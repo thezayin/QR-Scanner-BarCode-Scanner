@@ -1,0 +1,44 @@
+package com.thezayin.generate.presentation.state
+
+import android.graphics.Bitmap
+import com.thezayin.generate.domain.model.QrType
+
+data class GenerateState(
+    val error: String? = null,
+    val text: String = "",
+    val clip: String = "",
+    val itfCode: String = "",
+    val wifiSsid: String = "",
+    val ean8Code: String = "",
+    val upcACode: String = "",
+    val upcECode: String = "",
+    val smsNumber: String = "",
+    val emailBody: String = "",
+    val aztecCode: String = "",
+    val ean13Code: String = "",
+    val code39Code: String = "",
+    val pdf417Code: String = "",
+    val websiteUrl: String = "",
+    val callNumber: String = "",
+    val smsMessage: String = "",
+    val codabarCode: String = "",
+    val locationLat: String = "",
+    val code128Code: String = "",
+    val contactName: String = "",
+    val calendarEnd: String = "",
+    val locationLong: String = "",
+    val contactEmail: String = "",
+    val emailSubject: String = "",
+    val wifiPassword: String = "",
+    val emailAddress: String = "",
+    val contactPhone: String = "",
+    val calendarTitle: String = "",
+    val calendarStart: String = "",
+    val dataMatrixCode: String = "",
+    val wifiEncryption: String = "WPA",
+    val calendarDescription: String = "",
+    val generatedQrBitmap: Bitmap? = null,
+    val showMainListOnly: Boolean = true,
+    val selectedType: QrType = QrType.CALL,
+    val showDownloadSuccess: Boolean = false
+)

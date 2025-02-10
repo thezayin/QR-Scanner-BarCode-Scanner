@@ -1,0 +1,138 @@
+[
+  {
+    "code": "en",
+    "language": "English"
+  },
+  {
+    "code": "fr",
+    "language": "French (Français)"
+  },
+  {
+    "code": "es",
+    "language": "Spanish (Español)"
+  },
+  {
+    "code": "ar",
+    "language": "Arabic (العربیتہ)"
+  },
+  {
+    "code": "ru",
+    "language": "Russian (Русский)"
+  },
+  {
+    "code": "pt",
+    "language": "Portuguese (Português)"
+  },
+  {
+    "code": "hi",
+    "language": "Hindi (हिंदी)"
+  },
+  {
+    "code": "da",
+    "language": "Danish (Dansk)"
+  },
+  {
+    "code": "it",
+    "language": "Italian (Italiano)"
+  },
+  {
+    "code": "tr",
+    "language": "Turkis (Türkçe)"
+  },
+  {
+    "code": "id",
+    "language": "Indonesian (Bahasa Indonesia)"
+  },
+  {
+    "code": "ja",
+    "language": "Japanese (日本語)"
+  },
+  {
+    "code": "ko",
+    "language": "Korean (한국어)"
+  },
+  {
+    "code": "pl",
+    "language": "Polish (Polskie)"
+  },
+  {
+    "code": "af",
+    "language": "Afrikaans (Afrikaanse)"
+  },
+  {
+    "code": "zh",
+    "language": "Chinese (简体中文)"
+  },
+  {
+    "code": "zh-TW",
+    "language": "Chinese Traditional (繁體中文)"
+  },
+  {
+    "code": "th",
+    "language": "Thai (ไทย)"
+  },
+  {
+    "code": "fa",
+    "language": "Persian (فارسی)"
+  },
+  {
+    "code": "vi",
+    "language": "Vietnamese (Tiêng Viêt)"
+  },
+  {
+    "code": "hu",
+    "language": "Hungarian (Magyar)"
+  },
+  {
+    "code": "he",
+    "language": "Hebrew (עברית)"
+  },
+  {
+    "code": "sv",
+    "language": "Swedish (Svenska)"
+  },
+  {
+    "code": "no",
+    "language": "Norwegian (Norsk)"
+  },
+  {
+    "code": "ca",
+    "language": "Catalan (Catalana)"
+  },
+  {
+    "code": "ms",
+    "language": "Malay (Melayu)"
+  },
+  {
+    "code": "nl",
+    "language": "Dutch (Nederlands)"
+  },
+  {
+    "code": "cs",
+    "language": "Czech (Txec)"
+  },
+  {
+    "code": "ur",
+    "language": "Urdu (اردو)"
+  },
+  {
+    "code": "de",
+    "language": "German (Deutsch)"
+  },
+  {
+    "code": "uk",
+    "language": "Ukrainian (українська)"
+  },
+  {
+    "code": "bn",
+    "language": "Bengali (বাংলা)"
+  },
+  {
+    "code": "hy",
+    "language": "Armenian (Հայերեն)"
+  },
+  {
+    "code": "ro",
+    "language": "Romanian (Român)"
+  }
+]
