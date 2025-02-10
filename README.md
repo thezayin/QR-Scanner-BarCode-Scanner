@@ -1,5 +1,3 @@
-
-```markdown
 # QRScanner App
 
 ![QRScanner Icon](https://github.com/thezayin/QR-Scanner-BarCode-Scanner/blob/master/common/values/src/main/res/drawable/ic_main.jpeg)
