@@ -1,5 +1,7 @@
-package com.thezayin.start_up.languages
+package com.thezayin.start_up.languages.state
 
+import com.thezayin.start_up.languages.manager.Language
+import com.thezayin.start_up.languages.utils.State
 import java.util.Locale
 
 sealed interface LanguageState : State {

@@ -31,11 +31,13 @@ class OnboardingViewModel(
             pages = listOf(
                 OnboardingPage(
                     image = R.drawable.img_bar_code,
+                    scannerPainter = R.drawable.img_bar_code,
                     title = application.getString(R.string.barcode_scanner),
                     subtitle = application.getString(R.string.barcode_details)
                 ),
                 OnboardingPage(
                     image = R.drawable.img_qr_code,
+                    scannerPainter = R.drawable.onboard_bar_code,
                     title = application.getString(R.string.qr_code_scanner),
                     subtitle = application.getString(R.string.qr_code_details)
                 ),
@@ -83,4 +85,3 @@ class OnboardingViewModel(
         }
     }
 }
-

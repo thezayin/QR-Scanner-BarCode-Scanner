@@ -3,6 +3,7 @@ package com.thezayin.generate.presentation
 import android.app.Application
 import android.content.ContentValues
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -11,6 +12,7 @@ import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.domain.model.QrContent
 import com.thezayin.generate.domain.model.QrType
@@ -26,7 +28,8 @@ import java.io.FileOutputStream
 class GenerateViewModel(
     application: Application,
     private val generateQrUseCase: GenerateQrUseCase,
-    val remoteConfig: RemoteConfig
+    val remoteConfig: RemoteConfig,
+    val pref: PreferencesManager
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(GenerateState())

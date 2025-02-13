@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.font.FontWeight
 import com.thezayin.framework.utils.formatTimestamp
 import com.thezayin.framework.utils.getQrTypeIcon
 import com.thezayin.history.domain.model.CreateItem
@@ -66,20 +66,6 @@ fun CreateItemCard(
                 verticalArrangement = Arrangement.spacedBy(4.sdp)
             ) {
                 Spacer(modifier = Modifier.height(8.sdp))
-                Text(
-                    fontSize = 10.ssp,
-                    text = item.title,
-                    fontFamily = FontFamily(Font(R.font.roboto_bold)),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    fontFamily = FontFamily(Font(R.font.roboto_regular)),
-                    text = formatTimestamp(item.timestamp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 8.ssp
-                )
                 val jsonObject = try {
                     org.json.JSONObject(item.content)
                 } catch (e: Exception) {
@@ -89,15 +75,28 @@ fun CreateItemCard(
                     for (key in obj.keys()) {
                         val value = obj.getString(key)
                         Text(
-                            fontFamily = FontFamily(Font(R.font.roboto_regular)),
                             text = value,
-                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 8.ssp,
-                            textDecoration = TextDecoration.None
+                            fontFamily = FontFamily(Font(R.font.roboto_bold)),
+                            fontSize = 10.ssp,
                         )
                     }
                 }
+                Text(
+                    fontSize = 8.ssp,
+                    text = item.title,
+                    fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                    text = formatTimestamp(item.timestamp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 8.ssp
+                )
             }
             IconButton(
                 onClick = { onDelete(item) },

@@ -74,7 +74,7 @@ fun InputSection(
                 .height(35.sdp),
             shape = RoundedCornerShape(8.sdp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.primary),
+                containerColor = viewModel.pref.getPrimaryColor(),
                 disabledContainerColor = colorResource(id = R.color.greyish),
             ),
         ) {

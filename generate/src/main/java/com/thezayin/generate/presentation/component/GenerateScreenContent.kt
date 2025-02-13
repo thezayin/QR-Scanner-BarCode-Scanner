@@ -102,6 +102,7 @@ fun GenerateScreenContent(
             exit = exitTransition
         ) {
             BigQrTypeList(
+                primaryColor = viewModel.pref.getPrimaryColor(),
                 allTypes = allTypes,
                 onTypeSelected = { type ->
                     activity.interstitialAd(

@@ -26,6 +26,7 @@ import androidx.lifecycle.Lifecycle
 import com.thezayin.framework.ads.loader.GoogleBannerAdLoader
 import com.thezayin.framework.components.ComposableLifecycle
 import com.thezayin.framework.components.GoogleNativeSimpleAd
+import com.thezayin.framework.components.ScannerOverlay
 import com.thezayin.start_up.onboarding.OnboardingViewModel
 import com.thezayin.start_up.onboarding.model.OnboardingPage
 import com.thezayin.values.R
@@ -100,7 +101,6 @@ fun OnboardingContent(
                     GoogleNativeSimpleAd(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
                             .height(150.dp),
                         nativeAd = vm.nativeAd.value
                     )
@@ -110,6 +110,7 @@ fun OnboardingContent(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

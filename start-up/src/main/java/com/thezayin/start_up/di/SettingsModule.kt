@@ -1,7 +1,7 @@
 package com.thezayin.start_up.di
 
-import com.thezayin.start_up.languages.LanguageManager
-import com.thezayin.start_up.languages.LanguageManagerImpl
+import com.thezayin.start_up.languages.manager.LanguageManager
+import com.thezayin.start_up.languages.manager.LanguageManagerImpl
 import com.thezayin.start_up.languages.LanguageViewModel
 import com.thezayin.start_up.onboarding.OnboardingViewModel
 import com.thezayin.start_up.setting.SettingsViewModel

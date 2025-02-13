@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -26,13 +27,43 @@ import ir.kaaveh.sdpcompose.ssp
 @Composable
 fun QrTypeItem(
     type: QrType,
+    primaryColor: Color,
     isSelected: Boolean,
     onSelect: (QrType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val iconTint: Color = when (type) {
+        QrType.CALL       -> colorResource(R.color.ptcl_green)
+        QrType.SMS        -> colorResource(R.color.telenor_blue)
+        QrType.EMAIL      -> colorResource(R.color.strawberry)
+        QrType.WEBSITE    -> colorResource(R.color.pumpkin)
+        QrType.TEXT       -> colorResource(R.color.bright_sun)
+        QrType.CLIPBOARD  -> colorResource(R.color.tealish)
+        QrType.WIFI       -> colorResource(R.color.blue_purple)
+        QrType.CALENDAR   -> colorResource(R.color.carnation_pink)
+        QrType.CONTACT    -> colorResource(R.color.brown)
+        QrType.LOCATION   -> colorResource(R.color.sun_yellow_qr)
+
+        QrType.EAN_8,
+        QrType.EAN_13,
+        QrType.UPC_A,
+        QrType.UPC_E      -> colorResource(R.color.ad_tag_color)
+        QrType.CODE_39,
+        QrType.CODE_128,
+        QrType.ITF,
+        QrType.PDF_417,
+        QrType.CODABAR    -> colorResource(R.color.telenor_blue)
+        QrType.DATAMATRIX -> colorResource(R.color.deep_lavender)
+        QrType.AZTEC      -> colorResource(R.color.bright_lavender)
+    }
+
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) colorResource(id = R.color.bluishRandom) else MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = if (isSelected) {
+                primaryColor
+            } else {
+                MaterialTheme.colorScheme.surfaceContainer
+            }
         ),
         modifier = modifier
             .clickable { onSelect(type) }
@@ -46,7 +77,7 @@ fun QrTypeItem(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                tint = MaterialTheme.colorScheme.onSurface,
+                tint = iconTint,
                 painter = when (type) {
                     QrType.CALL -> painterResource(id = R.drawable.ic_call)
                     QrType.SMS -> painterResource(id = R.drawable.ic_sms)
@@ -73,6 +104,7 @@ fun QrTypeItem(
                 contentDescription = type.name,
                 modifier = Modifier.size(16.sdp)
             )
+
             Text(
                 text = type.name,
                 fontSize = 8.ssp,

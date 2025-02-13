@@ -69,17 +69,6 @@ fun ScanItemCard(
 
                 Spacer(modifier = Modifier.width(8.sdp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = item.type,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 10.ssp
-                    )
-                    Text(
-                        text = formatTimestamp(item.timestamp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 10.ssp
-                    )
-
                     when (item.type) {
                         "CALL" -> {
                             Text(
@@ -171,6 +160,18 @@ fun ScanItemCard(
                             )
                         }
                     }
+                    Text(
+                        text = item.type,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 8.ssp
+                    )
+                    Text(
+                        text = formatTimestamp(item.timestamp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 8.ssp
+                    )
+
+
                 }
 
                 Row {

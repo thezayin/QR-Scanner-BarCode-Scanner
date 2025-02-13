@@ -1,4 +1,4 @@
-package com.thezayin.start_up.languages
+package com.thezayin.start_up.languages.manager
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

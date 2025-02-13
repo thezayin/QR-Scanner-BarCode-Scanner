@@ -109,4 +109,6 @@ dependencies {
     implementation(libs.grizzly)
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.navigation.animation)
+
+    implementation (libs.user.messaging.platform)
 }

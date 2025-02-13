@@ -88,12 +88,9 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "barcodeScanning" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
-gpuimage = { module = "jp.co.cyberagent.android:gpuimage", version.ref = "gpuimage" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 grizzly = { module = "io.github.farimarwat:grizzly", version.ref = "grizzly" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-image = { module = "com.google.android.odml:image", version.ref = "image" }
 jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoupVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -144,8 +141,6 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config", ver
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
-play-services-mlkit-subject-segmentation = { module = "com.google.android.gms:play-services-mlkit-subject-segmentation", version.ref = "playServicesMlkitSubjectSegmentation" }
-tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflowLite" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
@@ -156,17 +151,7 @@ sdp-compose = { module = "com.github.Kaaveh:sdp-compose", version.ref = "sdpComp
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
-firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
-firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebaseConfigKtx" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
-tensorflow-lite-gpu = { module = "org.tensorflow:tensorflow-lite-gpu", version.ref = "tensorflowLite" }
-androidx-constraintlayout-compose-android = { group = "androidx.constraintlayout", name = "constraintlayout-compose-android", version.ref = "constraintlayoutComposeAndroid" }
-cloudy = { module = "com.github.skydoves:cloudy", version.ref = "cloudy" }
-colorpicker = { module = "io.mhssn:colorpicker", version.ref = "colorpicker" }
-compose-screenshot = { module = "com.github.SmartToolFactory:Compose-Screenshot", version.ref = "composeScreenshot" }
-android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
 play-services-ads-lite = { group = "com.google.android.gms", name = "play-services-ads-lite", version.ref = "playServicesAdsLite" }
 

@@ -51,6 +51,7 @@ fun DetailedViewContent(
             items(allTypes) { type ->
                 QrTypeItem(
                     type = type,
+                    primaryColor = viewModel.pref.getPrimaryColor(),
                     isSelected = (type == state.selectedType),
                     onSelect = { selected ->
                         activity.interstitialAd(
