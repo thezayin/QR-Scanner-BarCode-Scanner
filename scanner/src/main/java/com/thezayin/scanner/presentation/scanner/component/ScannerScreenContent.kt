@@ -1,5 +1,7 @@
 package com.thezayin.scanner.presentation.scanner.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -10,6 +12,7 @@ import com.thezayin.framework.components.ScannerOverlay
 import com.thezayin.scanner.presentation.scanner.ScannerViewModel
 import com.thezayin.scanner.presentation.scanner.state.ScannerState
 import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.sdp
 
 @Composable
 fun ScannerScreenContent(
@@ -29,13 +32,15 @@ fun ScannerScreenContent(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            HeaderSection(
-                onBatchClick = onBatchClick,
-                onGalleryClick = onGalleryClick,
-                onFlashToggle = onFlashToggle,
-                isFlashOn = state.isFlashlightOn
-            )
-
+            Column {
+                Spacer(modifier = Modifier.padding(top = 16.sdp))
+                HeaderSection(
+                    onBatchClick = onBatchClick,
+                    onGalleryClick = onGalleryClick,
+                    onFlashToggle = onFlashToggle,
+                    isFlashOn = state.isFlashlightOn
+                )
+            }
         },
         bottomBar = {
             ZoomControlsSection(

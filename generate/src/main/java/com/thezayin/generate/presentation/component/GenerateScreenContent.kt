@@ -22,13 +22,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.thezayin.framework.ads.functions.interstitialAd
-import com.thezayin.framework.components.AdLoadingDialog
 import com.thezayin.generate.domain.model.QrType
 import com.thezayin.generate.presentation.GenerateViewModel
 import com.thezayin.generate.presentation.event.GenerateEvent
@@ -42,15 +38,10 @@ fun GenerateScreenContent(
     onNavigateBack: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val adManager = viewModel.adManager
     val allTypes = QrType.entries
 
-    val showLoadingAd = remember { mutableStateOf(false) }
     val activity = LocalContext.current as Activity
-
-    if (showLoadingAd.value) {
-        AdLoadingDialog()
-    }
-
     val enterTransition: EnterTransition = slideInHorizontally(
         initialOffsetX = { fullWidth -> fullWidth },
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
@@ -105,12 +96,10 @@ fun GenerateScreenContent(
                 primaryColor = viewModel.pref.getPrimaryColor(),
                 allTypes = allTypes,
                 onTypeSelected = { type ->
-                    activity.interstitialAd(
+                    adManager.showAd(
+                        activity = activity,
                         showAd = viewModel.remoteConfig.adConfigs.adOnCreateOption,
-                        adUnitId = viewModel.remoteConfig.adUnits.interstitialAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = {
+                        onNext = {
                             viewModel.onEvent(GenerateEvent.SelectType(type))
                         },
                     )
@@ -125,8 +114,8 @@ fun GenerateScreenContent(
             exit = exitTransition
         ) {
             GeneratedQrContent(
+                viewModel = viewModel,
                 remoteConfig = viewModel.remoteConfig,
-                showLoadingAd = showLoadingAd,
                 state = state,
                 onEvent = { viewModel.onEvent(it) },
                 modifier = Modifier.padding(paddingValues)
@@ -144,7 +133,6 @@ fun GenerateScreenContent(
                 onEvent = { viewModel.onEvent(it) },
                 modifier = Modifier.padding(paddingValues),
                 viewModel = viewModel,
-                showLoadingAd = showLoadingAd
             )
         }
     }

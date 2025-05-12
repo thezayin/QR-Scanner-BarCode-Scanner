@@ -20,8 +20,8 @@ import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
-import com.thezayin.framework.ads.functions.appOpenAd
-import com.thezayin.framework.ads.functions.interstitialAd
+import com.thezayin.framework.ads.admob.domain.repository.AppOpenAdManager
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.qrscanner.navigation.RootNavGraph
@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     private val preferencesManager: PreferencesManager by inject()
     private val remoteConfig: RemoteConfig by inject()
+    private val adManager: AppOpenAdManager by inject()
+    private val interstitialAdManager: InterstitialAdManager by inject()
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -49,7 +51,8 @@ class MainActivity : AppCompatActivity() {
         val savedLanguage = preferencesManager.selectedLanguageFlow.value ?: "en"
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(savedLanguage))
         setupConsent()
-
+        adManager.loadAd(activity = this)
+        interstitialAdManager.loadAd(activity = this)
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
@@ -82,20 +85,16 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (remoteConfig.adConfigs.switchAdResume) {
-            this.appOpenAd(
+            adManager.showAd(
+                activity = this,
                 showAd = remoteConfig.adConfigs.adOnResume,
-                adUnitId = remoteConfig.adUnits.appOpenAd,
-                showLoading = {},
-                hideLoading = { },
-                callback = {},
+                onNext = {},
             )
         } else {
-            this.interstitialAd(
+            interstitialAdManager.showAd(
                 showAd = remoteConfig.adConfigs.adOnResume,
-                adUnitId = remoteConfig.adUnits.interstitialAd,
-                showLoading = {},
-                hideLoading = { },
-                callback = {},
+                activity = this,
+                onNext = {},
             )
         }
     }
@@ -172,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this) {}
         MobileAds.setRequestConfiguration(
             RequestConfiguration.Builder()
-//                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
+               .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
                 .build()
         )
     }

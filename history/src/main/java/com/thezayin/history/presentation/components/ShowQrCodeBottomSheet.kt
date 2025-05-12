@@ -21,14 +21,12 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.thezayin.framework.ads.functions.rewardedAd
 import com.thezayin.framework.utils.saveImageToExternalStorage
 import com.thezayin.framework.utils.shareImage
 import com.thezayin.history.domain.model.CreateItem
@@ -40,14 +38,15 @@ import ir.kaaveh.sdpcompose.ssp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowQrCodeBottomSheet(
-    showLoadingAd: MutableState<Boolean>,
     vm: HistoryViewModel,
     context: Context,
     item: CreateItem,
     onDismiss: () -> Unit
 ) {
+    val adManager = vm.rewardedAdManager
     val activity = context as android.app.Activity
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     ModalBottomSheet(
         sheetState = state,
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -78,12 +77,10 @@ fun ShowQrCodeBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(onClick = {
-                    activity.rewardedAd(
+                    adManager.showAd(
+                        activity = activity,
                         showAd = vm.remoteConfig.adConfigs.adOnHistoryDownloadClick,
-                        adUnitId = vm.remoteConfig.adUnits.rewardedAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = {
+                        onNext = {
                             saveImageToExternalStorage(context, item.imageUri)
                             Toast.makeText(
                                 context,
@@ -103,12 +100,10 @@ fun ShowQrCodeBottomSheet(
                     }
                 }
                 IconButton(onClick = {
-                    activity.rewardedAd(
+                    adManager.showAd(
+                        activity = activity,
                         showAd = vm.remoteConfig.adConfigs.adOnHistoryShareClick,
-                        adUnitId = vm.remoteConfig.adUnits.rewardedAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = { shareImage(context, item.imageUri) }
+                        onNext = { shareImage(context, item.imageUri) }
                     )
                 }) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

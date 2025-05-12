@@ -66,7 +66,7 @@ firebaseStorageKtx = "21.0.1"
 firebaseConfigKtx = "22.0.1"
 volley = "1.2.1"
 constraintlayoutComposeAndroid = "1.1.0"
-
+coilGif = "2.6.0"
 androidImageCropper = "4.5.0"
 cloudy = "0.1.2"
 colorpicker = "1.0.0"
@@ -76,6 +76,9 @@ firebaseCrashlyticsKtx = "19.4.0"
 playServicesAdsLite = "23.6.0"
 
 [libraries]
+
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilGif" }
+
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }

@@ -3,7 +3,6 @@
 package com.thezayin.generate.presentation.component
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.res.stringResource
 import com.thezayin.generate.domain.model.InputFieldData
 import com.thezayin.generate.domain.model.QrType
@@ -14,16 +13,13 @@ import com.thezayin.values.R
 
 @Composable
 fun QrTypeViews(
-    state: GenerateState,
-    viewModel: GenerateViewModel,
-    showLoadingAd: MutableState<Boolean>,
-    onEvent: (GenerateEvent) -> Unit
+    state: GenerateState, viewModel: GenerateViewModel, onEvent: (GenerateEvent) -> Unit
 ) {
+
     when (state.selectedType) {
         QrType.CALL -> {
             InputSection(
                 viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
                 fields = listOf(
                     InputFieldData(
                         label = stringResource(id = R.string.phone_number),
@@ -32,17 +28,13 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateCallNumber(it)) },
                         validation = { phoneNumber ->
                             phoneNumber.isNotBlank() && phoneNumber.matches(Regex("^\\+?[0-9]*$"))
-                        }
-                    )
-                ),
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        })
+                ), onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.SMS -> {
             InputSection(
                 viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
                 fields = listOf(
                     InputFieldData(
                         label = stringResource(id = R.string.phone_number),
@@ -51,24 +43,19 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateSmsNumber(it)) },
                         validation = { phoneNumber ->
                             phoneNumber.isNotBlank() && phoneNumber.matches(Regex("^\\+?[0-9]*$"))
-                        }
-                    ),
-                    InputFieldData(
+                        }), InputFieldData(
                         label = stringResource(id = R.string.message),
                         placeholder = stringResource(id = R.string.enter_message),
                         value = state.smsMessage,
                         onValueChange = { onEvent(GenerateEvent.UpdateSmsMessage(it)) },
-                        validation = { message -> message.isNotBlank() }
-                    )
+                        validation = { message -> message.isNotBlank() })
                 ),
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.EMAIL -> {
             InputSection(
                 viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
                 fields = listOf(
                     InputFieldData(
                         label = stringResource(id = R.string.email_address),
@@ -76,27 +63,20 @@ fun QrTypeViews(
                         value = state.emailAddress,
                         onValueChange = { onEvent(GenerateEvent.UpdateEmailAddress(it)) },
                         validation = { email ->
-                            email.isNotBlank() &&
-                                    email.matches(Regex("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))
-                        }
-                    ),
-                    InputFieldData(
+                            email.isNotBlank() && email.matches(Regex("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))
+                        }), InputFieldData(
                         label = stringResource(id = R.string.subject),
                         placeholder = stringResource(id = R.string.enter_subject),
                         value = state.emailSubject,
                         onValueChange = { onEvent(GenerateEvent.UpdateEmailSubject(it)) },
-                        validation = { subject -> subject.isNotBlank() }
-                    ),
-                    InputFieldData(
+                        validation = { subject -> subject.isNotBlank() }), InputFieldData(
                         label = stringResource(id = R.string.body),
                         placeholder = stringResource(id = R.string.enter_email_body),
                         value = state.emailBody,
                         onValueChange = { onEvent(GenerateEvent.UpdateEmailBody(it)) },
-                        validation = { body -> body.isNotBlank() }
-                    )
+                        validation = { body -> body.isNotBlank() })
                 ),
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.WEBSITE -> {
@@ -109,13 +89,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateWebsiteUrl(it)) },
                         validation = { url ->
                             url.isNotBlank() && url.matches(Regex("^(https?|ftp)://[^\\s/$.?#].[^\\s]*$"))
-                        }
-                    )
-                ),
-                viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        })
+                ), viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.TEXT -> {
@@ -126,12 +102,9 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_text),
                         value = state.text,
                         onValueChange = { onEvent(GenerateEvent.UpdateText(it)) },
-                        validation = { text -> text.isNotBlank() }
-                    )
+                        validation = { text -> text.isNotBlank() })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.CLIPBOARD -> {
@@ -142,12 +115,9 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_clipboard_text),
                         value = state.clip,
                         onValueChange = { onEvent(GenerateEvent.UpdateClipboard(it)) },
-                        validation = { clip -> clip.isNotBlank() }
-                    )
+                        validation = { clip -> clip.isNotBlank() })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.WIFI -> {
@@ -158,26 +128,20 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_ssid),
                         value = state.wifiSsid,
                         onValueChange = { onEvent(GenerateEvent.UpdateWifiSsid(it)) },
-                        validation = { ssid -> ssid.isNotBlank() }
-                    ),
-                    InputFieldData(
+                        validation = { ssid -> ssid.isNotBlank() }), InputFieldData(
                         label = stringResource(id = R.string.password),
                         placeholder = stringResource(id = R.string.enter_password),
                         value = state.wifiPassword,
                         onValueChange = { onEvent(GenerateEvent.UpdateWifiPassword(it)) },
-                        validation = { password -> password.isNotBlank() }
-                    ),
-                    InputFieldData(
+                        validation = { password -> password.isNotBlank() }), InputFieldData(
                         label = stringResource(id = R.string.encryption),
                         placeholder = stringResource(id = R.string.enter_encryption),
                         value = state.wifiEncryption,
                         onValueChange = { onEvent(GenerateEvent.UpdateWifiEncryption(it)) },
-                        validation = { encryption -> encryption.isNotBlank() }
-                    )
-                ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        validation = { encryption -> encryption.isNotBlank() })
+                ),
+                viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.CALENDAR -> {
@@ -188,33 +152,24 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_event_title),
                         value = state.calendarTitle,
                         onValueChange = { onEvent(GenerateEvent.UpdateCalendarTitle(it)) },
-                        validation = { title -> title.isNotBlank() }
-                    ),
-                    InputFieldData(
+                        validation = { title -> title.isNotBlank() }), InputFieldData(
                         label = stringResource(id = R.string.description),
                         placeholder = stringResource(id = R.string.enter_description),
                         value = state.calendarDescription,
                         onValueChange = { onEvent(GenerateEvent.UpdateCalendarDescription(it)) },
-                        validation = { description -> description.isNotBlank() }
-                    ),
-                    InputFieldData(
+                        validation = { description -> description.isNotBlank() }), InputFieldData(
                         label = stringResource(id = R.string.start_timestamp),
                         placeholder = stringResource(id = R.string.enter_start_time),
                         value = state.calendarStart,
                         onValueChange = { onEvent(GenerateEvent.UpdateCalendarStart(it)) },
-                        validation = { start -> start.isNotBlank() }
-                    ),
-                    InputFieldData(
+                        validation = { start -> start.isNotBlank() }), InputFieldData(
                         label = stringResource(id = R.string.end_timestamp),
                         placeholder = stringResource(id = R.string.enter_end_time),
                         value = state.calendarEnd,
                         onValueChange = { onEvent(GenerateEvent.UpdateCalendarEnd(it)) },
-                        validation = { end -> end.isNotBlank() }
-                    )
+                        validation = { end -> end.isNotBlank() })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.CODABAR -> {
@@ -227,12 +182,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateCodabar(it)) },
                         validation = { code ->
                             code.isNotBlank() && code.matches(Regex("^[A-D0-9\\$\\/+\\-\\.]+$"))
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.ITF -> {
@@ -245,12 +197,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateItf(it)) },
                         validation = { code ->
                             code.isNotBlank() && code.matches(Regex("^[0-9]{6,14}$"))
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.UPC_E -> {
@@ -263,12 +212,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateUpcE(it)) },
                         validation = { code ->
                             code.isNotBlank() && code.matches(Regex("^[0-9]{6}$"))
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.UPC_A -> {
@@ -281,12 +227,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateUpcA(it)) },
                         validation = { code ->
                             code.isNotBlank() && code.matches(Regex("^[0-9]{12}$"))
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.EAN_13 -> {
@@ -299,12 +242,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateEan13(it)) },
                         validation = { code ->
                             code.isNotBlank() && code.matches(Regex("^[0-9]{13}$"))
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.EAN_8 -> {
@@ -317,12 +257,9 @@ fun QrTypeViews(
                         onValueChange = { onEvent(GenerateEvent.UpdateEan8(it)) },
                         validation = { code ->
                             code.isNotBlank() && code.matches(Regex("^[0-9]{8}$"))
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.CONTACT -> {
@@ -333,15 +270,13 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_contact_name),
                         value = state.contactName,
                         onValueChange = { onEvent(GenerateEvent.UpdateContactName(it)) },
-                        validation = { it.isNotBlank() }
-                    ),
+                        validation = { it.isNotBlank() }),
                     InputFieldData(
                         label = stringResource(id = R.string.contact_phone),
                         placeholder = stringResource(id = R.string.enter_contact_phone),
                         value = state.contactPhone,
                         onValueChange = { onEvent(GenerateEvent.UpdateContactPhone(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[0-9]{10,15}$")) }
-                    ),
+                        validation = { it.isNotBlank() && it.matches(Regex("^[0-9]{10,15}$")) }),
                     InputFieldData(
                         label = stringResource(id = R.string.contact_email),
                         placeholder = stringResource(id = R.string.enter_contact_email),
@@ -351,12 +286,9 @@ fun QrTypeViews(
                             it.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(
                                 it
                             ).matches()
-                        }
-                    )
+                        })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.LOCATION -> {
@@ -367,19 +299,16 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_latitude),
                         value = state.locationLat,
                         onValueChange = { onEvent(GenerateEvent.UpdateLocationLat(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[+-]?([0-9]{1,2}|1[0-7][0-9]|180)(\\.[0-9]+)?$")) }
-                    ),
+                        validation = { it.isNotBlank() && it.matches(Regex("^[+-]?([0-9]{1,2}|1[0-7][0-9]|180)(\\.[0-9]+)?$")) }),
                     InputFieldData(
                         label = stringResource(id = R.string.longitude),
                         placeholder = stringResource(id = R.string.enter_longitude),
                         value = state.locationLong,
                         onValueChange = { onEvent(GenerateEvent.UpdateLocationLong(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[+-]?(180|1[0-7][0-9]|[1-9]?[0-9])$")) }
-                    )
-                ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        validation = { it.isNotBlank() && it.matches(Regex("^[+-]?(180|1[0-7][0-9]|[1-9]?[0-9])$")) })
+                ),
+                viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.CODE_39 -> {
@@ -390,12 +319,10 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_code_39),
                         value = state.code39Code,
                         onValueChange = { onEvent(GenerateEvent.UpdateCode39(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[A-Z0-9\\-\\$\\/\\+\\.\\%\\*]+$")) }
-                    )
-                ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        validation = { it.isNotBlank() && it.matches(Regex("^[A-Z0-9\\-\\$\\/\\+\\.\\%\\*]+$")) })
+                ),
+                viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.CODE_128 -> {
@@ -406,12 +333,10 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_code_128),
                         value = state.code128Code,
                         onValueChange = { onEvent(GenerateEvent.UpdateCode128(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[\\x21-\\x7E]+$")) }
-                    )
-                ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        validation = { it.isNotBlank() && it.matches(Regex("^[\\x21-\\x7E]+$")) })
+                ),
+                viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.PDF_417 -> {
@@ -422,12 +347,9 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_pdf_417_code),
                         value = state.pdf417Code,
                         onValueChange = { onEvent(GenerateEvent.UpdatePdf417(it)) },
-                        validation = { it.isNotBlank() && it.length >= 2 }
-                    )
+                        validation = { it.isNotBlank() && it.length >= 2 })
                 ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.DATAMATRIX -> {
@@ -438,12 +360,10 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_datamatrix_code),
                         value = state.dataMatrixCode,
                         onValueChange = { onEvent(GenerateEvent.UpdateDataMatrix(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[A-Za-z0-9]+$")) }
-                    )
-                ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        validation = { it.isNotBlank() && it.matches(Regex("^[A-Za-z0-9]+$")) })
+                ),
+                viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
         QrType.AZTEC -> {
@@ -454,12 +374,10 @@ fun QrTypeViews(
                         placeholder = stringResource(id = R.string.enter_aztec_code),
                         value = state.aztecCode,
                         onValueChange = { onEvent(GenerateEvent.UpdateAztec(it)) },
-                        validation = { it.isNotBlank() && it.matches(Regex("^[A-Za-z0-9]+$")) }
-                    )
-                ), viewModel = viewModel,
-                showLoadingAd = showLoadingAd,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) }
-            )
+                        validation = { it.isNotBlank() && it.matches(Regex("^[A-Za-z0-9]+$")) })
+                ),
+                viewModel = viewModel,
+                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
     }
 }

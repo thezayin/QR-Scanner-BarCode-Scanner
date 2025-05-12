@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.mlkit.vision.common.InputImage
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
@@ -40,7 +41,8 @@ class ScannerViewModel(
     private val scanQrUseCase: ScanQrUseCase,
     private val preferencesManager: PreferencesManager,
     private val sessionManager: ScanSessionManager,
-    val remoteConfig: RemoteConfig
+    val remoteConfig: RemoteConfig,
+    val adManager: InterstitialAdManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ScannerState())

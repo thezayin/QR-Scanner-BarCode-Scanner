@@ -1,7 +1,10 @@
 package com.thezayin.history.presentation
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
+import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
 import com.thezayin.history.domain.model.CreateItem
@@ -24,7 +27,9 @@ class HistoryViewModel(
     private val deleteScanItemUseCase: DeleteScanItemUseCase,
     private val deleteCreateItemUseCase: DeleteCreateItemUseCase,
     private val sessionManager: ScanSessionManager,
-    val remoteConfig: RemoteConfig
+    val remoteConfig: RemoteConfig,
+    val adManager: InterstitialAdManager,
+    val rewardedAdManager: RewardedAdManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HistoryState())
@@ -61,6 +66,11 @@ class HistoryViewModel(
                 openScanItem(event.item)
             }
         }
+    }
+
+    fun initManager(activity: Activity) {
+        adManager.loadAd(activity)
+        rewardedAdManager.loadAd(activity)
     }
 
     private fun openScanItem(item: ScanItem) {

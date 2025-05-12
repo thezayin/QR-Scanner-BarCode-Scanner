@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,7 +29,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
-import com.thezayin.framework.ads.functions.rewardedAd
 import com.thezayin.scanner.domain.model.ResultScreenItem
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
 import com.thezayin.scanner.presentation.result.event.ResultScreenEvent
@@ -43,11 +41,12 @@ fun ProductFoundCard(
     item: ResultScreenItem,
     scannedResult: String,
     sessionImageUri: String,
-    showLoadingAd: MutableState<Boolean>,
     vm: ResultScreenViewModel
 ) {
     val context = LocalContext.current
     val activity = context as Activity
+    val adManager = vm.adManager
+
     Card(
         modifier = Modifier.padding(horizontal = 10.sdp, vertical = 20.sdp),
         colors = CardDefaults.cardColors(
@@ -104,7 +103,8 @@ fun ProductFoundCard(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconWithLabel(iconRes = R.drawable.ic_barcode,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_barcode,
                     label = stringResource(id = R.string.view_code),
                     onClick = {
                         Toast.makeText(
@@ -113,7 +113,8 @@ fun ProductFoundCard(
                             Toast.LENGTH_SHORT
                         ).show()
                     })
-                IconWithLabel(iconRes = R.drawable.ic_amazon,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_amazon,
                     label = stringResource(id = R.string.amazon),
                     onClick = {
                         val query = Uri.encode(scannedResult)
@@ -124,15 +125,14 @@ fun ProductFoundCard(
                         context.startActivity(intent)
                     }
                 )
-                IconWithLabel(iconRes = R.drawable.ic_open,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_open,
                     label = stringResource(id = R.string.open),
                     onClick = {
-                        activity.rewardedAd(
+                        adManager.showAd(
+                            activity = activity,
                             showAd = vm.remoteConfig.adConfigs.adOnScanOpen,
-                            adUnitId = vm.remoteConfig.adUnits.rewardedAd,
-                            showLoading = { showLoadingAd.value = true },
-                            hideLoading = { showLoadingAd.value = false },
-                            callback = {
+                            onNext = {
                                 val url = "https://world.openfoodfacts.org/product/$scannedResult"
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
                                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -142,7 +142,8 @@ fun ProductFoundCard(
                         )
 
                     })
-                IconWithLabel(iconRes = R.drawable.ic_ebay,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_ebay,
                     label = stringResource(id = R.string.ebay),
                     onClick = {
                         val query = Uri.encode(scannedResult)
@@ -152,7 +153,8 @@ fun ProductFoundCard(
                         }
                         context.startActivity(intent)
                     })
-                IconWithLabel(iconRes = R.drawable.ic_share,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_share,
                     label = stringResource(id = R.string.share),
                     onClick = {
                         val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -166,7 +168,8 @@ fun ProductFoundCard(
                                 }
                         context.startActivity(chooserIntent)
                     })
-                IconWithLabel(iconRes = R.drawable.ic_shop_now,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_shop_now,
                     label = stringResource(id = R.string.shop_now),
                     onClick = {
                         val query = Uri.encode(scannedResult)
@@ -176,7 +179,8 @@ fun ProductFoundCard(
                         }
                         context.startActivity(intent)
                     })
-                IconWithLabel(iconRes = R.drawable.ic_copy,
+                IconWithLabel(
+                    iconRes = R.drawable.ic_copy,
                     label = stringResource(id = R.string.copy),
                     onClick = {
                         val clipboard =

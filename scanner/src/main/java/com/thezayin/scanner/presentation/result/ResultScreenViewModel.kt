@@ -1,5 +1,6 @@
 package com.thezayin.scanner.presentation.result
 
+import android.app.Activity
 import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -11,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.ads.nativead.NativeAd
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.ads.loader.GoogleNativeAdLoader
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
@@ -32,7 +34,8 @@ class ResultScreenViewModel(
     private val fetchProductDetailsUseCase: FetchProductDetailsUseCase,
     private val addProductToDbUseCase: AddProductToDbUseCase,
     private val updateFavoriteUseCase: UpdateFavoriteUseCase,
-    val remoteConfig: RemoteConfig
+    val remoteConfig: RemoteConfig,
+    val adManager: InterstitialAdManager
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(ResultScreenState())
@@ -43,6 +46,10 @@ class ResultScreenViewModel(
 
     init {
         loadResults()
+    }
+
+    fun initManager(activity: Activity) {
+        adManager.loadAd(activity)
     }
 
     fun getNativeAd(context: Context) = viewModelScope.launch {

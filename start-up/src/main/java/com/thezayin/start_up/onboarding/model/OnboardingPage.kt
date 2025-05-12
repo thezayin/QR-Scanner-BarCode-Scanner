@@ -1,8 +1,9 @@
 package com.thezayin.start_up.onboarding.model
 
+import android.net.Uri
+
 data class OnboardingPage(
-    val image: Int,
+    val gifResId: Int,
     val title: String,
-    val scannerPainter: Int,
     val subtitle: String,
 )

@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -24,22 +23,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.thezayin.framework.ads.functions.rewardedAd
+import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
 import com.thezayin.framework.remote.RemoteConfig
+import com.thezayin.generate.presentation.GenerateViewModel
 import com.thezayin.generate.presentation.event.GenerateEvent
 import com.thezayin.generate.presentation.state.GenerateState
 import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
+import org.koin.compose.koinInject
 
 @Composable
 fun GeneratedQrContent(
+    viewModel: GenerateViewModel,
     remoteConfig: RemoteConfig,
-    showLoadingAd: MutableState<Boolean>,
     state: GenerateState,
     onEvent: (GenerateEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val adManager = viewModel.adManager
     val activity = LocalContext.current as Activity
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -60,12 +63,10 @@ fun GeneratedQrContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = {
-                activity.rewardedAd(
+                adManager.showAd(
+                    activity = activity,
                     showAd = remoteConfig.adConfigs.adOnHistoryDownloadClick,
-                    adUnitId = remoteConfig.adUnits.rewardedAd,
-                    showLoading = { showLoadingAd.value = true },
-                    hideLoading = { showLoadingAd.value = false },
-                    callback = {
+                    onNext = {
                         onEvent(GenerateEvent.DownloadQrCode)
                     }
                 )
@@ -80,12 +81,10 @@ fun GeneratedQrContent(
                 }
             }
             IconButton(onClick = {
-                activity.rewardedAd(
+                adManager.showAd(
+                    activity = activity,
                     showAd = remoteConfig.adConfigs.adOnHistoryDownloadClick,
-                    adUnitId = remoteConfig.adUnits.rewardedAd,
-                    showLoading = { showLoadingAd.value = true },
-                    hideLoading = { showLoadingAd.value = false },
-                    callback = {
+                    onNext = {
                         onEvent(GenerateEvent.ShareQrCode)
                     }
                 )

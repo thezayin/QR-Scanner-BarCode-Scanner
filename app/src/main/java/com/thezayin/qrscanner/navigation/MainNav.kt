@@ -14,14 +14,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,15 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.thezayin.framework.ads.functions.interstitialAd
-import com.thezayin.framework.ads.loader.GoogleBannerAdLoader
-import com.thezayin.framework.components.AdLoadingDialog
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
+import com.thezayin.framework.components.BannerAd
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.presentation.GenerateScreen
 import com.thezayin.history.presentation.FavoritesScreen
@@ -46,6 +43,7 @@ import com.thezayin.scanner.presentation.result.ResultScreen
 import com.thezayin.scanner.presentation.scanner.ScannerScreen
 import com.thezayin.start_up.languages.LanguageScreen
 import com.thezayin.start_up.setting.SettingsScreen
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -53,6 +51,12 @@ fun MainNav(
     primaryColor: Color,
     remoteConfig: RemoteConfig
 ) {
+    val activity = LocalContext.current as Activity
+    val adManager = koinInject<InterstitialAdManager>()
+    LaunchedEffect(Unit) {
+        adManager.loadAd(activity)
+    }
+
     val navController = rememberNavController()
     val bottomNavRoutes = listOf(
         BottomNavItem.Scan.route,
@@ -65,7 +69,6 @@ fun MainNav(
     val bottomNavItems = listOf(
         BottomNavItem.Scan, BottomNavItem.Create, BottomNavItem.History, BottomNavItem.Settings
     )
-    val showLoadingAd = remember { mutableStateOf(false) }
     val showExitDialog = remember { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
@@ -76,23 +79,18 @@ fun MainNav(
         }
     }
 
-    val activity = LocalContext.current as Activity
-    if (showLoadingAd.value) {
-        AdLoadingDialog()
-    }
-    val bottomBarHeight = if (currentRoute in bottomNavRoutes) {
-        if (remoteConfig.adConfigs.adOnBottomHome) 56.dp + 50.dp else 56.dp
-    } else {
-        0.dp
-    }
 
+//    val bottomBarHeight = if (currentRoute in bottomNavRoutes) {
+//        if (remoteConfig.adConfigs.adOnBottomHome) 56.dp + 50.dp else 56.dp
+//    } else {
+//        0.dp
+//    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedNavHost(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = bottomBarHeight),
+                .fillMaxSize(),
             navController = navController,
             startDestination = BottomNavItem.Scan.route,
             enterTransition = {
@@ -181,12 +179,10 @@ fun MainNav(
             composable("languages") {
                 LanguageScreen(
                     onLanguageSelection = {
-                        activity.interstitialAd(
+                        adManager.showAd(
+                            activity = activity,
                             showAd = remoteConfig.adConfigs.adOnSplash,
-                            adUnitId = remoteConfig.adUnits.interstitialAd,
-                            showLoading = { showLoadingAd.value = true },
-                            hideLoading = { showLoadingAd.value = false },
-                            callback = { navController.navigateUp() }
+                            onNext = { navController.navigateUp() }
                         )
                     },
                     onNavigateBack = { navController.navigateUp() }
@@ -209,25 +205,9 @@ fun MainNav(
                     remoteConfig = remoteConfig
                 )
                 if (remoteConfig.adConfigs.adOnBottomHome) {
-                    AndroidView(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        factory = { context ->
-                            val adView = GoogleBannerAdLoader.getBannerAd(
-                                context,
-                                remoteConfig.adUnits.bannerAd
-                            )
-                            val frameLayout = FrameLayout(context).apply {
-                                layoutParams = FrameLayout.LayoutParams(
-                                    FrameLayout.LayoutParams.MATCH_PARENT,
-                                    FrameLayout.LayoutParams.MATCH_PARENT
-                                )
-                            }
-                            frameLayout.addView(adView)
-                            adView.visibility = android.view.View.VISIBLE
-                            frameLayout
-                        }
+                    BannerAd(
+                        showAd = remoteConfig.adConfigs.adOnBottomHome,
+                        adId = remoteConfig.adUnits.bannerAd
                     )
                 }
             }
@@ -241,12 +221,10 @@ fun MainNav(
             confirmButton = {
                 Button(onClick = {
                     showExitDialog.value = false
-                    activity.interstitialAd(
+                    adManager.showAd(
+                        activity = activity,
                         showAd = remoteConfig.adConfigs.adOnSplash,
-                        adUnitId = remoteConfig.adUnits.interstitialAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = { activity.finish() }
+                        onNext = { activity.finish() }
                     )
                 }) {
                     Text(text = "Exit")

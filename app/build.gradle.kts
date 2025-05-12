@@ -20,7 +20,7 @@ android {
         minSdk = libs.versions.minSdkVersion.get().toInt()
         targetSdk = libs.versions.targetSdkVersion.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -111,4 +111,5 @@ dependencies {
     implementation(libs.accompanist.navigation.animation)
 
     implementation (libs.user.messaging.platform)
+
 }

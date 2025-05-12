@@ -13,11 +13,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.thezayin.framework.ads.functions.interstitialAd
 import com.thezayin.generate.domain.model.QrType
 import com.thezayin.generate.presentation.GenerateViewModel
 import com.thezayin.generate.presentation.event.GenerateEvent
@@ -31,9 +29,10 @@ fun DetailedViewContent(
     onEvent: (GenerateEvent) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GenerateViewModel,
-    showLoadingAd: MutableState<Boolean>,
 ) {
+    val adManager = viewModel.adManager
     val activity = LocalContext.current as Activity
+
     val lazyListState = rememberLazyListState()
     LaunchedEffect(state.selectedType) {
         val index = allTypes.indexOf(state.selectedType)
@@ -54,12 +53,10 @@ fun DetailedViewContent(
                     primaryColor = viewModel.pref.getPrimaryColor(),
                     isSelected = (type == state.selectedType),
                     onSelect = { selected ->
-                        activity.interstitialAd(
+                        adManager.showAd(
+                            activity = activity,
                             showAd = viewModel.remoteConfig.adConfigs.adOnCreateOption,
-                            adUnitId = viewModel.remoteConfig.adUnits.interstitialAd,
-                            showLoading = { showLoadingAd.value = true },
-                            hideLoading = { showLoadingAd.value = false },
-                            callback = {
+                            onNext = {
                                 onEvent(GenerateEvent.SelectType(selected))
                             },
                         )
@@ -73,7 +70,6 @@ fun DetailedViewContent(
         Spacer(modifier = Modifier.height(16.dp))
         QrTypeViews(
             viewModel = viewModel,
-            showLoadingAd = showLoadingAd,
             state = state,
             onEvent = onEvent
         )
