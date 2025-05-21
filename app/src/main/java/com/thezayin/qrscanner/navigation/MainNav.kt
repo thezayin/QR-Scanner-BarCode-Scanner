@@ -4,6 +4,7 @@ package com.thezayin.qrscanner.navigation
 
 import android.app.Activity
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -29,8 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.premium.presentation.PremiumScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
@@ -162,7 +165,9 @@ fun MainNav(
             }
             composable(BottomNavItem.Settings.route) {
                 SettingsScreen(
+
                     navigateToLanguage = { navController.navigate("languages") },
+                    navigateToPremium = { navController.navigate(("premium")) },
                     onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) },
                     navigateToFavourite = { navController.navigate("favourite") }
                 )
@@ -187,6 +192,12 @@ fun MainNav(
                     },
                     onNavigateBack = { navController.navigateUp() }
                 )
+            }
+            composable("premium") {
+                PremiumScreen {
+                    Toast.makeText(activity,"Purchased", Toast.LENGTH_LONG).show()
+                    navController.navigateUp()
+                }
             }
         }
 

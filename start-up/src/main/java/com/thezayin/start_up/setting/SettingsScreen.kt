@@ -10,6 +10,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SettingsScreen(
     navigateToLanguage: () -> Unit,
+    navigateToPremium: () -> Unit,
     onNavigateBack: () -> Unit,
     navigateToFavourite: () -> Unit
 ) {
@@ -19,6 +20,7 @@ fun SettingsScreen(
     SettingsScreenContent(
         state = state,
         navigateToLanguage = navigateToLanguage,
+        navigateToPremium = navigateToPremium,
         onColorSelected = { color ->
             viewModel.onEvent(SettingsEvent.ColorSelected(color))
         },

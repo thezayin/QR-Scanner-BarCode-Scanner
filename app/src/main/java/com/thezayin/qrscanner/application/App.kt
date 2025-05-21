@@ -4,6 +4,8 @@ import android.app.Application
 import com.google.firebase.FirebaseApp
 import com.thezayin.databases.di.databaseModule
 import com.thezayin.framework.di.frameworkModule
+import com.thezayin.framework.utils.billing.initializeBilling
+import com.thezayin.framework.utils.billing.initializeClient
 import com.thezayin.generate.presentation.di.generateModule
 import com.thezayin.history.presentation.di.historyModule
 import com.thezayin.scanner.presentation.di.scannerModule
@@ -17,6 +19,7 @@ import timber.log.Timber
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+        initializeClient(this)
         FirebaseApp.initializeApp(this)
         Timber.plant(Timber.DebugTree())
         startKoin {

@@ -56,6 +56,7 @@ dependencies {
     implementation(project(":generate"))
     implementation(project(":start-up"))
     implementation(project(":history"))
+    implementation(project(":premium"))
     implementation(project(":common:values"))
     implementation(project(":databases"))
     implementation(project(":common:framework"))
@@ -111,5 +112,8 @@ dependencies {
     implementation(libs.accompanist.navigation.animation)
 
     implementation (libs.user.messaging.platform)
+    //Funsol Billing
+    implementation (libs.billing)
+    implementation (libs.funsol.billing.helper)
 
 }

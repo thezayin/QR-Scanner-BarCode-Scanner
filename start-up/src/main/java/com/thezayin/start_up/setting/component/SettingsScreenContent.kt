@@ -24,6 +24,7 @@ import ir.kaaveh.sdpcompose.ssp
 fun SettingsScreenContent(
     state: SettingsState,
     navigateToLanguage: () -> Unit,
+    navigateToPremium: () -> Unit,
     onColorSelected: (Color) -> Unit,
     onBeepToggled: (Boolean) -> Unit,
     onVibrateToggled: (Boolean) -> Unit,
@@ -96,6 +97,13 @@ fun SettingsScreenContent(
                 trailingText = stringResource(id = R.string.english)
             ) {
                 navigateToLanguage()
+            }
+            SettingsClickableRow(
+                icon = painterResource(R.drawable.ic_language),
+                label = stringResource(id = R.string.upgrade_to_premium),
+                trailingText = stringResource(id = R.string.upgrade_to_premium)
+            ) {
+                navigateToPremium()
             }
             SettingsClickableRow(
                 icon = painterResource(R.drawable.ic_start),
