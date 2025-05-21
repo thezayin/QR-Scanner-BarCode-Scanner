@@ -2,6 +2,7 @@ package com.thezayin.scanner.presentation.scanner
 
 import android.app.Activity
 import android.net.Uri
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -18,7 +19,7 @@ fun ScannerScreen(
     viewModel: ScannerViewModel = koinInject(), onScanSuccess: (List<Pair<String, String>>) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val adManager = viewModel.adManager
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(), onResult = { uri: Uri? ->

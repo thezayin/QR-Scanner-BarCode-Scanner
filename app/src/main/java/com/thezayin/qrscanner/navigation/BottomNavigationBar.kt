@@ -1,6 +1,8 @@
 package com.thezayin.qrscanner.navigation
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -10,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -19,6 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.remote.RemoteConfig
 import org.koin.compose.koinInject
+import java.nio.file.WatchEvent
 
 @Composable
 fun BottomNavigationBar(
@@ -27,7 +31,7 @@ fun BottomNavigationBar(
     items: List<BottomNavItem>,
     primaryColor: Color
 ) {
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val adManager = koinInject<InterstitialAdManager>()
 
     LaunchedEffect(Unit) {
@@ -35,6 +39,7 @@ fun BottomNavigationBar(
     }
 
     NavigationBar(
+        modifier = Modifier.navigationBarsPadding(),
         containerColor = MaterialTheme.colorScheme.surface
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

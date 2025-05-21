@@ -15,7 +15,7 @@ import ir.kaaveh.sdpcompose.sdp
 fun ImageHeader(modifier: Modifier) {
     Card(
         modifier = modifier.size(120.sdp),
-        shape = RoundedCornerShape(120.sdp)
+        shape = RoundedCornerShape(0.sdp)
     ) {
         Image(
             painter = painterResource(id = com.thezayin.values.R.drawable.ic_main),

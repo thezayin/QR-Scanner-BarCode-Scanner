@@ -1,6 +1,7 @@
 package com.thezayin.generate.presentation.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -8,7 +9,10 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +33,7 @@ import com.thezayin.generate.domain.model.QrType
 import com.thezayin.generate.presentation.GenerateViewModel
 import com.thezayin.generate.presentation.event.GenerateEvent
 import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +46,7 @@ fun GenerateScreenContent(
     val adManager = viewModel.adManager
     val allTypes = QrType.entries
 
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val enterTransition: EnterTransition = slideInHorizontally(
         initialOffsetX = { fullWidth -> fullWidth },
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
@@ -56,6 +61,7 @@ fun GenerateScreenContent(
     }
 
     Scaffold(
+        modifier = Modifier.navigationBarsPadding(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
@@ -64,7 +70,7 @@ fun GenerateScreenContent(
                 ),
                 title = {
                     Text(
-                        fontSize = 12.ssp,
+                        fontSize = 14.ssp,
                         text = stringResource(id = R.string.qr_generator),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -85,6 +91,9 @@ fun GenerateScreenContent(
                     }
                 }
             )
+        },
+        bottomBar = {
+            Spacer(modifier = Modifier.size(100.sdp))
         }
     ) { paddingValues ->
         AnimatedVisibility(

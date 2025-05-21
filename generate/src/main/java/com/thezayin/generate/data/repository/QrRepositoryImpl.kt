@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.util.Log
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
@@ -15,6 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
+import com.google.zxing.oned.EAN8Writer
 
 class QrRepositoryImpl(
     private val qrItemDao: QrItemDao, private val application: Application
@@ -27,15 +31,27 @@ class QrRepositoryImpl(
     override suspend fun buildQrBitmap(content: QrContent): Bitmap =
         withContext(Dispatchers.Default) {
             val params = resolveFormatAndString(content)
+            Log.d("QRCodeGeneration", "Param: $params")
             val writer = MultiFormatWriter()
-            val bitMatrix: BitMatrix = writer.encode(
-                params.rawString, params.format, params.width, params.height
-            )
+            val bitMatrix: BitMatrix = try {
+                writer.encode(
+                    params.rawString, params.format, params.width, params.height
+                )
+            } catch (e: Exception) {
+                Log.e("QRCodeGeneration", "Error generating BitMatrix: ${e.message}")
+                throw e // Re-throw the exception
+            }
+
+            if (bitMatrix.width == 0 || bitMatrix.height == 0) {
+                Log.e("QRCodeGeneration", "BitMatrix width or height is 0")
+                throw Exception("Invalid BitMatrix dimensions")
+            }
+
             val bitmap = bitMatrixToBitmap(bitMatrix)
             val imageUri = saveBitmapToFile(bitmap)
             val inputJson = createJsonFromContent(content)
             val entity = QrItemEntity(
-                qrType = content::class.java.simpleName, // or use a custom mapping if desired
+                qrType = content::class.java.simpleName,
                 inputData = inputJson,
                 imageUri = imageUri.toString(),
                 timestamp = System.currentTimeMillis()
@@ -95,10 +111,50 @@ class QrRepositoryImpl(
                 EncodeParams(raw, BarcodeFormat.QR_CODE, 512, 512)
             }
 
-            is QrContent.Ean8 -> EncodeParams(content.code, BarcodeFormat.EAN_8, 512, 256)
-            is QrContent.Ean13 -> EncodeParams(content.code, BarcodeFormat.EAN_13, 512, 256)
-            is QrContent.UpcA -> EncodeParams(content.code, BarcodeFormat.UPC_A, 512, 256)
-            is QrContent.UpcE -> EncodeParams(content.code, BarcodeFormat.UPC_E, 512, 256)
+//            is QrContent.Ean8 -> {
+//                Log.d("QRCodeGeneration", "EAN-8 Code: ${content.code}")
+//                // Validate that the EAN-8 code is exactly 8 digits and checksum is valid
+//                if (content.code.length != 8 || !content.code.matches(Regex("^[0-9]{8}$"))) {
+//                    throw IllegalArgumentException("Invalid EAN-8 code length")
+//                }
+//
+//                if (!isValidEAN8(content.code)) {
+//                    throw IllegalArgumentException("Invalid EAN-8 code checksum")
+//                }
+//
+//                EncodeParams(content.code, BarcodeFormat.EAN_8, 512, 256)
+//            }
+//
+//            is QrContent.Ean13 -> EncodeParams(content.code, BarcodeFormat.EAN_13, 512, 256)
+//
+//            is QrContent.UpcA -> {
+//                Log.d("QRCodeGeneration", "UPC-A Code: ${content.code}")
+//                // Validate that the UPC-A code is exactly 12 digits and checksum is valid
+//                if (content.code.length != 12 || !content.code.matches(Regex("^[0-9]{12}$"))) {
+//                    throw IllegalArgumentException("Invalid UPC-A code length")
+//                }
+//
+//                if (!isValidUPC(content.code)) {
+//                    throw IllegalArgumentException("Invalid UPC-A code checksum")
+//                }
+//
+//                EncodeParams(content.code, BarcodeFormat.UPC_A, 512, 256)
+//            }
+//
+//            is QrContent.UpcE -> {
+//                Log.d("QRCodeGeneration", "UPC-E Code: ${content.code}")
+//                // Validate that the UPC-E code is exactly 6 digits
+//                if (content.code.length != 6 || !content.code.matches(Regex("^[0-9]{6}$"))) {
+//                    throw IllegalArgumentException("Invalid UPC-E code length")
+//                }
+//
+//                if (!isValidUPC(content.code)) {
+//                    throw IllegalArgumentException("Invalid UPC-E code checksum")
+//                }
+//
+//                EncodeParams(content.code, BarcodeFormat.UPC_E, 512, 256)
+//            }
+
             is QrContent.Code39 -> EncodeParams(content.code, BarcodeFormat.CODE_39, 512, 256)
             is QrContent.Code128 -> EncodeParams(content.code, BarcodeFormat.CODE_128, 512, 256)
             is QrContent.Itf -> EncodeParams(content.code, BarcodeFormat.ITF, 512, 256)
@@ -115,10 +171,10 @@ class QrRepositoryImpl(
     private fun bitMatrixToBitmap(bitMatrix: BitMatrix): Bitmap {
         val width = bitMatrix.width
         val height = bitMatrix.height
-        val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+        val bmp = createBitmap(width, height, Bitmap.Config.RGB_565)
         for (x in 0 until width) {
             for (y in 0 until height) {
-                bmp.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                bmp[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
             }
         }
         return bmp
@@ -146,10 +202,10 @@ class QrRepositoryImpl(
             is QrContent.Calendar -> """{"title": "${content.title}", "description": "${content.description}", "startTime": "${content.startTime}", "endTime": "${content.endTime}"}"""
             is QrContent.Contact -> """{"name": "${content.name}", "phoneNumber": "${content.phoneNumber}", "email": "${content.email}"}"""
             is QrContent.Location -> """{"latitude": "${content.latitude}", "longitude": "${content.longitude}"}"""
-            is QrContent.Ean8 -> """{"code": "${content.code}"}"""
-            is QrContent.Ean13 -> """{"code": "${content.code}"}"""
-            is QrContent.UpcA -> """{"code": "${content.code}"}"""
-            is QrContent.UpcE -> """{"code": "${content.code}"}"""
+//            is QrContent.Ean8 -> """{"code": "${content.code}"}"""
+//            is QrContent.Ean13 -> """{"code": "${content.code}"}"""
+//            is QrContent.UpcA -> """{"code": "${content.code}"}"""
+//            is QrContent.UpcE -> """{"code": "${content.code}"}"""
             is QrContent.Code39 -> """{"code": "${content.code}"}"""
             is QrContent.Code128 -> """{"code": "${content.code}"}"""
             is QrContent.Itf -> """{"code": "${content.code}"}"""
@@ -158,5 +214,34 @@ class QrRepositoryImpl(
             is QrContent.DataMatrix -> """{"code": "${content.code}"}"""
             is QrContent.Aztec -> """{"code": "${content.code}"}"""
         }
+    }
+    // Checksum validation methods for EAN-8 and UPC-A
+    private fun isValidEAN8(code: String): Boolean {
+        // Implement EAN-8 checksum validation logic here
+        val sum = code.dropLast(1)
+            .mapIndexed { index, c -> (c.toString().toInt() * (3 - (index % 2))) }
+            .sum()
+
+        val checkDigit = code.last().toString().toInt()
+        val calculatedCheckDigit = (10 - (sum % 10)) % 10
+
+        return checkDigit == calculatedCheckDigit
+    }
+
+    private fun isValidUPC(code: String): Boolean {
+        // Implement UPC-A checksum validation logic here
+        val sumOdd = code.filterIndexed { index, _ -> index % 2 == 0 }
+            .map { it.toString().toInt() }
+            .sum()
+
+        val sumEven = code.filterIndexed { index, _ -> index % 2 == 1 }
+            .map { it.toString().toInt() }
+            .sum()
+
+        val totalSum = sumOdd * 3 + sumEven
+        val checkDigit = code.last().toString().toInt()
+        val calculatedCheckDigit = (10 - (totalSum % 10)) % 10
+
+        return checkDigit == calculatedCheckDigit
     }
 }

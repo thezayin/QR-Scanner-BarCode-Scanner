@@ -1,6 +1,7 @@
 package com.thezayin.scanner.presentation.result.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +37,7 @@ fun ResultScreenContent(
     onNavigateUp: () -> Unit
 ) {
 
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val adManager = viewModel.adManager

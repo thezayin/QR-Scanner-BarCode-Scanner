@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.thezayin.qrscanner.navigation
 
 import androidx.compose.animation.ExperimentalAnimationApi

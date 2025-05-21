@@ -3,8 +3,8 @@
 package com.thezayin.qrscanner.navigation
 
 import android.app.Activity
-import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -27,8 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -51,7 +49,7 @@ fun MainNav(
     primaryColor: Color,
     remoteConfig: RemoteConfig
 ) {
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val adManager = koinInject<InterstitialAdManager>()
     LaunchedEffect(Unit) {
         adManager.loadAd(activity)
@@ -78,14 +76,6 @@ fun MainNav(
             navController.popBackStack()
         }
     }
-
-
-//    val bottomBarHeight = if (currentRoute in bottomNavRoutes) {
-//        if (remoteConfig.adConfigs.adOnBottomHome) 56.dp + 50.dp else 56.dp
-//    } else {
-//        0.dp
-//    }
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedNavHost(

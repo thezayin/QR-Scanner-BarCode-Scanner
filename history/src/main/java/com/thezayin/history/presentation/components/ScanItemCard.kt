@@ -1,7 +1,6 @@
 package com.thezayin.history.presentation.components
 
 import android.content.Intent
-import android.net.Uri
 import android.provider.CalendarContract
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,11 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.core.net.toUri
 import com.thezayin.framework.utils.formatTimestamp
 import com.thezayin.framework.utils.typeToIcon
 import com.thezayin.history.domain.model.ScanItem
@@ -41,6 +42,17 @@ fun ScanItemCard(
     onDelete: (ScanItem) -> Unit
 ) {
     val context = LocalContext.current
+    val iconTint: Color = when (item.type) {
+        "Barcode" -> colorResource(R.color.ptcl_green)
+        "URL" -> colorResource(R.color.telenor_blue)
+        "Email" -> colorResource(R.color.red)
+        "Phone" -> colorResource(R.color.ptcl_green)
+        "SMS" -> colorResource(R.color.ad_button_color)
+        "Location" -> colorResource(R.color.red)
+        "Calendar" -> colorResource(R.color.astronaut_blue)
+        else -> colorResource(R.color.dodger_blue)
+    }
+
     Card(
         modifier = Modifier
             .clickable { onItemClick(item) }
@@ -63,7 +75,7 @@ fun ScanItemCard(
                 Icon(
                     painter = painterResource(id = typeToIcon(item.type)),
                     contentDescription = stringResource(id = R.string.type_icon),
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = iconTint,
                     modifier = Modifier.size(25.sdp)
                 )
 
@@ -78,7 +90,7 @@ fun ScanItemCard(
                                 textDecoration = TextDecoration.Underline,
                                 modifier = Modifier.clickable {
                                     val intent =
-                                        Intent(Intent.ACTION_DIAL, Uri.parse(item.scannedText))
+                                        Intent(Intent.ACTION_DIAL, item.scannedText.toUri())
                                     context.startActivity(intent)
                                 }
                             )
@@ -99,7 +111,7 @@ fun ScanItemCard(
                                     textDecoration = TextDecoration.Underline,
                                     modifier = Modifier.clickable {
                                         val uri = "geo:${item.scannedText}"
-                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                                        val intent = Intent(Intent.ACTION_VIEW, uri.toUri())
                                         context.startActivity(intent)
                                     }
                                 )
@@ -145,7 +157,7 @@ fun ScanItemCard(
                                 textDecoration = TextDecoration.Underline,
                                 modifier = Modifier.clickable {
                                     val intent =
-                                        Intent(Intent.ACTION_VIEW, Uri.parse(item.scannedText))
+                                        Intent(Intent.ACTION_VIEW, item.scannedText.toUri())
                                     context.startActivity(intent)
                                 }
                             )

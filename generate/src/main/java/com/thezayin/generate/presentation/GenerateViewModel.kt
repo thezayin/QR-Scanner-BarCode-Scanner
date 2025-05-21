@@ -4,12 +4,12 @@ import android.app.Activity
 import android.app.Application
 import android.content.ContentValues
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -111,17 +111,17 @@ class GenerateViewModel(
             is GenerateEvent.UpdateLocationLong ->
                 _state.value = _state.value.copy(locationLong = event.long)
 
-            is GenerateEvent.UpdateEan8 ->
-                _state.value = _state.value.copy(ean8Code = event.code)
-
-            is GenerateEvent.UpdateEan13 ->
-                _state.value = _state.value.copy(ean13Code = event.code)
-
-            is GenerateEvent.UpdateUpcA ->
-                _state.value = _state.value.copy(upcACode = event.code)
-
-            is GenerateEvent.UpdateUpcE ->
-                _state.value = _state.value.copy(upcECode = event.code)
+//            is GenerateEvent.UpdateEan8 ->
+//                _state.value = _state.value.copy(ean8Code = event.code)
+//
+//            is GenerateEvent.UpdateEan13 ->
+//                _state.value = _state.value.copy(ean13Code = event.code)
+//
+//            is GenerateEvent.UpdateUpcA ->
+//                _state.value = _state.value.copy(upcACode = event.code)
+//
+//            is GenerateEvent.UpdateUpcE ->
+//                _state.value = _state.value.copy(upcECode = event.code)
 
             is GenerateEvent.UpdateCode39 ->
                 _state.value = _state.value.copy(code39Code = event.code)
@@ -171,7 +171,7 @@ class GenerateViewModel(
         }
     }
 
-    fun initManager(activity: Activity){
+    fun initManager(activity: Activity) {
         adManager.loadAd(activity)
     }
 
@@ -179,6 +179,7 @@ class GenerateViewModel(
         viewModelScope.launch {
             try {
                 val content = buildQrContent()
+                Log.d("jeje", "$content")
                 val bmp = generateQrUseCase(content)
                 _state.value = _state.value.copy(generatedQrBitmap = bmp)
             } catch (e: Exception) {
@@ -206,10 +207,10 @@ class GenerateViewModel(
 
             QrType.CONTACT -> QrContent.Contact(s.contactName, s.contactPhone, s.contactEmail)
             QrType.LOCATION -> QrContent.Location(s.locationLat, s.locationLong)
-            QrType.EAN_8 -> QrContent.Ean8(s.ean8Code)
-            QrType.EAN_13 -> QrContent.Ean13(s.ean13Code)
-            QrType.UPC_A -> QrContent.UpcA(s.upcACode)
-            QrType.UPC_E -> QrContent.UpcE(s.upcECode)
+//            QrType.EAN_8 -> QrContent.Ean8(s.ean8Code)
+//            QrType.EAN_13 -> QrContent.Ean13(s.ean13Code)
+//            QrType.UPC_A -> QrContent.UpcA(s.upcACode)
+//            QrType.UPC_E -> QrContent.UpcE(s.upcECode)
             QrType.CODE_39 -> QrContent.Code39(s.code39Code)
             QrType.CODE_128 -> QrContent.Code128(s.code128Code)
             QrType.ITF -> QrContent.Itf(s.itfCode)

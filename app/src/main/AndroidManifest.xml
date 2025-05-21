@@ -3,7 +3,7 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="true" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -21,7 +21,6 @@
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.QRScanner">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +30,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2913057115284606~4495679245" />
+            android:value="ca-app-pub-1251134228868472~9170938070" />
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
             android:enabled="false"
@@ -40,12 +39,7 @@
                 android:name="autoStoreLocales"
                 android:value="true" />
         </service>
-        <property
-            android:name="android.adservices.AD_SERVICES_CONFIG"
-            tools:replace="android:resource"
-            android:resource="@xml/ga_ad_services_config" />
 
-        <!-- Single FileProvider entry -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -56,5 +50,4 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
-
 </manifest>

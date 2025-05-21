@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,7 @@ import com.thezayin.qrscanner.ui.theme.QRScannerTheme
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private val preferencesManager: PreferencesManager by inject()
     private val remoteConfig: RemoteConfig by inject()
@@ -65,19 +66,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeScreen() {
-        enableEdgeToEdge()
-
         setContent {
             val primaryColor by preferencesManager.primaryColorFlow.collectAsState()
             val darkTheme by preferencesManager.darkThemeFlow.collectAsState()
 
-            QRScannerTheme(
-                darkTheme = darkTheme,
-                userSelectedPrimary = primaryColor
-            ) {
-                Surface {
-                    RootNavGraph(primaryColor = primaryColor, remoteConfig = remoteConfig)
+            Timber.d("Setting content with primaryColor: $primaryColor, darkTheme: $darkTheme")
+
+            // Check for null values
+            if (primaryColor != null && darkTheme != null) {
+                QRScannerTheme(
+                    darkTheme = darkTheme,
+                    userSelectedPrimary = primaryColor
+                ) {
+                    Surface {
+                        Timber.d("Initializing RootNavGraph...")
+                        RootNavGraph(primaryColor = primaryColor, remoteConfig = remoteConfig)
+                    }
                 }
+            } else {
+                Timber.e("Error: primaryColor or darkTheme is null.")
             }
         }
     }
@@ -137,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                 }
             },
             { formError ->
-                Timber.tag("UMP").e("Error requesting consent info: $formError")
+                Timber.tag("UMP").e("Error requesting consent info: ${formError.message}")
                 initMobileAds()
             }
         )
@@ -148,9 +155,7 @@ class MainActivity : AppCompatActivity() {
             this,
             { consentForm ->
                 if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
-                    consentForm.show(
-                        this
-                    ) { formError ->
+                    consentForm.show(this) { formError ->
                         if (formError != null) {
                             Timber.tag("UMP").e("Error showing consent form: $formError")
                         }
@@ -161,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                 }
             },
             { loadError ->
-                Timber.tag("UMP").e("Error loading consent form: $loadError")
+                Timber.tag("UMP").e("Error loading consent form: ${loadError}")
                 initMobileAds()
             }
         )
@@ -171,7 +176,7 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this) {}
         MobileAds.setRequestConfiguration(
             RequestConfiguration.Builder()
-               .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
+                .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
                 .build()
         )
     }

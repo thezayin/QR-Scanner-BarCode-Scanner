@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -85,10 +88,8 @@ fun ScanResultCard(
                     )
                 }
                 Icon(
-                    painter = painterResource(
-                        id = if (item.isFavorite) R.drawable.ic_favourite else R.drawable.ic_non_favourite
-                    ),
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                    tint = colorResource(R.color.red),
                     contentDescription = stringResource(id = R.string.favorite_icon),
                     modifier = Modifier
                         .padding(end = 8.sdp)
@@ -103,7 +104,9 @@ fun ScanResultCard(
                 textDecoration = TextDecoration.Underline,
                 text = displayText,
                 fontSize = 10.ssp,
-                modifier = Modifier.padding(4.sdp)
+                modifier = Modifier.padding(4.sdp).clickable{
+                    vm.onEvent(ResultScreenEvent.OpenItem(item, context))
+                }
             )
             Spacer(modifier = Modifier.height(4.sdp))
             Row(
