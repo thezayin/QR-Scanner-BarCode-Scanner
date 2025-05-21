@@ -12,27 +12,25 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.ssp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingTopBar(onNavigateBack: () -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
-        title = {
-            Text(text = stringResource(id = R.string.settings))
-        },
-        navigationIcon = {
-            IconButton(onClick = {
-                onNavigateBack()
-            }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    contentDescription = stringResource(id = R.string.back)
-                )
-            }
+        containerColor = MaterialTheme.colorScheme.background
+    ), title = {
+        Text(text = stringResource(id = R.string.settings), fontSize = 14.ssp)
+    }, navigationIcon = {
+        IconButton(onClick = {
+            onNavigateBack()
+        }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                tint = MaterialTheme.colorScheme.onSurface,
+                contentDescription = stringResource(id = R.string.back)
+            )
         }
-    )
+    })
 }

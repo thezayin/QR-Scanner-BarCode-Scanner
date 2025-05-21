@@ -101,4 +101,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation (libs.guava)
+    implementation(libs.androidx.material.icons.extended)
 }

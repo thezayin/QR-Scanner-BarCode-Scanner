@@ -44,10 +44,10 @@ fun QrTypeItem(
         QrType.CONTACT    -> colorResource(R.color.brown)
         QrType.LOCATION   -> colorResource(R.color.sun_yellow_qr)
 
-        QrType.EAN_8,
-        QrType.EAN_13,
-        QrType.UPC_A,
-        QrType.UPC_E      -> colorResource(R.color.ad_tag_color)
+//        QrType.EAN_8,
+//        QrType.EAN_13,
+//        QrType.UPC_A,
+//        QrType.UPC_E      -> colorResource(R.color.ad_tag_color)
         QrType.CODE_39,
         QrType.CODE_128,
         QrType.ITF,
@@ -89,10 +89,10 @@ fun QrTypeItem(
                     QrType.CALENDAR -> painterResource(id = R.drawable.ic_calendar)
                     QrType.CONTACT -> painterResource(id = R.drawable.ic_contact)
                     QrType.LOCATION -> painterResource(id = R.drawable.ic_location)
-                    QrType.EAN_8 -> painterResource(id = R.drawable.ic_upc)
-                    QrType.EAN_13 -> painterResource(id = R.drawable.ic_upc)
-                    QrType.UPC_A -> painterResource(id = R.drawable.ic_upc)
-                    QrType.UPC_E -> painterResource(id = R.drawable.ic_upc)
+//                    QrType.EAN_8 -> painterResource(id = R.drawable.ic_upc)
+//                    QrType.EAN_13 -> painterResource(id = R.drawable.ic_upc)
+//                    QrType.UPC_A -> painterResource(id = R.drawable.ic_upc)
+//                    QrType.UPC_E -> painterResource(id = R.drawable.ic_upc)
                     QrType.CODE_39 -> painterResource(id = R.drawable.ic_barcode_type)
                     QrType.CODE_128 -> painterResource(id = R.drawable.ic_barcode_type)
                     QrType.ITF -> painterResource(id = R.drawable.ic_barcode_type)

@@ -2,16 +2,11 @@ package com.thezayin.scanner.data.repository
 
 import com.thezayin.databases.dao.ScanResultDao
 import com.thezayin.scanner.data.entitiy.toEntity
+import com.thezayin.scanner.data.remote.ApiService
 import com.thezayin.scanner.domain.model.Result
 import com.thezayin.scanner.domain.model.ResultScreenItem
 import com.thezayin.scanner.domain.repository.ProductRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
@@ -25,8 +20,7 @@ import kotlinx.serialization.json.jsonPrimitive
  * @param scanResultDao A Room DAO ([ScanResultDao]) for accessing stored scan results.
  */
 class ProductRepositoryImpl(
-    private val httpClient: HttpClient,
-    private val scanResultDao: ScanResultDao
+    private val apiService: ApiService, private val scanResultDao: ScanResultDao
 ) : ProductRepository {
 
     /**
@@ -40,17 +34,11 @@ class ProductRepositoryImpl(
      */
     override suspend fun fetchProductDetails(barcode: String): Result<ResultScreenItem> {
         return try {
-            val response: HttpResponse =
-                httpClient.get("https://world.openfoodfacts.org/api/v0/product/$barcode.json") {
-                    // Specify the type of content we expect in the response.
-                    contentType(ContentType.Application.Json)
-                }
+            val productResponse: JsonObject? = apiService.fetchProductDetails(barcode)
 
             // If the response is HTTP 200 (OK), parse the JSON body for product data.
-            if (response.status == HttpStatusCode.OK) {
-                val responseBody = response.body<JsonObject>()
-                // The "product" field in the JSON typically contains the relevant data.
-                val product = responseBody["product"]?.jsonObject
+            if (productResponse != null) {
+                val product = productResponse["product"]?.jsonObject
 
                 if (product != null) {
                     // Extract relevant fields from the product JSON
@@ -82,12 +70,10 @@ class ProductRepositoryImpl(
                     // Wrap the product details in a Success result.
                     Result.Success(result)
                 } else {
-                    // If "product" is missing or null, we treat it as product not found.
                     Result.Failure(Exception("Product not found"))
                 }
             } else {
-                // Non-200 HTTP responses are treated as errors.
-                Result.Failure(Exception("HTTP error ${response.status}"))
+                Result.Failure(Exception("HTTP error ${productResponse}"))
             }
 
         } catch (e: Exception) {
@@ -108,16 +94,9 @@ class ProductRepositoryImpl(
      */
     override suspend fun addToDb(product: ResultScreenItem): Result<ResultScreenItem> {
         return try {
-            // Convert the domain model to a Room entity
             val entity = product.toEntity()
-
-            // Insert the entity into the DB; Room returns the generated primary key
             val generatedId = scanResultDao.insert(entity)
-
-            // Now retrieve the newly inserted entity from the database using the generated ID
             val insertedEntity = scanResultDao.getAll().find { it.id == generatedId }
-
-            // If found, we construct a new ResultScreenItem with the actual ID from the DB
             if (insertedEntity != null) {
                 val updatedProduct = product.copy(id = insertedEntity.id)
                 Result.Success(updatedProduct)
@@ -125,7 +104,6 @@ class ProductRepositoryImpl(
                 Result.Failure(Exception("Error retrieving inserted product"))
             }
         } catch (e: Exception) {
-            // Any database insertion or retrieval errors are caught and returned as a Failure.
             Result.Failure(e)
         }
     }
@@ -139,12 +117,10 @@ class ProductRepositoryImpl(
      */
     override suspend fun updateFavorite(product: ResultScreenItem): Result<Unit> {
         return try {
-            // Convert the domain model to a Room entity, then update it in the DB
             val entity = product.toEntity()
             scanResultDao.update(entity)
             Result.Success(Unit)
         } catch (e: Exception) {
-            // Any database update errors are caught and returned as a Failure.
             Result.Failure(e)
         }
     }

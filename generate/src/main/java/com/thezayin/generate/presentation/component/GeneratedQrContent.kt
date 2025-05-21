@@ -1,6 +1,7 @@
 package com.thezayin.generate.presentation.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +42,7 @@ fun GeneratedQrContent(
     modifier: Modifier = Modifier
 ) {
     val adManager = viewModel.adManager
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
 
     Column(
         modifier = modifier

@@ -11,6 +11,7 @@
     <string name="scan">Scan</string>
     <string name="create">Create</string>
     <string name="history">History</string>
+    <string name="result">Scan Result</string>
     <string name="generated_qr_code">Generated QR Code</string>
     <string name="zoom_out">Zoom Out</string>
     <string name="zoom_in">Zoom In</string>
@@ -135,6 +136,9 @@
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="favourites">Favourites</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="about_us">About Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
     <string name="rate_us">Rate Us</string>
     <string name="share_app">Share App</string>
 

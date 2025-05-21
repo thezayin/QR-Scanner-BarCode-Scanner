@@ -8,6 +8,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
+import timber.log.Timber
 
 object GoogleNativeAdLoader {
     fun loadNativeAd(
@@ -17,12 +18,13 @@ object GoogleNativeAdLoader {
     ) {
         val adLoader = AdLoader.Builder(context, adUnitId)
             .forNativeAd { nativeAd ->
-                Log.d("NativeAdBuilder", "Native ad loaded successfully.")
+                Timber.tag("NativeAdBuilder").d("Native ad loaded successfully.")
                 onNativeAdLoaded(nativeAd)
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.d("NativeAdBuilder", "Native ad failed to load: ${loadAdError.message}")
+                    Timber.tag("NativeAdBuilder")
+                        .d("Native ad failed to load: ${loadAdError.message}, Error code: ${loadAdError.code}, Response info: ${loadAdError.responseInfo}")
                 }
             })
             .withNativeAdOptions(NativeAdOptions.Builder().build())

@@ -35,6 +35,7 @@ import com.thezayin.scanner.presentation.result.event.ResultScreenEvent
 import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
+import androidx.core.net.toUri
 
 @Composable
 fun ProductFoundCard(
@@ -134,7 +135,7 @@ fun ProductFoundCard(
                             showAd = vm.remoteConfig.adConfigs.adOnScanOpen,
                             onNext = {
                                 val url = "https://world.openfoodfacts.org/product/$scannedResult"
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                                val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                 }
                                 context.startActivity(intent)

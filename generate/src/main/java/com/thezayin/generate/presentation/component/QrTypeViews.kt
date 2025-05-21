@@ -202,65 +202,65 @@ fun QrTypeViews(
                 onAction = { onEvent(GenerateEvent.GenerateQrCode) })
         }
 
-        QrType.UPC_E -> {
-            InputSection(
-                fields = listOf(
-                    InputFieldData(
-                        label = stringResource(id = R.string.upc_e_code),
-                        placeholder = stringResource(id = R.string.enter_upc_e_code),
-                        value = state.upcECode,
-                        onValueChange = { onEvent(GenerateEvent.UpdateUpcE(it)) },
-                        validation = { code ->
-                            code.isNotBlank() && code.matches(Regex("^[0-9]{6}$"))
-                        })
-                ), viewModel = viewModel,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
-        }
-
-        QrType.UPC_A -> {
-            InputSection(
-                fields = listOf(
-                    InputFieldData(
-                        label = stringResource(id = R.string.upc_a_code),
-                        placeholder = stringResource(id = R.string.enter_upc_a_code),
-                        value = state.upcACode,
-                        onValueChange = { onEvent(GenerateEvent.UpdateUpcA(it)) },
-                        validation = { code ->
-                            code.isNotBlank() && code.matches(Regex("^[0-9]{12}$"))
-                        })
-                ), viewModel = viewModel,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
-        }
-
-        QrType.EAN_13 -> {
-            InputSection(
-                fields = listOf(
-                    InputFieldData(
-                        label = stringResource(id = R.string.ean_13_code),
-                        placeholder = stringResource(id = R.string.enter_ean_13_code),
-                        value = state.ean13Code,
-                        onValueChange = { onEvent(GenerateEvent.UpdateEan13(it)) },
-                        validation = { code ->
-                            code.isNotBlank() && code.matches(Regex("^[0-9]{13}$"))
-                        })
-                ), viewModel = viewModel,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
-        }
-
-        QrType.EAN_8 -> {
-            InputSection(
-                fields = listOf(
-                    InputFieldData(
-                        label = stringResource(id = R.string.ean_8_code),
-                        placeholder = stringResource(id = R.string.enter_ean_8_code),
-                        value = state.ean8Code,
-                        onValueChange = { onEvent(GenerateEvent.UpdateEan8(it)) },
-                        validation = { code ->
-                            code.isNotBlank() && code.matches(Regex("^[0-9]{8}$"))
-                        })
-                ), viewModel = viewModel,
-                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
-        }
+//        QrType.UPC_E -> {
+//            InputSection(
+//                fields = listOf(
+//                    InputFieldData(
+//                        label = stringResource(id = R.string.upc_e_code),
+//                        placeholder = stringResource(id = R.string.enter_upc_e_code),
+//                        value = state.upcECode,
+//                        onValueChange = { onEvent(GenerateEvent.UpdateUpcE(it)) },
+//                        validation = { code ->
+//                            code.isNotBlank() && code.matches(Regex("^[0-9]{6}$"))
+//                        })
+//                ), viewModel = viewModel,
+//                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
+//        }
+//
+//        QrType.UPC_A -> {
+//            InputSection(
+//                fields = listOf(
+//                    InputFieldData(
+//                        label = stringResource(id = R.string.upc_a_code),
+//                        placeholder = stringResource(id = R.string.enter_upc_a_code),
+//                        value = state.upcACode,
+//                        onValueChange = { onEvent(GenerateEvent.UpdateUpcA(it)) },
+//                        validation = { code ->
+//                            code.isNotBlank() && code.matches(Regex("^[0-9]{12}$"))
+//                        })
+//                ), viewModel = viewModel,
+//                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
+//        }
+//
+//        QrType.EAN_13 -> {
+//            InputSection(
+//                fields = listOf(
+//                    InputFieldData(
+//                        label = stringResource(id = R.string.ean_13_code),
+//                        placeholder = stringResource(id = R.string.enter_ean_13_code),
+//                        value = state.ean13Code,
+//                        onValueChange = { onEvent(GenerateEvent.UpdateEan13(it)) },
+//                        validation = { code ->
+//                            code.isNotBlank() && code.matches(Regex("^[0-9]{13}$"))
+//                        })
+//                ), viewModel = viewModel,
+//                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
+//        }
+//
+//        QrType.EAN_8 -> {
+//            InputSection(
+//                fields = listOf(
+//                    InputFieldData(
+//                        label = stringResource(id = R.string.ean_8_code),
+//                        placeholder = stringResource(id = R.string.enter_ean_8_code),
+//                        value = state.ean8Code,
+//                        onValueChange = { onEvent(GenerateEvent.UpdateEan8(it)) },
+//                        validation = { code ->
+//                            code.isNotBlank() && code.matches(Regex("^[0-9]{8}$"))
+//                        })
+//                ), viewModel = viewModel,
+//                onAction = { onEvent(GenerateEvent.GenerateQrCode) })
+//        }
 
         QrType.CONTACT -> {
             InputSection(

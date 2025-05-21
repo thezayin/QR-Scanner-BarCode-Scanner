@@ -1,9 +1,12 @@
 package com.thezayin.start_up.setting.component
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -12,12 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.thezayin.start_up.setting.state.SettingsState
 import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
 @Composable
@@ -33,10 +39,14 @@ fun SettingsScreenContent(
     onNavigateBack: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             SettingTopBar(onNavigateBack = onNavigateBack)
+        },
+        bottomBar = {
+            Spacer(modifier = Modifier.size(100.sdp))
         }
     ) { paddingValues ->
         Column(
@@ -111,6 +121,39 @@ fun SettingsScreenContent(
                 trailingText = ""
             ) {
                 onFavouritesClicked()
+            }
+            SettingsClickableRow(
+                icon = painterResource(R.drawable.ic_terms),
+                label = stringResource(R.string.terms_conditions),
+                trailingText = ""
+            ) {
+                val url = "https://bougielabs.com/terms-and-conditions/"
+                val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+            }
+            SettingsClickableRow(
+                icon = painterResource(R.drawable.ic_privacy),
+                label = stringResource(R.string.privacy_policy),
+                trailingText = ""
+            ) {
+                val url = "https://bougielabs.com/privacy-policy/"
+                val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
+            }
+            SettingsClickableRow(
+                icon = painterResource(R.drawable.ic_about_us),
+                label = stringResource(R.string.about_us),
+                trailingText = ""
+            ) {
+                val url = "https://bougielabs.com"
+                val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(intent)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.thezayin.generate.presentation.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,7 @@ fun DetailedViewContent(
     viewModel: GenerateViewModel,
 ) {
     val adManager = viewModel.adManager
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
 
     val lazyListState = rememberLazyListState()
     LaunchedEffect(state.selectedType) {

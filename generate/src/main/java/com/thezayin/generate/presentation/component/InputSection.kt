@@ -1,6 +1,7 @@
 package com.thezayin.generate.presentation.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,7 @@ fun InputSection(
     onAction: () -> Unit
 ) {
     val adManager = viewModel.adManager
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val allFieldsValid = fields.all { field ->
         field.validation(field.value)
     }

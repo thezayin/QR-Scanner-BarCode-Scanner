@@ -7,8 +7,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import com.thezayin.history.domain.model.ScanItem
 import com.thezayin.history.presentation.state.HistoryState
 import com.thezayin.history.presentation.state.HistoryTab
 import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
 @Composable
@@ -51,6 +54,9 @@ fun HistoryScreenContent(
                 selectedTab = state.selectedTab,
                 onTabSelected = onTabSelected
             )
+        },
+        bottomBar = {
+            Spacer(modifier = Modifier.size(100.sdp))
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
