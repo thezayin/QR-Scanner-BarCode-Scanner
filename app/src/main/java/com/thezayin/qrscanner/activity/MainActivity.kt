@@ -6,27 +6,30 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.thezayin.framework.ads.admob.domain.repository.AppOpenAdManager
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
+import com.thezayin.framework.ads.loader.GoogleNativeAdLoader
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
+import com.thezayin.premium.domain.usecase.IsUserSubscribedUseCase
 import com.thezayin.qrscanner.navigation.RootNavGraph
 import com.thezayin.qrscanner.ui.theme.QRScannerTheme
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
@@ -36,6 +39,10 @@ class MainActivity : ComponentActivity() {
     private val remoteConfig: RemoteConfig by inject()
     private val adManager: AppOpenAdManager by inject()
     private val interstitialAdManager: InterstitialAdManager by inject()
+    private val isUserSubscribed: IsUserSubscribedUseCase by inject()
+
+    private var nativeAd: NativeAd? = null
+
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -52,6 +59,8 @@ class MainActivity : ComponentActivity() {
         val savedLanguage = preferencesManager.selectedLanguageFlow.value ?: "en"
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(savedLanguage))
         setupConsent()
+        observeSubscriptionStatus()
+        loadNativeAd()
         adManager.loadAd(activity = this)
         interstitialAdManager.loadAd(activity = this)
         if (ContextCompat.checkSelfPermission(
@@ -60,6 +69,7 @@ class MainActivity : ComponentActivity() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             initializeScreen()
+
         } else {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
@@ -80,7 +90,11 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Surface {
                         Timber.d("Initializing RootNavGraph...")
-                        RootNavGraph(primaryColor = primaryColor, remoteConfig = remoteConfig)
+                        RootNavGraph(
+                            primaryColor = primaryColor,
+                            remoteConfig = remoteConfig,
+                            nativeAd = nativeAd
+                        )
                     }
                 }
             } else {
@@ -179,5 +193,25 @@ class MainActivity : ComponentActivity() {
                 .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
                 .build()
         )
+    }
+
+    private fun loadNativeAd() {
+        GoogleNativeAdLoader.loadNativeAd(
+            context = this,
+            adUnitId = remoteConfig.adUnits.nativeAd,
+            onNativeAdLoaded = {
+                nativeAd = it
+            }
+        )
+    }
+
+    private fun observeSubscriptionStatus() {
+        lifecycleScope.launch {
+            isUserSubscribed.execute()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

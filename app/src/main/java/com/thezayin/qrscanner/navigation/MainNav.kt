@@ -3,7 +3,6 @@
 package com.thezayin.qrscanner.navigation
 
 import android.app.Activity
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
@@ -12,50 +11,59 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.compose.composable
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.premium.presentation.PremiumScreen
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.google.android.gms.ads.nativead.NativeAd
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.components.BannerAd
+import com.thezayin.framework.components.GoogleNativeSimpleAd
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.presentation.GenerateScreen
 import com.thezayin.history.presentation.FavoritesScreen
 import com.thezayin.history.presentation.HistoryScreen
+import com.thezayin.premium.presentation.PremiumScreen
 import com.thezayin.scanner.presentation.result.ResultScreen
 import com.thezayin.scanner.presentation.scanner.ScannerScreen
 import com.thezayin.start_up.languages.LanguageScreen
 import com.thezayin.start_up.setting.SettingsScreen
+import com.thezayin.values.R
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainNav(
-    primaryColor: Color,
-    remoteConfig: RemoteConfig
+    primaryColor: Color, remoteConfig: RemoteConfig, nativeAd: NativeAd?
 ) {
     val activity = LocalActivity.current as Activity
+
     val adManager = koinInject<InterstitialAdManager>()
     LaunchedEffect(Unit) {
         adManager.loadAd(activity)
@@ -83,61 +91,73 @@ fun MainNav(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(), bottomBar = {
+
+            if (currentRoute in bottomNavRoutes) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .navigationBarsPadding()
+                ) {
+                    BottomNavigationBar(
+                        navController = navController,
+                        items = bottomNavItems,
+                        primaryColor = primaryColor,
+                        remoteConfig = remoteConfig
+                    )
+                    if (remoteConfig.adConfigs.adOnBottomHome) {
+                        BannerAd(
+                            showAd = remoteConfig.adConfigs.adOnBottomHome,
+                            adId = remoteConfig.adUnits.bannerAd
+                        )
+                    }
+                }
+            }
+        }) { padding ->
         AnimatedNavHost(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(padding),
             navController = navController,
             startDestination = BottomNavItem.Scan.route,
             enterTransition = {
                 slideInHorizontally(
-                    initialOffsetX = { fullWidth -> fullWidth },
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = { fraction ->
+                    initialOffsetX = { fullWidth -> fullWidth }, animationSpec = tween(
+                        durationMillis = 500, easing = { fraction ->
                             val interpolator = android.view.animation.OvershootInterpolator(2f)
                             interpolator.getInterpolation(fraction)
-                        }
-                    )
+                        })
                 )
             },
             exitTransition = {
                 slideOutHorizontally(
-                    targetOffsetX = { fullWidth -> -fullWidth },
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = { fraction ->
+                    targetOffsetX = { fullWidth -> -fullWidth }, animationSpec = tween(
+                        durationMillis = 500, easing = { fraction ->
                             val interpolator = android.view.animation.AnticipateInterpolator(2f)
                             interpolator.getInterpolation(fraction)
-                        }
-                    )
+                        })
                 )
             },
             popEnterTransition = {
                 slideInHorizontally(
-                    initialOffsetX = { fullWidth -> -fullWidth },
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = { fraction ->
+                    initialOffsetX = { fullWidth -> -fullWidth }, animationSpec = tween(
+                        durationMillis = 500, easing = { fraction ->
                             val interpolator = android.view.animation.AnticipateInterpolator(2f)
                             interpolator.getInterpolation(fraction)
-                        }
-                    )
+                        })
                 )
             },
             popExitTransition = {
                 slideOutHorizontally(
-                    targetOffsetX = { fullWidth -> fullWidth },
-                    animationSpec = tween(
-                        durationMillis = 500,
-                        easing = { fraction ->
+                    targetOffsetX = { fullWidth -> fullWidth }, animationSpec = tween(
+                        durationMillis = 500, easing = { fraction ->
                             val interpolator = android.view.animation.OvershootInterpolator(2f)
                             interpolator.getInterpolation(fraction)
-                        }
-                    )
+                        })
                 )
-            }
-        ) {
+            }) {
             composable(BottomNavItem.Scan.route) {
                 ScannerScreen(onScanSuccess = {
                     navController.navigate("result")
@@ -145,16 +165,14 @@ fun MainNav(
             }
             composable(BottomNavItem.Create.route) {
                 GenerateScreen(
-                    onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) }
-                )
+                    onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) })
             }
             composable(BottomNavItem.History.route) {
                 HistoryScreen(
                     onNavigateUp = { navController.navigate(BottomNavItem.Scan.route) },
                     navigateToScanItem = {
                         navController.navigate("result")
-                    }
-                )
+                    })
             }
             composable(BottomNavItem.Settings.route) {
                 SettingsScreen(
@@ -162,83 +180,103 @@ fun MainNav(
                     navigateToLanguage = { navController.navigate("languages") },
                     navigateToPremium = { navController.navigate(("premium")) },
                     onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) },
-                    navigateToFavourite = { navController.navigate("favourite") }
-                )
+                    navigateToFavourite = { navController.navigate("favourite") })
             }
             composable("favourite") {
                 FavoritesScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    navigateToScanItem = { navController.navigate("result") }
-                )
+                    navigateToScanItem = { navController.navigate("result") })
             }
             composable("result") {
                 ResultScreen(onNavigateUp = { navController.popBackStack() })
             }
             composable("languages") {
-                LanguageScreen(
-                    onLanguageSelection = {
-                        adManager.showAd(
-                            activity = activity,
-                            showAd = remoteConfig.adConfigs.adOnSplash,
-                            onNext = { navController.navigateUp() }
-                        )
-                    },
-                    onNavigateBack = { navController.navigateUp() }
-                )
+                LanguageScreen(onLanguageSelection = {
+                    adManager.showAd(
+                        activity = activity,
+                        showAd = remoteConfig.adConfigs.adOnSplash,
+                        onNext = { navController.navigateUp() })
+                }, onNavigateBack = { navController.navigateUp() })
             }
             composable("premium") {
                 PremiumScreen {
-                    Toast.makeText(activity,"Purchased", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Purchased", Toast.LENGTH_LONG).show()
                     navController.navigateUp()
-                }
-            }
-        }
-
-        if (currentRoute in bottomNavRoutes) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .navigationBarsPadding()
-                    .align(Alignment.BottomCenter)
-            ) {
-                BottomNavigationBar(
-                    navController = navController,
-                    items = bottomNavItems,
-                    primaryColor = primaryColor,
-                    remoteConfig = remoteConfig
-                )
-                if (remoteConfig.adConfigs.adOnBottomHome) {
-                    BannerAd(
-                        showAd = remoteConfig.adConfigs.adOnBottomHome,
-                        adId = remoteConfig.adUnits.bannerAd
-                    )
                 }
             }
         }
     }
     if (showExitDialog.value) {
-        AlertDialog(
-            onDismissRequest = { showExitDialog.value = false },
-            title = { Text(text = "Exit App") },
-            text = { Text(text = "Are you sure you want to exit?") },
-            confirmButton = {
-                Button(onClick = {
-                    showExitDialog.value = false
-                    adManager.showAd(
-                        activity = activity,
-                        showAd = remoteConfig.adConfigs.adOnSplash,
-                        onNext = { activity.finish() }
+        Dialog(
+            onDismissRequest = { showExitDialog.value = false } // Close dialog on outside touch
+        ) {
+            // Custom Dialog Layout
+            Card(
+                modifier = Modifier
+            ) {
+                // Column to hold dialog content and the native ad
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+
+                ) {
+                    // Title and text
+                    Text(
+                        text = "Exit App",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                }) {
-                    Text(text = "Exit")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showExitDialog.value = false }) {
-                    Text(text = "Cancel")
+                    Text(
+                        text = "Are you sure you want to exit?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Buttons for confirmation and cancellation
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Button(
+                            modifier = Modifier.width(100.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.allports),
+                                contentColor = colorResource(R.color.white)
+                            ),
+                            onClick = {
+                                showExitDialog.value = false
+                                adManager.showAd(
+                                    activity = activity,
+                                    showAd = remoteConfig.adConfigs.adOnSplash,
+                                    onNext = { activity.finish() }
+                                )
+                            }
+                        ) {
+                            Text(text = "Exit")
+                        }
+                        Button(
+                            modifier = Modifier.width(100.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.allports),
+                                contentColor = colorResource(R.color.white)
+                            ),
+                            onClick = { showExitDialog.value = false }) {
+                            Text(text = "Cancel")
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (nativeAd != null) {
+                        GoogleNativeSimpleAd(
+                            modifier = Modifier.fillMaxWidth(),
+                            nativeAd = nativeAd
+                        )
+                    }
                 }
             }
-        )
+        }
     }
 }

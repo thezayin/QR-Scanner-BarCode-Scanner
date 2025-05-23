@@ -6,9 +6,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.ads.nativead.NativeAd
@@ -26,6 +26,7 @@ import com.thezayin.scanner.presentation.result.state.ResultScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.Locale
 
 class ResultScreenViewModel(
@@ -157,36 +158,35 @@ class ResultScreenViewModel(
     private fun openItem(item: ResultScreenItem, context: Context) {
         when {
             item.result.startsWith("tel:") -> {
-                val intent = Intent(Intent.ACTION_DIAL, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_DIAL, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("sms:") -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_VIEW, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("mailto:") -> {
-                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_SENDTO, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("http://") || item.result.startsWith("https://") -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_VIEW, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("wifi:") -> {
                 val wifiDetails = item.result.removePrefix("wifi:")
                 val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse("wifi:$wifiDetails")
+                    data = "wifi:$wifiDetails".toUri()
                 }
                 context.startActivity(intent)
             }
 
             else -> {
-                Toast.makeText(context, "Unsupported QR type: ${item.result}", Toast.LENGTH_SHORT)
-                    .show()
+                Timber.e("Unsupported QR type: ${item.result}")
             }
         }
     }

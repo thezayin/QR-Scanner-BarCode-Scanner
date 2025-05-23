@@ -13,6 +13,8 @@ class PreferencesManager(context: Context) {
     private val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
     companion object {
+        private const val KEY_IS_PREMIUM = "is_premium"
+        private const val KEY_SUBSCRIPTION_TYPE = "subscription_type"
         private const val KEY_PRIMARY_COLOR = "primary_color"
         private const val KEY_BEEP_ENABLED = "beep_enabled"
         private const val KEY_VIBRATE_ENABLED = "vibrate_enabled"
@@ -20,6 +22,22 @@ class PreferencesManager(context: Context) {
         private const val KEY_SELECTED_LANGUAGE = "selected_language"
         private const val KEY_IS_FIRST_TIME = "is_first_time"
         private val DEFAULT_PRIMARY_COLOR = Color(0xFFA761FF)
+    }
+
+    fun setIsPremium(isPremium: Boolean) {
+        prefs.edit { putBoolean(KEY_IS_PREMIUM, isPremium) }
+    }
+
+    fun getIsPremium(): Boolean {
+        return prefs.getBoolean(KEY_IS_PREMIUM, false)
+    }
+
+    fun setSubscriptionType(subscriptionType: String) {
+        prefs.edit { putString(KEY_SUBSCRIPTION_TYPE, subscriptionType) }
+    }
+
+    fun getSubscriptionType(): String? {
+        return prefs.getString(KEY_SUBSCRIPTION_TYPE, null)
     }
 
     private val _primaryColorFlow = MutableStateFlow(getPrimaryColorFromPrefs())

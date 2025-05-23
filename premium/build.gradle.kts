@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.premium"
+    namespace = "com.thezayin.premium"
     compileSdk = libs.versions.compileSdkVersion.get().toInt()
 
     defaultConfig {
@@ -32,12 +32,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
+    implementation(project(":common:values"))
+    implementation(project(":common:framework"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -55,4 +54,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //Funsol Billing
+    implementation (libs.billing)
+    implementation (libs.funsol.billing.helper)
+
+
+    //koin dependency injection
+    implementation(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.android)
+    testImplementation(libs.koin.test.junit4)
+    implementation(libs.koin.androidx.navigation)
 }

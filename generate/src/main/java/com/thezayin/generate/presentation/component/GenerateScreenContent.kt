@@ -70,7 +70,7 @@ fun GenerateScreenContent(
                 ),
                 title = {
                     Text(
-                        fontSize = 14.ssp,
+                        fontSize = 16.ssp,
                         text = stringResource(id = R.string.qr_generator),
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -91,9 +91,6 @@ fun GenerateScreenContent(
                     }
                 }
             )
-        },
-        bottomBar = {
-            Spacer(modifier = Modifier.size(100.sdp))
         }
     ) { paddingValues ->
         AnimatedVisibility(

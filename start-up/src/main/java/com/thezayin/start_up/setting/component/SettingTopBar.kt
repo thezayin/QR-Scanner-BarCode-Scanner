@@ -21,7 +21,7 @@ fun SettingTopBar(onNavigateBack: () -> Unit) {
         colors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.background
     ), title = {
-        Text(text = stringResource(id = R.string.settings), fontSize = 14.ssp)
+        Text(text = stringResource(id = R.string.settings), fontSize = 16.ssp,)
     }, navigationIcon = {
         IconButton(onClick = {
             onNavigateBack()

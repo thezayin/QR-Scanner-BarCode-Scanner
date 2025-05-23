@@ -21,6 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.thezayin.framework.utils.openPrivacy
+import com.thezayin.framework.utils.openTerms
 import com.thezayin.start_up.setting.state.SettingsState
 import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
@@ -41,22 +43,20 @@ fun SettingsScreenContent(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+        containerColor = MaterialTheme.colorScheme.background, topBar = {
             SettingTopBar(onNavigateBack = onNavigateBack)
-        },
-        bottomBar = {
-            Spacer(modifier = Modifier.size(100.sdp))
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(scrollState), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            PremiumCard(
+                onClick = navigateToPremium
+            )
+            Spacer(modifier = Modifier.size(10.sdp))
             Text(
                 text = stringResource(id = R.string.color_scheme),
                 fontWeight = FontWeight.Bold,
@@ -77,9 +77,7 @@ fun SettingsScreenContent(
                     Color(0xFFFFB200),
                     Color(0xFF34A855),
                     Color(0xFF3CA8C4)
-                ),
-                selectedColor = state.primaryColor,
-                onColorSelected = onColorSelected
+                ), selectedColor = state.primaryColor, onColorSelected = onColorSelected
             )
 
             SettingsSwitchRow(
@@ -108,13 +106,7 @@ fun SettingsScreenContent(
             ) {
                 navigateToLanguage()
             }
-            SettingsClickableRow(
-                icon = painterResource(R.drawable.ic_language),
-                label = stringResource(id = R.string.upgrade_to_premium),
-                trailingText = stringResource(id = R.string.upgrade_to_premium)
-            ) {
-                navigateToPremium()
-            }
+
             SettingsClickableRow(
                 icon = painterResource(R.drawable.ic_start),
                 label = stringResource(id = R.string.favourites),
@@ -127,22 +119,14 @@ fun SettingsScreenContent(
                 label = stringResource(R.string.terms_conditions),
                 trailingText = ""
             ) {
-                val url = "https://bougielabs.com/terms-and-conditions/"
-                val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(intent)
+                context.openTerms()
             }
             SettingsClickableRow(
                 icon = painterResource(R.drawable.ic_privacy),
                 label = stringResource(R.string.privacy_policy),
                 trailingText = ""
             ) {
-                val url = "https://bougielabs.com/privacy-policy/"
-                val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }
-                context.startActivity(intent)
+                context.openPrivacy()
             }
             SettingsClickableRow(
                 icon = painterResource(R.drawable.ic_about_us),

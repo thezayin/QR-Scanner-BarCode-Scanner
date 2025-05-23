@@ -33,7 +33,7 @@ fun HistoryTabBar(
             title = {
                 Text(
                     text = stringResource(id = R.string.history),
-                    fontSize = 14.ssp,
+                    fontSize = 16.ssp,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             },

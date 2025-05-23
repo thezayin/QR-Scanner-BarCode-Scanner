@@ -38,7 +38,7 @@ fun ZoomControlsSection(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.sdp, vertical = 60.sdp),
+            .padding(horizontal = 10.sdp, vertical = 30.sdp),
         contentAlignment = Alignment.Center
     ) {
         Row(

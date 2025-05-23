@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.thezayin.history.domain.model.ScanItem
 import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.ssp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +34,9 @@ fun FavoritesScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.favorites)) },
+                title = { Text(
+                    fontSize = 16.ssp,
+                    text = stringResource(id = R.string.favorites)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(

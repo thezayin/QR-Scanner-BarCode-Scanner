@@ -33,7 +33,7 @@ fun ScannerScreenContent(
             .fillMaxSize(),
         topBar = {
             Column {
-                Spacer(modifier = Modifier.padding(top = 16.sdp))
+                Spacer(modifier = Modifier.padding(top = 40.sdp))
                 HeaderSection(
                     onBatchClick = onBatchClick,
                     onGalleryClick = onGalleryClick,

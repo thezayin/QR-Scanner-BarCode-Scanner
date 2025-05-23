@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.android.gms.ads.nativead.NativeAd
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.start_up.languages.LanguageScreen
 import com.thezayin.start_up.onboarding.OnboardingScreen
@@ -18,7 +19,7 @@ import com.thezayin.start_up.splash.SplashScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig) {
+fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig,nativeAd: NativeAd?) {
     val navController = rememberNavController()
     AnimatedNavHost(
         navController = navController,
@@ -86,7 +87,10 @@ fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig) {
             )
         }
         composable("main") {
-            MainNav(primaryColor = primaryColor, remoteConfig = remoteConfig)
+            MainNav(primaryColor = primaryColor,
+                remoteConfig = remoteConfig,
+                nativeAd = nativeAd
+            )
         }
     }
 }

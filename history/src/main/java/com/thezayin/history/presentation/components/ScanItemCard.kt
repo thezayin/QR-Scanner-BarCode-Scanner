@@ -191,7 +191,7 @@ fun ScanItemCard(
                         painter = painterResource(
                             id = if (item.isFavorite) R.drawable.ic_favourite else R.drawable.ic_non_favourite
                         ),
-                        tint = MaterialTheme.colorScheme.onSurface,
+                        tint = colorResource(R.color.red),
                         contentDescription = stringResource(id = R.string.favorite_icon),
                         modifier = Modifier
                             .size(20.sdp)

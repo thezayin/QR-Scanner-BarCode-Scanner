@@ -19,8 +19,8 @@ android {
         applicationId = "com.thezayin.qrscanner"
         minSdk = libs.versions.minSdkVersion.get().toInt()
         targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        versionCode = 1
-        versionName = "1.0.0.1"
+        versionCode = 2
+        versionName = "1.0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -69,7 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
+    implementation (libs.billing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -116,7 +116,7 @@ dependencies {
     implementation (libs.billing)
     implementation (libs.funsol.billing.helper)
 
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 
 }

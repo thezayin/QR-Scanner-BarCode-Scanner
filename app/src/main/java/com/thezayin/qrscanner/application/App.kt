@@ -1,6 +1,8 @@
 package com.thezayin.qrscanner.application
 
 import android.app.Application
+import com.funsol.iap.billing.FunSolBillingHelper
+import com.funsol.iap.billing.model.FunsolPurchase
 import com.google.firebase.FirebaseApp
 import com.thezayin.databases.di.databaseModule
 import com.thezayin.framework.di.frameworkModule
@@ -8,6 +10,7 @@ import com.thezayin.framework.utils.billing.initializeBilling
 import com.thezayin.framework.utils.billing.initializeClient
 import com.thezayin.generate.presentation.di.generateModule
 import com.thezayin.history.presentation.di.historyModule
+import com.thezayin.premium.presentation.di.billingModule
 import com.thezayin.scanner.presentation.di.scannerModule
 import com.thezayin.start_up.di.settingsModule
 import org.koin.android.ext.koin.androidContext
@@ -31,7 +34,8 @@ class App : Application() {
                 scannerModule,
                 historyModule,
                 generateModule,
-                settingsModule
+                settingsModule,
+                billingModule
             )
         }
     }

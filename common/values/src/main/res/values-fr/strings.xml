@@ -1,22 +1,23 @@
 <resources>
-    <string name="app_name">RePhoto</string>
-    <string name="qr_code_empty_content">Code QR détecté mais le contenu est vide</string>
-    <string name="qr_code_not_found">Aucun code QR trouvé</string>
-    <string name="qr_code_scan_error">Une erreur s\'est produite lors de la lecture du code QR</string>
+    <string name="app_name">Scanner QR - Scanner le code-barres</string>
+    <string name="qr_code_empty_content">QR code détecté mais le contenu est vide</string>
+    <string name="qr_code_not_found">Aucun QR code trouvé</string>
+    <string name="qr_code_scan_error">Une erreur est survenue lors du scan du QR code</string>
     <string name="batch_scan">Lot</string>
     <string name="gallery">Galerie</string>
     <string name="flash_on">Flash activé</string>
     <string name="flash_off">Flash désactivé</string>
-    <string name="generate_qr_code">Générer un code QR</string>
+    <string name="generate_qr_code">Générer le QR Code</string>
     <string name="scan">Scanner</string>
     <string name="create">Créer</string>
     <string name="history">Historique</string>
-    <string name="generated_qr_code">Code QR généré</string>
+    <string name="result">Résultat du scan</string>
+    <string name="generated_qr_code">QR Code généré</string>
     <string name="zoom_out">Dézoomer</string>
     <string name="zoom_in">Zoomer</string>
-    <string name="qr_code_found">Code QR trouvé : %1$s</string>
-    <string name="flashlight_error">Échec du basculement du flash</string>
-    <string name="qr_generator">Générateur de codes QR</string>
+    <string name="qr_code_found">QR Code trouvé : %1$s</string>
+    <string name="flashlight_error">Échec de l\'activation du flash</string>
+    <string name="qr_generator">Créer QR</string>
     <string name="already_scanned">Déjà scanné</string>
     <string name="download_success">Enregistré avec succès</string>
     <string name="product_image_desc">Image du produit</string>
@@ -24,17 +25,17 @@
     <string name="unknown_product">Produit inconnu</string>
     <string name="scanned_result_format">Résultat : %1$s</string>
     <string name="view_details">Voir les détails</string>
-    <string name="open_food">Ouvrir Food</string>
+    <string name="open_food">Ouvrir la nourriture</string>
     <string name="view_code">Voir le code</string>
     <string name="amazon">Amazon</string>
     <string name="open">Ouvrir</string>
     <string name="ebay">Ebay</string>
-    <string name="shop_now">Acheter maintenant</string>
+    <string name="shop_now">Achetez maintenant</string>
     <string name="share_via">Partager via</string>
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
-    <string name="scanned_result">Résultat scanné</string>
+    <string name="scanned_result">Résultat du scan</string>
     <string name="not_a_url">Ce n\'est pas une URL</string>
-    <string name="view_details_to_be_implemented">Voir les détails cliqué (à implémenter)</string>
+    <string name="view_details_to_be_implemented">Voir les détails cliqués (à implémenter)</string>
     <string name="view_code_to_be_implemented">Voir le code cliqué (à implémenter)</string>
     <string name="phone_number">Numéro de téléphone</string>
     <string name="enter_phone_number">Entrez le numéro de téléphone</string>
@@ -44,27 +45,27 @@
     <string name="enter_email_address">Entrez l\'adresse e-mail</string>
     <string name="subject">Objet</string>
     <string name="enter_subject">Entrez l\'objet</string>
-    <string name="body">Contenu</string>
-    <string name="enter_email_body">Entrez le contenu de l\'e-mail</string>
-    <string name="website_url">URL du site web</string>
-    <string name="enter_website_url">Entrez l\'URL du site web</string>
+    <string name="body">Corps</string>
+    <string name="enter_email_body">Entrez le corps du message</string>
+    <string name="website_url">URL du site Web</string>
+    <string name="enter_website_url">Entrez l\'URL du site Web</string>
     <string name="text">Texte</string>
     <string name="enter_text">Entrez le texte</string>
     <string name="clipboard_text">Texte du presse-papiers</string>
     <string name="enter_clipboard_text">Entrez le texte du presse-papiers</string>
     <string name="ssid">SSID</string>
-    <string name="enter_ssid">Entrez le SSID</string>
+    <string name="enter_ssid">Entrez l\'SSID</string>
     <string name="password">Mot de passe</string>
     <string name="enter_password">Entrez le mot de passe</string>
-    <string name="encryption">Cryptage (WPA, WEP, etc.)</string>
-    <string name="enter_encryption">Entrez le cryptage</string>
+    <string name="encryption">Chiffrement (WPA, WEP, etc.)</string>
+    <string name="enter_encryption">Entrez le chiffrement</string>
     <string name="event_title">Titre de l\'événement</string>
     <string name="enter_event_title">Entrez le titre de l\'événement</string>
     <string name="description">Description</string>
     <string name="enter_description">Entrez la description</string>
-    <string name="start_timestamp">Début (horodatage)</string>
+    <string name="start_timestamp">Début (timestamp)</string>
     <string name="enter_start_time">Entrez l\'heure de début</string>
-    <string name="end_timestamp">Fin (horodatage)</string>
+    <string name="end_timestamp">Fin (timestamp)</string>
     <string name="enter_end_time">Entrez l\'heure de fin</string>
     <string name="codabar_code">Code Codabar</string>
     <string name="enter_codabar_code">Entrez le code Codabar</string>
@@ -82,33 +83,36 @@
     <string name="enter_contact_name">Entrez le nom</string>
     <string name="contact_phone">Téléphone</string>
     <string name="enter_contact_phone">Entrez le numéro de téléphone</string>
-    <string name="contact_email">E-mail</string>
-    <string name="enter_contact_email">Entrez l\'e-mail</string>
+    <string name="contact_email">Email</string>
+    <string name="enter_contact_email">Entrez l\'email</string>
     <string name="latitude">Latitude</string>
     <string name="enter_latitude">Entrez la latitude</string>
     <string name="longitude">Longitude</string>
     <string name="enter_longitude">Entrez la longitude</string>
     <string name="code_39">CODE-39</string>
-    <string name="enter_code_39">Entrez CODE-39</string>
+    <string name="enter_code_39">Entrez le CODE-39</string>
     <string name="code_128">CODE-128</string>
-    <string name="enter_code_128">Entrez CODE-128</string>
+    <string name="enter_code_128">Entrez le CODE-128</string>
     <string name="pdf_417_code">Code PDF-417</string>
     <string name="enter_pdf_417_code">Entrez le code PDF-417</string>
     <string name="datamatrix_code">Code DataMatrix</string>
     <string name="enter_datamatrix_code">Entrez le code DataMatrix</string>
     <string name="aztec_code">Code Aztec</string>
     <string name="enter_aztec_code">Entrez le code Aztec</string>
+
     <string name="qr_type_icon">Icône du type de QR</string>
     <string name="delete">Supprimer</string>
-    <string name="loading">Chargement…</string>
-    <string name="type_icon">Icône de type</string>
-    <string name="favorite_icon">Icône favori</string>
+    <string name="loading">Chargement...</string>
+
+    <string name="type_icon">Icône du type</string>
+    <string name="favorite_icon">Icône des favoris</string>
+
     <string name="location_text">Latitude : %1$s, Longitude : %2$s</string>
     <string name="event_text">Événement : %1$s</string>
-    <string name="qr_code_image">Image du code QR</string>
+    <string name="qr_code_image">Image du QR Code</string>
     <string name="download">Télécharger</string>
     <string name="share">Partager</string>
-    <string name="not_available">Indisponible</string>
+    <string name="not_available">Non disponible</string>
     <string name="wifi_ssid">SSID : %1$s</string>
     <string name="wifi_password">Mot de passe : %1$s</string>
     <string name="unknown_ssid">SSID inconnu</string>
@@ -116,16 +120,38 @@
     <string name="connect">Se connecter</string>
     <string name="copy_password">Copier le mot de passe</string>
     <string name="copy">Copier</string>
+
     <string name="settings">Paramètres</string>
     <string name="back">Retour</string>
+
+    <!-- Button and Label Texts -->
     <string name="upgrade_to_premium">Passer à la version premium</string>
     <string name="color_scheme">Schéma de couleurs</string>
+
+    <!-- Bottom Menu Options -->
     <string name="beep">Bip</string>
     <string name="vibrate">Vibrer</string>
     <string name="dark_theme">Thème sombre</string>
     <string name="language">Langue</string>
     <string name="english">Anglais</string>
     <string name="favourites">Favoris</string>
+    <string name="terms_conditions">Conditions d\'utilisation</string>
+    <string name="about_us">À propos de nous</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
     <string name="rate_us">Évaluez-nous</string>
     <string name="share_app">Partager l\'application</string>
+
+    <string name="loading_settings">Chargement des paramètres...</string>
+    <string name="finishing_up">Finishing Up...</string>
+    <string name="please_wait">Veuillez patienter...</string>
+    <string name="almost_there">Presque terminé...</string>
+
+    <string name="barcode_scanner">Scanner le code-barres</string>
+    <string name="barcode_details">Scannez les codes-barres et comparez les prix</string>
+    <string name="qr_code_scanner">Scanner le QR Code</string>
+    <string name="qr_code_details">Scannez ou créez des QR codes depuis votre téléphone</string>
+    <string name="ad_title">Titre de l\'annonce</string>
+    <string name="no_record_found">Aucun enregistrement trouvé</string>
+    <string name="favorites">Favoris</string>
+    <string name="no_favorite_items">Vous n\'avez pas d\'articles favoris.</string>
 </resources>

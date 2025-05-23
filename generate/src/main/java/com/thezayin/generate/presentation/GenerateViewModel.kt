@@ -14,6 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
+import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.domain.model.QrContent
@@ -33,6 +34,7 @@ class GenerateViewModel(
     val remoteConfig: RemoteConfig,
     val pref: PreferencesManager,
     val adManager: InterstitialAdManager,
+    val rewardedAdManager: RewardedAdManager,
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(GenerateState())
@@ -173,6 +175,7 @@ class GenerateViewModel(
 
     fun initManager(activity: Activity) {
         adManager.loadAd(activity)
+        rewardedAdManager.loadAd(activity)
     }
 
     private fun generateQr() {

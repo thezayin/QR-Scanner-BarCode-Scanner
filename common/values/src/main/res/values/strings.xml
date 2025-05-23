@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR Scanner - Barcode Scanner</string>
+    <string name="app_name">QR Scanner - Scan Barcode</string>
     <string name="qr_code_empty_content">QR code detected but content is empty</string>
     <string name="qr_code_not_found">No QR code found</string>
     <string name="qr_code_scan_error">Error occurred while scanning the QR code</string>
@@ -17,7 +17,7 @@
     <string name="zoom_in">Zoom In</string>
     <string name="qr_code_found">QR Code Found: %1$s</string>
     <string name="flashlight_error">Failed to toggle flashlight</string>
-    <string name="qr_generator">QR Generator</string>
+    <string name="qr_generator">Create QR</string>
     <string name="already_scanned">Already Scanned</string>
     <string name="download_success">Saved Successfully</string>
     <string name="product_image_desc">Product Image</string>

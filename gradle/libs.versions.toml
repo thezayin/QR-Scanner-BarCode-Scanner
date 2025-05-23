@@ -4,11 +4,13 @@ barcodeScanning = "17.3.0"
 billing = "7.1.1"
 cameraCore ="1.4.2"
 core = "3.5.2"
+glide = "4.16.0"
 guava = "33.3.1-android"
 lottieCompose = "6.2.0"
 kotlinxCoroutinesPlayServices ="1.10.2"
 coilCompose = "2.6.0"
 grizzly = "2.1"
+funsolBillingHelper = "v2.0.6"
 multidex = "2.0.1"
 agp = "8.6.1"
 gradle = "8.4.2"
@@ -77,8 +79,10 @@ androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "mult
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "barcodeScanning" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
 funsol-billing-helper = { module = "com.github.Funsol-Projects:Funsol-Billing-Helper", version.ref = "funsolBillingHelper" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 grizzly = { module = "io.github.farimarwat:grizzly", version.ref = "grizzly" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }

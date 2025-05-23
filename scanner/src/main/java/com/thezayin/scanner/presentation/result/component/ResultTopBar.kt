@@ -25,7 +25,7 @@ fun ResultTopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.result),
-                fontSize = 14.ssp,
+                fontSize = 16.ssp,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         },

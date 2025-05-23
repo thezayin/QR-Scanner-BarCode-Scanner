@@ -42,6 +42,7 @@ fun GeneratedQrContent(
     modifier: Modifier = Modifier
 ) {
     val adManager = viewModel.adManager
+    val rewardedAdManager = viewModel.rewardedAdManager
     val activity = LocalActivity.current as Activity
 
     Column(
@@ -64,7 +65,7 @@ fun GeneratedQrContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = {
-                adManager.showAd(
+                rewardedAdManager.showAd(
                     activity = activity,
                     showAd = remoteConfig.adConfigs.adOnHistoryDownloadClick,
                     onNext = {
