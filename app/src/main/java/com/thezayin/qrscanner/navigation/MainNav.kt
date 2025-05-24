@@ -3,7 +3,6 @@
 package com.thezayin.qrscanner.navigation
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -199,16 +198,12 @@ fun MainNav(
                 }, onNavigateBack = { navController.navigateUp() })
             }
             composable("premium") {
-                PremiumScreen {
-                    Toast.makeText(activity, "Purchased", Toast.LENGTH_LONG).show()
-                    navController.navigateUp()
-                }
+                PremiumScreen()
             }
         }
     }
     if (showExitDialog.value) {
-        Dialog(
-            onDismissRequest = { showExitDialog.value = false } // Close dialog on outside touch
+        Dialog(onDismissRequest = { showExitDialog.value = false } // Close dialog on outside touch
         ) {
             // Custom Dialog Layout
             Card(
@@ -241,29 +236,23 @@ fun MainNav(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Button(
-                            modifier = Modifier.width(100.dp),
-                            colors = ButtonDefaults.buttonColors(
+                            modifier = Modifier.width(100.dp), colors = ButtonDefaults.buttonColors(
                                 containerColor = colorResource(R.color.allports),
                                 contentColor = colorResource(R.color.white)
-                            ),
-                            onClick = {
+                            ), onClick = {
                                 showExitDialog.value = false
                                 adManager.showAd(
                                     activity = activity,
                                     showAd = remoteConfig.adConfigs.adOnSplash,
-                                    onNext = { activity.finish() }
-                                )
-                            }
-                        ) {
+                                    onNext = { activity.finish() })
+                            }) {
                             Text(text = "Exit")
                         }
                         Button(
-                            modifier = Modifier.width(100.dp),
-                            colors = ButtonDefaults.buttonColors(
+                            modifier = Modifier.width(100.dp), colors = ButtonDefaults.buttonColors(
                                 containerColor = colorResource(R.color.allports),
                                 contentColor = colorResource(R.color.white)
-                            ),
-                            onClick = { showExitDialog.value = false }) {
+                            ), onClick = { showExitDialog.value = false }) {
                             Text(text = "Cancel")
                         }
                     }
@@ -271,8 +260,7 @@ fun MainNav(
                     Spacer(modifier = Modifier.height(16.dp))
                     if (nativeAd != null) {
                         GoogleNativeSimpleAd(
-                            modifier = Modifier.fillMaxWidth(),
-                            nativeAd = nativeAd
+                            modifier = Modifier.fillMaxWidth(), nativeAd = nativeAd
                         )
                     }
                 }

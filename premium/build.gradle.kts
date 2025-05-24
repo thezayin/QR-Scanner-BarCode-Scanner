@@ -65,4 +65,6 @@ dependencies {
     implementation(libs.koin.android)
     testImplementation(libs.koin.test.junit4)
     implementation(libs.koin.androidx.navigation)
+
+    implementation(libs.timber)
 }

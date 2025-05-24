@@ -1,4 +1,4 @@
-package com.thezayin.premium.presentation.viewmodel
+package com.thezayin.premium.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,154 +9,94 @@ import com.thezayin.premium.domain.usecase.IsUserSubscribedUseCase
 import com.thezayin.premium.domain.usecase.SubscribeToWeeklyPlanUseCase
 import com.thezayin.premium.domain.usecase.SubscribeToYearlyPlanUseCase
 import com.thezayin.premium.presentation.event.PremiumEvent
+import com.thezayin.premium.presentation.event.PremiumEvent.CheckSubscriptionStatus
+import com.thezayin.premium.presentation.event.PremiumEvent.LoadPremiumStatus
+import com.thezayin.premium.presentation.event.PremiumEvent.LoadSubscriptionPrices
+import com.thezayin.premium.presentation.event.PremiumEvent.SubscribeToWeekly
+import com.thezayin.premium.presentation.event.PremiumEvent.SubscribeToYearly
+import com.thezayin.premium.presentation.state.PlanType
 import com.thezayin.premium.presentation.state.PremiumState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+const val BASEPLAN_WEEKLY  = "s1w"
+const val BASEPLAN_YEARLY  = "s1y"
+
 class PremiumViewModel(
-    private val subscribeToYearlyPlanUseCase: SubscribeToYearlyPlanUseCase,
-    private val subscribeToWeeklyPlanUseCase: SubscribeToWeeklyPlanUseCase,
-    private val checkPremiumStatusUseCase: CheckPremiumStatusUseCase,
-    private val isUserSubscribedUseCase: IsUserSubscribedUseCase,
-    private val getSubscriptionPriceUseCase: GetSubscriptionPriceUseCase
+    private val checkPremium: CheckPremiumStatusUseCase,
+    private val isSubscribed: IsUserSubscribedUseCase,
+    private val getPrice: GetSubscriptionPriceUseCase,
+    private val subscribeWeekly: SubscribeToWeeklyPlanUseCase,
+    private val subscribeYearly: SubscribeToYearlyPlanUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PremiumState())
-    val state: StateFlow<PremiumState> = _state
+    val state: StateFlow<PremiumState> = _state.asStateFlow()
 
     fun onEvent(event: PremiumEvent) {
         when (event) {
-            is PremiumEvent.LoadPremiumStatus -> loadPremiumStatus()
-            is PremiumEvent.SubscribeToYearly -> subscribeToYearlyPlan()
-            is PremiumEvent.SubscribeToWeekly -> subscribeToWeeklyPlan()
-            is PremiumEvent.CheckSubscriptionStatus -> checkSubscriptionStatus()
-            is PremiumEvent.LoadSubscriptionPrices -> loadSubscriptionPrices()
-            is PremiumEvent.SetPackageName -> setPackageName(event.packageName)
+            LoadSubscriptionPrices -> loadPrices()
+            CheckSubscriptionStatus -> checkUserSubscribed()
+            LoadPremiumStatus -> checkPremiumStatus()
+            SubscribeToWeekly -> subscribe(PlanType.Weekly)
+            SubscribeToYearly -> subscribe(PlanType.Yearly)
         }
     }
 
-    private fun loadPremiumStatus() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            checkPremiumStatusUseCase.execute().collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        _state.value = _state.value.copy(
-                            isPremium = response.data, isLoading = false
-                        )
-                    }
+    private fun loadPrices() = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        val weeklyRes = getPrice.execute(BASEPLAN_WEEKLY).first()
+        val yearlyRes = getPrice.execute(BASEPLAN_YEARLY).first()
+        _state.update {
+            it.copy(
+                weeklyPrice = (weeklyRes as? Response.Success)?.data,
+                yearlyPrice = (yearlyRes as? Response.Success)?.data,
+                isLoading = false
+            )
+        }
+    }
 
-                    is Response.Error -> {
-                        _state.value = _state.value.copy(
-                            error = response.e, isLoading = false
-                        )
-                    }
-
-                    Response.Loading -> TODO()
-                }
+    private fun checkUserSubscribed() = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        val res = isSubscribed.execute().first()
+        _state.update {
+            when (res) {
+                is Response.Success -> it.copy(isSubscribed = res.data, isLoading = false)
+                is Response.Error -> it.copy(errorMessage = res.e, isLoading = false)
+                else -> it.copy(isLoading = false)
             }
         }
     }
 
-    private fun subscribeToYearlyPlan() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            subscribeToYearlyPlanUseCase.execute().collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        _state.value = _state.value.copy(isSubscribed = true, isLoading = false)
-                        onEvent(PremiumEvent.SetPackageName("Yearly Plan"))
-                    }
-
-                    is Response.Error -> {
-                        _state.value = _state.value.copy(error = response.e, isLoading = false)
-                    }
-
-                    Response.Loading -> TODO()
-                }
+    private fun checkPremiumStatus() = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        val res = checkPremium.execute().first()
+        _state.update {
+            when (res) {
+                is Response.Success -> it.copy(isPremium = res.data, isLoading = false)
+                is Response.Error -> it.copy(errorMessage = res.e, isLoading = false)
+                else -> it.copy(isLoading = false)
             }
         }
     }
 
-    private fun subscribeToWeeklyPlan() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            subscribeToWeeklyPlanUseCase.execute().collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        _state.value = _state.value.copy(isSubscribed = true, isLoading = false)
-                        onEvent(PremiumEvent.SetPackageName("Weekly Plan"))
-                    }
+    private fun subscribe(plan: PlanType) = viewModelScope.launch {
+        _state.update { it.copy(isLoading = true, errorMessage = null) }
+        val res = if (plan == PlanType.Weekly)
+            subscribeWeekly.execute().first()
+        else
+            subscribeYearly.execute().first()
 
-                    is Response.Error -> {
-                        _state.value = _state.value.copy(error = response.e, isLoading = false)
-                    }
-
-                    Response.Loading -> TODO()
-                }
+        _state.update {
+            when (res) {
+                is Response.Success -> it.copy(isSubscribed = true, isLoading = false)
+                is Response.Error -> it.copy(errorMessage = res.e, isLoading = false)
+                else -> it.copy(isLoading = false)
             }
         }
-    }
-
-    private fun checkSubscriptionStatus() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            isUserSubscribedUseCase.execute().collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        _state.value =
-                            _state.value.copy(isSubscribed = response.data, isLoading = false)
-                    }
-
-                    is Response.Error -> {
-                        _state.value = _state.value.copy(error = response.e, isLoading = false)
-                    }
-
-                    Response.Loading -> TODO()
-                }
-            }
-        }
-    }
-
-    private fun loadSubscriptionPrices() {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true, error = null)
-            getSubscriptionPriceUseCase.execute("yearly.sub.removeads").collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        _state.value = _state.value.copy(
-                            yearlySubscriptionPrice = response.data, isLoading = false
-                        )
-                    }
-
-                    is Response.Error -> {
-                        _state.value = _state.value.copy(error = response.e, isLoading = false)
-                    }
-
-                    Response.Loading -> TODO()
-                }
-            }
-
-            getSubscriptionPriceUseCase.execute("weekly.sub.removeads").collect { response ->
-                when (response) {
-                    is Response.Success -> {
-                        _state.value = _state.value.copy(
-                            weeklySubscriptionPrice = response.data, isLoading = false
-                        )
-                    }
-
-                    is Response.Error -> {
-                        _state.value = _state.value.copy(error = response.e, isLoading = false)
-                    }
-
-                    Response.Loading -> TODO()
-                }
-            }
-        }
-    }
-
-    private fun setPackageName(packageName: String) {
-        _state.value = _state.value.copy(packageName = packageName)
     }
 }
