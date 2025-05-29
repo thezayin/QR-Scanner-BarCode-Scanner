@@ -2,9 +2,8 @@
 
 package com.thezayin.qrscanner.navigation
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -36,6 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -44,25 +45,30 @@ import com.google.android.gms.ads.nativead.NativeAd
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.components.BannerAd
 import com.thezayin.framework.components.GoogleNativeSimpleAd
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.presentation.GenerateScreen
 import com.thezayin.history.presentation.FavoritesScreen
 import com.thezayin.history.presentation.HistoryScreen
-import com.thezayin.premium.presentation.PremiumScreen
+import com.thezayin.qrscanner.ui.language.ui.LanguageScreen
+import com.thezayin.qrscanner.ui.language.ui.LanguageViewModel
+import com.thezayin.qrscanner.ui.premium.presentation.PremiumScreen
 import com.thezayin.scanner.presentation.result.ResultScreen
 import com.thezayin.scanner.presentation.scanner.ScannerScreen
-import com.thezayin.start_up.languages.LanguageScreen
 import com.thezayin.start_up.setting.SettingsScreen
 import com.thezayin.values.R
 import org.koin.compose.koinInject
+import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainNav(
-    primaryColor: Color, remoteConfig: RemoteConfig, nativeAd: NativeAd?
+    activity: AppCompatActivity,
+    primaryColor: Color,
+    remoteConfig: RemoteConfig,
+    nativeAd: NativeAd?,
+    preferencesManager: PreferencesManager
 ) {
-    val activity = LocalActivity.current as Activity
-
     val adManager = koinInject<InterstitialAdManager>()
     LaunchedEffect(Unit) {
         adManager.loadAd(activity)
@@ -92,7 +98,6 @@ fun MainNav(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(), bottomBar = {
-
             if (currentRoute in bottomNavRoutes) {
                 Column(
                     modifier = Modifier
@@ -108,6 +113,7 @@ fun MainNav(
                     )
                     if (remoteConfig.adConfigs.adOnBottomHome) {
                         BannerAd(
+                            preferencesManager = preferencesManager,
                             showAd = remoteConfig.adConfigs.adOnBottomHome,
                             adId = remoteConfig.adUnits.bannerAd
                         )
@@ -164,14 +170,16 @@ fun MainNav(
             }
             composable(BottomNavItem.Create.route) {
                 GenerateScreen(
-                    onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) })
+                    onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) },
+                    navigateToPremium = { navController.navigate("premium") })
             }
             composable(BottomNavItem.History.route) {
                 HistoryScreen(
                     onNavigateUp = { navController.navigate(BottomNavItem.Scan.route) },
                     navigateToScanItem = {
                         navController.navigate("result")
-                    })
+                    },
+                    navigateToPremium = { navController.navigate("premium") })
             }
             composable(BottomNavItem.Settings.route) {
                 SettingsScreen(
@@ -184,21 +192,32 @@ fun MainNav(
             composable("favourite") {
                 FavoritesScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    navigateToScanItem = { navController.navigate("result") })
+                    navigateToScanItem = { navController.navigate("result") },
+                    navigateToPremium = { navController.navigate("premium") })
             }
             composable("result") {
-                ResultScreen(onNavigateUp = { navController.popBackStack() })
+                ResultScreen(
+                    onNavigateUp = { navController.popBackStack() },
+                    navigateToPremium = { navController.navigate("premium") })
             }
             composable("languages") {
-                LanguageScreen(onLanguageSelection = {
-                    adManager.showAd(
-                        activity = activity,
-                        showAd = remoteConfig.adConfigs.adOnSplash,
-                        onNext = { navController.navigateUp() })
-                }, onNavigateBack = { navController.navigateUp() })
+                val languageViewModel: LanguageViewModel = koinInject()
+                LaunchedEffect(key1 = Unit) { // Use Unit or true if it only needs to run once per composition
+                    languageViewModel.recreateActivityEvent.flowWithLifecycle(
+                        activity.lifecycle, Lifecycle.State.STARTED
+                    ) // Ensure collection is lifecycle-aware
+                        .collect {
+                            Timber.tag("jajaRootNavGraph")
+                                .d("Received recreateActivityEvent. Calling activity.recreate().")
+//                            activity.recreate()
+                        }
+                }
+                LanguageScreen(
+                    viewModel = languageViewModel, onNavigateBack = { navController.navigateUp() })
             }
             composable("premium") {
-                PremiumScreen()
+                PremiumScreen(
+                    navigateBack = { navController.navigateUp() })
             }
         }
     }
@@ -228,7 +247,6 @@ fun MainNav(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // Buttons for confirmation and cancellation
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

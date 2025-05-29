@@ -2,24 +2,38 @@
 
 package com.thezayin.qrscanner.navigation
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.android.gms.ads.nativead.NativeAd
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
-import com.thezayin.start_up.languages.LanguageScreen
+import com.thezayin.qrscanner.ui.language.ui.LanguageScreen
+import com.thezayin.qrscanner.ui.language.ui.LanguageViewModel
 import com.thezayin.start_up.onboarding.OnboardingScreen
 import com.thezayin.start_up.splash.SplashScreen
+import org.koin.compose.koinInject
+import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig,nativeAd: NativeAd?) {
+fun RootNavGraph(
+    activity: AppCompatActivity,
+    primaryColor: Color,
+    remoteConfig: RemoteConfig,
+    nativeAd: NativeAd?,
+    preferencesManager: PreferencesManager
+) {
     val navController = rememberNavController()
     AnimatedNavHost(
         navController = navController,
@@ -75,19 +89,31 @@ fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig,nativeAd: Nativ
         }
 
         composable("language") {
-            LanguageScreen(
-                onLanguageSelection = {
-                    navController.navigate("main") {
-                        popUpTo("language") { inclusive = true }
+            val languageViewModel: LanguageViewModel = koinInject()
+            LaunchedEffect(key1 = Unit) { // Use Unit or true if it only needs to run once per composition
+                languageViewModel.recreateActivityEvent
+                    .flowWithLifecycle(
+                        activity.lifecycle,
+                        Lifecycle.State.STARTED
+                    ) // Ensure collection is lifecycle-aware
+                    .collect {
+                        Timber.tag("jajaRootNavGraph")
+                            .d("Received recreateActivityEvent. Calling activity.recreate().")
+//                        activity.recreate()
                     }
-                },
+            }
+            LanguageScreen(
+                viewModel = languageViewModel,
                 onNavigateBack = {
                     navController.navigate("onboarding")
                 }
             )
         }
         composable("main") {
-            MainNav(primaryColor = primaryColor,
+            MainNav(
+                activity = activity,
+                preferencesManager = preferencesManager,
+                primaryColor = primaryColor,
                 remoteConfig = remoteConfig,
                 nativeAd = nativeAd
             )

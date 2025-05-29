@@ -9,10 +9,15 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,13 +26,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.thezayin.generate.domain.model.QrType
 import com.thezayin.generate.presentation.GenerateViewModel
@@ -40,7 +44,8 @@ import ir.kaaveh.sdpcompose.ssp
 @Composable
 fun GenerateScreenContent(
     viewModel: GenerateViewModel,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    navigateToPremium: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val adManager = viewModel.adManager
@@ -61,21 +66,16 @@ fun GenerateScreenContent(
     }
 
     Scaffold(
-        modifier = Modifier.navigationBarsPadding(),
+        modifier = Modifier,
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                ),
-                title = {
-                    Text(
-                        fontSize = 16.ssp,
-                        text = stringResource(id = R.string.qr_generator),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                },
-                navigationIcon = {
+            Column {
+                Spacer(modifier = Modifier.size(10.sdp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = {
                         if (!state.showMainListOnly) {
                             viewModel.onEvent(GenerateEvent.BackPressed)
@@ -89,8 +89,28 @@ fun GenerateScreenContent(
                             contentDescription = stringResource(id = R.string.back)
                         )
                     }
+
+                    Text(
+                        fontSize = 16.ssp,
+                        text = stringResource(id = R.string.qr_generator),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    if (!viewModel.pref.isPremiumFlow.value) {
+                        IconButton(onClick = {
+                            navigateToPremium()
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_crown),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(15.sdp),
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    }else{
+                        Spacer(modifier = Modifier.size(30.sdp))
+                    }
                 }
-            )
+            }
         }
     ) { paddingValues ->
         AnimatedVisibility(

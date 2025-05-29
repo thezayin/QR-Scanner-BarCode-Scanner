@@ -8,7 +8,9 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import timber.log.Timber
 
@@ -17,14 +19,9 @@ import timber.log.Timber
  * rewarded ads using Google's AdMob SDK.
  */
 class RewardedAdManagerImpl(
-    // Remote configuration to fetch ad unit IDs
-    private val remoteConfig: RemoteConfig,
+    remoteConfig: RemoteConfig, private val preferencesManager: PreferencesManager
 ) : RewardedAdManager {
-
-    // Rewarded ad instance
     private var rewardedAd: RewardedAd? = null
-
-    // Ad Unit ID (replace with your actual AdMob Rewarded Ad Unit ID)
     private var adId: String = remoteConfig.adUnits.rewardedAd
 
     /**
@@ -33,28 +30,26 @@ class RewardedAdManagerImpl(
      */
     override fun loadAd(activity: Activity) {
         Timber.tag("RewardedAd").d("Loading rewarded ad")
-
-        // Load the ad only if it's not already loaded
+        if (preferencesManager.isPremiumFlow.value) {
+            Timber.tag("RewardedAd").d("App is premium. Skipping loading the ad.")
+            return
+        }
         if (rewardedAd == null) {
-            // Create an ad request and load the rewarded ad
             val adRequest = AdRequest.Builder().build()
             RewardedAd.load(
-                activity, // The activity in which the ad will be shown
-                adId,     // The ad unit ID
-                adRequest, // The ad request
-                object : RewardedAdLoadCallback() { // Callback to handle the loading result
+                activity, adId, adRequest, object : RewardedAdLoadCallback() {
                     override fun onAdLoaded(ad: RewardedAd) {
                         Timber.tag("RewardedAd").d("Rewarded Ad loaded successfully")
-                        rewardedAd = ad // Save the loaded ad
+                        rewardedAd = ad
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                        FirebaseCrashlytics.getInstance().recordException(Exception("Rewarded Ad failed to load: ${loadAdError.message}"))
                         Timber.tag("RewardedAd")
                             .d("Rewarded Ad failed to load: ${loadAdError.message}")
-                        rewardedAd = null // Reset the ad if loading fails
+                        rewardedAd = null
                     }
-                }
-            )
+                })
         }
     }
 
@@ -63,55 +58,56 @@ class RewardedAdManagerImpl(
      * Once the ad is dismissed, the next action will be triggered.
      */
     override fun showAd(
-        activity: Activity, // The activity in which the ad will be shown
-        showAd: Boolean,    // Whether or not to show the ad
-        adImpression: () -> Unit,  // Callback to handle ad impression
-        onReward: (RewardItem) -> Unit, // Callback to handle the reward
-        onNext: () -> Unit    // Callback to handle the next action after the ad is dismissed
+        activity: Activity,
+        showAd: Boolean,
+        adImpression: () -> Unit,
+        onReward: (RewardItem) -> Unit,
+        onNext: () -> Unit
     ) {
-        // Check if we need to show the ad
+        if (preferencesManager.isPremiumFlow.value) {
+            Timber.tag("RewardedAd").d("App is premium. Skipping showing the ad.")
+            onNext()
+        }
         if (showAd) {
-            rewardedAd?.let { ad ->  // If the ad is loaded, show it
+            rewardedAd?.let { ad ->
                 ad.show(activity) { rewardItem: RewardItem ->
-                    onReward(rewardItem)  // The user gets a reward
+                    onReward(rewardItem)
                 }
 
-                // FullScreenContentCallback to handle the ad's lifecycle
                 ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    // Called when the ad impression is logged
                     override fun onAdImpression() {
                         super.onAdImpression()
-                        adImpression()  // Trigger ad impression callback
+                        Timber.tag("RewardedAd").d("Rewarded Ad impression logged")
+                        adImpression()
                     }
 
-                    // Called when the ad is shown successfully
                     override fun onAdShowedFullScreenContent() {
+                        Timber.tag("RewardedAd").d("Rewarded Ad shown")
                         super.onAdShowedFullScreenContent()
                     }
 
-                    // Called if the ad fails to show
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                        FirebaseCrashlytics.getInstance().recordException(Exception("Rewarded Ad failed to show: ${adError.message}"))
                         Timber.tag("RewardedAd").d("Rewarded Ad failed to show: ${adError.message}")
-                        onNext() // Proceed with the next action
+                        onNext()
                     }
 
-                    // Optional: Called when the ad is clicked
                     override fun onAdClicked() {
-                        // Handle ad click if needed
+                        Timber.tag("RewardedAd").d("Rewarded Ad clicked")
                     }
 
-                    // Called when the ad is dismissed
                     override fun onAdDismissedFullScreenContent() {
                         Timber.tag("RewardedAd").d("Rewarded Ad dismissed. Reloading the ad.")
-                        rewardedAd = null  // Reset the ad after dismissal
-                        onNext()  // Proceed to the next action after ad dismissal
+                        rewardedAd = null
+                        onNext()
                     }
                 }
             } ?: run {
-                onNext()  // If the ad isn't loaded, proceed with the next action
+                Timber.tag("RewardedAd").d("Rewarded Ad is null. Skipping showing the ad.")
+                onNext()
             }
         } else {
-            // If the showAd flag is false, skip the ad and proceed to the next action
+            Timber.tag("RewardedAd").d("Rewarded Ad showAd flag is false. Skipping showing the ad.")
             onNext()
         }
     }

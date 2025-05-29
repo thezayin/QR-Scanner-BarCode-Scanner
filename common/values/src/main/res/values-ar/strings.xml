@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ماسح QR - مسح الباركود</string>
+    <string name="app_name">QR Scanner - Scan Barcode</string>
     <string name="qr_code_empty_content">تم اكتشاف رمز QR ولكن المحتوى فارغ</string>
     <string name="qr_code_not_found">لم يتم العثور على رمز QR</string>
     <string name="qr_code_scan_error">حدث خطأ أثناء مسح رمز QR</string>

@@ -8,6 +8,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ResultScreen(
     onNavigateUp: () -> Unit,
+    navigateToPremium: () -> Unit,
     viewModel: ResultScreenViewModel = koinInject(),
 ) {
     val state = viewModel.state.collectAsState().value
@@ -15,5 +16,6 @@ fun ResultScreen(
         state = state,
         viewModel = viewModel,
         onNavigateUp = onNavigateUp,
+        navigateToPremium=navigateToPremium
     )
 }

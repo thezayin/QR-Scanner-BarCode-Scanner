@@ -67,4 +67,7 @@ dependencies {
     implementation(libs.koin.androidx.navigation)
 
     implementation(libs.timber)
+    implementation(libs.sdp.compose)
+    implementation ("com.google.guava:guava:24.1-jre")
+
 }

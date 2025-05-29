@@ -1,6 +1,7 @@
 package com.thezayin.start_up.splash
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,7 @@ fun SplashScreen(
 ) {
     val vm: SplashViewModel = koinInject()
     val state by vm.state.collectAsState()
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val appOpenAdManager = vm.appOpenAdManager
     val interstitialAdManager = vm.interstitialAdManager
 

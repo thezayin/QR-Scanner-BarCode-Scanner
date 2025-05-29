@@ -12,9 +12,9 @@ import com.thezayin.framework.remote.RemoteConfig
 import org.koin.dsl.module
 
 val frameworkModule = module {
-    single<InterstitialAdManager> { InterstitialAdManagerImpl(get()) }
-    single<AppOpenAdManager> { AppOpenAdManagerImpl(get()) }
-    single<RewardedAdManager> { RewardedAdManagerImpl(get()) }
+    single<InterstitialAdManager> { InterstitialAdManagerImpl(get(), get()) }
+    single<AppOpenAdManager> { AppOpenAdManagerImpl(get(), get()) }
+    single<RewardedAdManager> { RewardedAdManagerImpl(get(), get()) }
     single { PreferencesManager(get<Application>()) }
     single { RemoteConfig(get()) }
     single<com.thezayin.framework.session.ScanSessionManager> { com.thezayin.framework.session.InMemoryScanSessionManager() }

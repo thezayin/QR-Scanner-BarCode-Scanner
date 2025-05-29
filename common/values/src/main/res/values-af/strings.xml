@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR Skandeerder - Skandeer Barkode</string>
+    <string name="app_name">QR Scanner - Scan Barcode</string>
     <string name="qr_code_empty_content">QR-kode opgespoor, maar die inhoud is leeg</string>
     <string name="qr_code_not_found">QR-kode nie gevind nie</string>
     <string name="qr_code_scan_error">Fout opgetree tydens QR-kode skandering</string>

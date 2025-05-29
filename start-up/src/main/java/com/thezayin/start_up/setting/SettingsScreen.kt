@@ -18,6 +18,7 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsState()
 
     SettingsScreenContent(
+        isPremium = viewModel.preferencesManager.isPremiumFlow.value,
         state = state,
         navigateToLanguage = navigateToLanguage,
         navigateToPremium = navigateToPremium,

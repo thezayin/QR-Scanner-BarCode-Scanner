@@ -28,6 +28,7 @@ import ir.kaaveh.sdpcompose.ssp
 
 @Composable
 fun HistoryScreenContent(
+    isPremium: Boolean,
     state: HistoryState,
     onNavigateUp: () -> Unit,
     onTabSelected: (HistoryTab) -> Unit,
@@ -35,7 +36,8 @@ fun HistoryScreenContent(
     onToggleFavorite: (ScanItem) -> Unit,
     onScanDelete: (ScanItem) -> Unit,
     onCreateDelete: (CreateItem) -> Unit,
-    onItemClicked: (CreateItem) -> Unit
+    onItemClicked: (CreateItem) -> Unit,
+    navigateToPremium: () -> Unit
 ) {
     val enterAnimation = slideInHorizontally(
         initialOffsetX = { it },
@@ -50,13 +52,12 @@ fun HistoryScreenContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HistoryTabBar(
+                isPremium = isPremium,
                 onNavigateUp = onNavigateUp,
                 selectedTab = state.selectedTab,
-                onTabSelected = onTabSelected
+                onTabSelected = onTabSelected,
+                navigateToPremium = navigateToPremium
             )
-        },
-        bottomBar = {
-            Spacer(modifier = Modifier.size(100.sdp))
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.thezayin.framework.components.ComposableLifecycle
 import com.thezayin.framework.components.GoogleNativeSimpleAd
+import com.thezayin.framework.utils.billing.isPremium
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
 import com.thezayin.scanner.presentation.result.state.ResultScreenState
 import ir.kaaveh.sdpcompose.sdp
@@ -34,7 +35,8 @@ import kotlinx.coroutines.launch
 fun ResultScreenContent(
     state: ResultScreenState,
     viewModel: ResultScreenViewModel,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    navigateToPremium: () -> Unit
 ) {
 
     val activity = LocalActivity.current as Activity
@@ -66,6 +68,8 @@ fun ResultScreenContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             ResultTopBar(
+                isPremium = viewModel.preferencesManager.isPremiumFlow.value,
+                navigateToPremium = navigateToPremium,
                 onNavigateUp = {
                     adManager.showAd(
                         activity = activity,

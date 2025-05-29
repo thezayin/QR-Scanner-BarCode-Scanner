@@ -70,6 +70,7 @@ fun OnboardingContent(
                 )
                 if (!vm.remoteConfig.adConfigs.switchBottomAdAtOnboarding) {
                     BannerAd(
+                        preferencesManager = vm.preferencesManager,
                         showAd = vm.remoteConfig.adConfigs.bottomAdAtOnboarding,
                         adId = vm.remoteConfig.adUnits.bannerAd
                     )

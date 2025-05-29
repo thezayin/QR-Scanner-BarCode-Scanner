@@ -30,6 +30,7 @@ import ir.kaaveh.sdpcompose.ssp
 
 @Composable
 fun SettingsScreenContent(
+    isPremium: Boolean,
     state: SettingsState,
     navigateToLanguage: () -> Unit,
     navigateToPremium: () -> Unit,
@@ -44,7 +45,10 @@ fun SettingsScreenContent(
     val context = LocalContext.current
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background, topBar = {
-            SettingTopBar(onNavigateBack = onNavigateBack)
+            Column {
+                Spacer(modifier = Modifier.size(10.sdp))
+                SettingTopBar(onNavigateBack = onNavigateBack)
+            }
         }) { paddingValues ->
         Column(
             modifier = Modifier
@@ -53,9 +57,11 @@ fun SettingsScreenContent(
                 .padding(16.dp)
                 .verticalScroll(scrollState), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            PremiumCard(
-                onClick = navigateToPremium
-            )
+            if (!isPremium) {
+                PremiumCard(
+                    onClick = navigateToPremium
+                )
+            }
             Spacer(modifier = Modifier.size(10.sdp))
             Text(
                 text = stringResource(id = R.string.color_scheme),

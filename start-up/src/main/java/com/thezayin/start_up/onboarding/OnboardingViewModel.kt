@@ -25,7 +25,7 @@ import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 
 class OnboardingViewModel(
     application: Application,
-    private val preferencesManager: PreferencesManager,
+    internal val preferencesManager: PreferencesManager,
     val remoteConfig: RemoteConfig,
     val appOpenAdManager: AppOpenAdManager,
     val interstitialAdManager: InterstitialAdManager,
@@ -85,6 +85,7 @@ class OnboardingViewModel(
     fun getNativeAd(context: Context) = viewModelScope.launch {
         if (remoteConfig.adConfigs.bottomAdAtOnboarding) {
             GoogleNativeAdLoader.loadNativeAd(
+                preferencesManager=preferencesManager,
                 context = context,
                 adUnitId = remoteConfig.adUnits.nativeAd,
                 onNativeAdLoaded = {

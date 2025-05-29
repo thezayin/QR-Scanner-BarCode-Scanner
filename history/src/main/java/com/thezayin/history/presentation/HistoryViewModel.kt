@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
 import com.thezayin.history.domain.model.CreateItem
@@ -29,7 +30,8 @@ class HistoryViewModel(
     private val sessionManager: ScanSessionManager,
     val remoteConfig: RemoteConfig,
     val adManager: InterstitialAdManager,
-    val rewardedAdManager: RewardedAdManager
+    val rewardedAdManager: RewardedAdManager,
+    val pref: PreferencesManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HistoryState())

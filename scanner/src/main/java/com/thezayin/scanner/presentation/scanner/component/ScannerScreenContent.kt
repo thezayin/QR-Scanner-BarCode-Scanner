@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,30 +29,25 @@ fun ScannerScreenContent(
     viewModel: ScannerViewModel
 ) {
     val context = LocalContext.current
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        topBar = {
-            Column {
-                Spacer(modifier = Modifier.padding(top = 40.sdp))
-                HeaderSection(
-                    onBatchClick = onBatchClick,
-                    onGalleryClick = onGalleryClick,
-                    onFlashToggle = onFlashToggle,
-                    isFlashOn = state.isFlashlightOn
-                )
-            }
-        },
-        bottomBar = {
-            ZoomControlsSection(
-                primaryColor = viewModel.primaryColor,
-                zoomLevel = state.zoomLevel,
-                onZoomChange = onZoomChange,
-                onZoomIn = onZoomIn,
-                onZoomOut = onZoomOut
+    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+        Column {
+            Spacer(modifier = Modifier.size(10.sdp))
+            HeaderSection(
+                onBatchClick = onBatchClick,
+                onGalleryClick = onGalleryClick,
+                onFlashToggle = onFlashToggle,
+                isFlashOn = state.isFlashlightOn
             )
         }
-    ) { paddingValues ->
+    }, bottomBar = {
+        ZoomControlsSection(
+            primaryColor = viewModel.primaryColor,
+            zoomLevel = state.zoomLevel,
+            onZoomChange = onZoomChange,
+            onZoomIn = onZoomIn,
+            onZoomOut = onZoomOut
+        )
+    }) { paddingValues ->
         CameraPreview(
             onCameraReady = onCameraReady,
             viewModel = viewModel,

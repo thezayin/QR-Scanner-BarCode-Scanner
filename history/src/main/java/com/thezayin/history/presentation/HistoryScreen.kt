@@ -1,6 +1,7 @@
 package com.thezayin.history.presentation
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,11 +20,12 @@ import org.koin.compose.koinInject
 fun HistoryScreen(
     onNavigateUp: () -> Unit,
     navigateToScanItem: () -> Unit,
+    navigateToPremium: () -> Unit,
     viewModel: HistoryViewModel = koinInject()
 ) {
     val state by viewModel.state.collectAsState()
     var selectedItem: CreateItem? by remember { mutableStateOf(null) }
-    val activity = LocalContext.current as Activity
+    val activity = LocalActivity.current as Activity
     val adManager = viewModel.adManager
     LaunchedEffect(Unit) {
         viewModel.initManager(activity)
@@ -38,8 +40,10 @@ fun HistoryScreen(
     }
 
     HistoryScreenContent(
+        isPremium = viewModel.pref.isPremiumFlow.value,
         state = state,
         onNavigateUp = onNavigateUp,
+        navigateToPremium = navigateToPremium,
         onTabSelected = { tab -> viewModel.onEvent(HistoryEvent.SelectTab(tab)) },
         onScanItemClick = { scanItem ->
             adManager.showAd(

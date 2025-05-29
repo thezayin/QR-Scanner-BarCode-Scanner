@@ -19,8 +19,8 @@ android {
         applicationId = "com.thezayin.qrscanner"
         minSdk = libs.versions.minSdkVersion.get().toInt()
         targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        versionCode = 2
-        versionName = "1.0.0.2"
+        versionCode = 3
+        versionName = "1.0.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,9 +38,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    androidResources {
-        generateLocaleConfig = true
-    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -56,7 +54,6 @@ dependencies {
     implementation(project(":generate"))
     implementation(project(":start-up"))
     implementation(project(":history"))
-    implementation(project(":premium"))
     implementation(project(":common:values"))
     implementation(project(":databases"))
     implementation(project(":common:framework"))
@@ -69,7 +66,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation (libs.billing)
+    implementation(libs.billing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -111,12 +108,13 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.navigation.animation)
 
-    implementation (libs.user.messaging.platform)
+    implementation(libs.user.messaging.platform)
     //Funsol Billing
-    implementation (libs.billing)
-    implementation (libs.funsol.billing.helper)
+    implementation(libs.billing)
+    implementation(libs.funsol.billing.helper)
 
-    implementation (libs.glide)
-    annotationProcessor (libs.compiler)
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+    implementation(libs.sdp.compose)
 
 }

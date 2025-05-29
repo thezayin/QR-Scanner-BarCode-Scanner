@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.ads.nativead.NativeAd
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.ads.loader.GoogleNativeAdLoader
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
 import com.thezayin.scanner.domain.model.Result
@@ -26,7 +27,6 @@ import com.thezayin.scanner.presentation.result.state.ResultScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.Locale
 
 class ResultScreenViewModel(
@@ -36,7 +36,8 @@ class ResultScreenViewModel(
     private val addProductToDbUseCase: AddProductToDbUseCase,
     private val updateFavoriteUseCase: UpdateFavoriteUseCase,
     val remoteConfig: RemoteConfig,
-    val adManager: InterstitialAdManager
+    val adManager: InterstitialAdManager,
+    val preferencesManager: PreferencesManager
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(ResultScreenState())
@@ -56,12 +57,12 @@ class ResultScreenViewModel(
     fun getNativeAd(context: Context) = viewModelScope.launch {
         if (remoteConfig.adConfigs.bottomAdOnScanResult) {
             GoogleNativeAdLoader.loadNativeAd(
+                preferencesManager = preferencesManager,
                 context = context,
                 adUnitId = remoteConfig.adUnits.nativeAd,
                 onNativeAdLoaded = {
                     nativeAd.value = it
-                }
-            )
+                })
         }
     }
 
@@ -186,7 +187,8 @@ class ResultScreenViewModel(
             }
 
             else -> {
-                Timber.e("Unsupported QR type: ${item.result}")
+                Toast.makeText(context, "Unsupported QR type: ${item.result}", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -257,8 +259,7 @@ class ResultScreenViewModel(
                         if (it.id == item.id) {
                             updatedItem
                         } else it
-                    }
-                )
+                    })
             } else {
                 Toast.makeText(getApplication(), "Error updating favorite", Toast.LENGTH_SHORT)
                     .show()
