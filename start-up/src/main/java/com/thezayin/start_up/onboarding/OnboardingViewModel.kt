@@ -1,7 +1,9 @@
 package com.thezayin.start_up.onboarding
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,33 +19,37 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
+import com.thezayin.framework.ads.admob.domain.repository.AppOpenAdManager
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 
 class OnboardingViewModel(
     application: Application,
-    private val preferencesManager: PreferencesManager,
-    val remoteConfig: RemoteConfig
+    internal val preferencesManager: PreferencesManager,
+    val remoteConfig: RemoteConfig,
+    val appOpenAdManager: AppOpenAdManager,
+    val interstitialAdManager: InterstitialAdManager,
 ) : ViewModel() {
     var nativeAd = mutableStateOf<NativeAd?>(null)
         private set
-
     private val _state = MutableStateFlow(
         OnboardingState(
             pages = listOf(
                 OnboardingPage(
-                    image = R.drawable.img_bar_code,
+                    gifResId = R.drawable.vid_bar,
                     title = application.getString(R.string.barcode_scanner),
                     subtitle = application.getString(R.string.barcode_details)
                 ),
                 OnboardingPage(
-                    image = R.drawable.img_qr_code,
+                    gifResId = R.drawable.vid_qr,
                     title = application.getString(R.string.qr_code_scanner),
                     subtitle = application.getString(R.string.qr_code_details)
                 ),
             )
         )
     )
-    val state: StateFlow<OnboardingState> = _state
 
+    val state: StateFlow<OnboardingState> = _state
     fun onAction(action: OnboardingActions) {
         viewModelScope.launch {
             when (action) {
@@ -71,9 +77,15 @@ class OnboardingViewModel(
         }
     }
 
+    fun initManagers(activity: Activity){
+        appOpenAdManager.loadAd(activity)
+        interstitialAdManager.loadAd(activity)
+    }
+
     fun getNativeAd(context: Context) = viewModelScope.launch {
         if (remoteConfig.adConfigs.bottomAdAtOnboarding) {
             GoogleNativeAdLoader.loadNativeAd(
+                preferencesManager=preferencesManager,
                 context = context,
                 adUnitId = remoteConfig.adUnits.nativeAd,
                 onNativeAdLoaded = {
@@ -83,4 +95,3 @@ class OnboardingViewModel(
         }
     }
 }
-

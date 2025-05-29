@@ -91,4 +91,8 @@ dependencies {
     api(libs.play.services.ads)
     implementation(libs.sdp.compose)
     implementation(libs.timber)
+
+    //Funsol Billing
+    implementation (libs.billing)
+    implementation (libs.funsol.billing.helper)
 }

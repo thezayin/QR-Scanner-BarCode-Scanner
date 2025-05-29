@@ -35,5 +35,5 @@
 -dontwarn com.thezayin.scanner.presentation.scanner.ScannerViewModel
 -dontwarn com.thezayin.start_up.di.SettingsModuleKt
 -dontwarn com.thezayin.start_up.languages.LanguageScreenKt
--dontwarn com.thezayin.start_up.languages.LanguageViewModel
+-dontwarn com.thezayin.qrscanner.ui.languages.LanguageViewModel
 -dontwarn com.thezayin.start_up.setting.SettingsScreenKt

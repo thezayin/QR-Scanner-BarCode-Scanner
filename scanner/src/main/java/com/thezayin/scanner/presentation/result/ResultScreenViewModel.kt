@@ -1,17 +1,20 @@
 package com.thezayin.scanner.presentation.result
 
+import android.app.Activity
 import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.ads.nativead.NativeAd
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.ads.loader.GoogleNativeAdLoader
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
 import com.thezayin.scanner.domain.model.Result
@@ -32,7 +35,9 @@ class ResultScreenViewModel(
     private val fetchProductDetailsUseCase: FetchProductDetailsUseCase,
     private val addProductToDbUseCase: AddProductToDbUseCase,
     private val updateFavoriteUseCase: UpdateFavoriteUseCase,
-    val remoteConfig: RemoteConfig
+    val remoteConfig: RemoteConfig,
+    val adManager: InterstitialAdManager,
+    val preferencesManager: PreferencesManager
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(ResultScreenState())
@@ -45,15 +50,19 @@ class ResultScreenViewModel(
         loadResults()
     }
 
+    fun initManager(activity: Activity) {
+        adManager.loadAd(activity)
+    }
+
     fun getNativeAd(context: Context) = viewModelScope.launch {
         if (remoteConfig.adConfigs.bottomAdOnScanResult) {
             GoogleNativeAdLoader.loadNativeAd(
+                preferencesManager = preferencesManager,
                 context = context,
                 adUnitId = remoteConfig.adUnits.nativeAd,
                 onNativeAdLoaded = {
                     nativeAd.value = it
-                }
-            )
+                })
         }
     }
 
@@ -150,29 +159,29 @@ class ResultScreenViewModel(
     private fun openItem(item: ResultScreenItem, context: Context) {
         when {
             item.result.startsWith("tel:") -> {
-                val intent = Intent(Intent.ACTION_DIAL, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_DIAL, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("sms:") -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_VIEW, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("mailto:") -> {
-                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_SENDTO, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("http://") || item.result.startsWith("https://") -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.result))
+                val intent = Intent(Intent.ACTION_VIEW, item.result.toUri())
                 context.startActivity(intent)
             }
 
             item.result.startsWith("wifi:") -> {
                 val wifiDetails = item.result.removePrefix("wifi:")
                 val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse("wifi:$wifiDetails")
+                    data = "wifi:$wifiDetails".toUri()
                 }
                 context.startActivity(intent)
             }
@@ -250,8 +259,7 @@ class ResultScreenViewModel(
                         if (it.id == item.id) {
                             updatedItem
                         } else it
-                    }
-                )
+                    })
             } else {
                 Toast.makeText(getApplication(), "Error updating favorite", Toast.LENGTH_SHORT)
                     .show()

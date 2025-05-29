@@ -11,13 +11,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import coil.compose.AsyncImage
-import com.thezayin.framework.ads.functions.rewardedAd
 import com.thezayin.framework.utils.formatTimestamp
 import com.thezayin.framework.utils.getDisplayText
 import com.thezayin.scanner.domain.model.ResultScreenItem
@@ -39,13 +40,13 @@ import ir.kaaveh.sdpcompose.ssp
 
 @Composable
 fun ScanResultCard(
-    showLoadingAd: MutableState<Boolean>,
     item: ResultScreenItem,
     vm: ResultScreenViewModel
 ) {
     val context = LocalContext.current
     val displayText = getDisplayText(item.result)
     val activity = context as Activity
+    val adManager = vm.adManager
 
     Card(
         modifier = Modifier
@@ -87,10 +88,8 @@ fun ScanResultCard(
                     )
                 }
                 Icon(
-                    painter = painterResource(
-                        id = if (item.isFavorite) R.drawable.ic_favourite else R.drawable.ic_non_favourite
-                    ),
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                    tint = colorResource(R.color.red),
                     contentDescription = stringResource(id = R.string.favorite_icon),
                     modifier = Modifier
                         .padding(end = 8.sdp)
@@ -105,7 +104,9 @@ fun ScanResultCard(
                 textDecoration = TextDecoration.Underline,
                 text = displayText,
                 fontSize = 10.ssp,
-                modifier = Modifier.padding(4.sdp)
+                modifier = Modifier.padding(4.sdp).clickable{
+                    vm.onEvent(ResultScreenEvent.OpenItem(item, context))
+                }
             )
             Spacer(modifier = Modifier.height(4.sdp))
             Row(
@@ -119,12 +120,10 @@ fun ScanResultCard(
                     iconRes = R.drawable.ic_open,
                     label = stringResource(id = R.string.open),
                     onClick = {
-                        activity.rewardedAd(
+                        adManager.showAd(
+                            activity = activity,
                             showAd = vm.remoteConfig.adConfigs.adOnScanOpen,
-                            adUnitId = vm.remoteConfig.adUnits.rewardedAd,
-                            showLoading = { showLoadingAd.value = true },
-                            hideLoading = { showLoadingAd.value = false },
-                            callback = { vm.onEvent(ResultScreenEvent.OpenItem(item, context)) }
+                            onNext = { vm.onEvent(ResultScreenEvent.OpenItem(item, context)) }
                         )
                     }
                 )

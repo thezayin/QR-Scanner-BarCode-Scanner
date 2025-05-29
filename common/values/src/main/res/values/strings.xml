@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QR Scanner - Barcode Scanner</string>
+    <string name="app_name">QR Scanner - Scan Barcode</string>
     <string name="qr_code_empty_content">QR code detected but content is empty</string>
     <string name="qr_code_not_found">No QR code found</string>
     <string name="qr_code_scan_error">Error occurred while scanning the QR code</string>
@@ -11,12 +11,13 @@
     <string name="scan">Scan</string>
     <string name="create">Create</string>
     <string name="history">History</string>
+    <string name="result">Scan Result</string>
     <string name="generated_qr_code">Generated QR Code</string>
     <string name="zoom_out">Zoom Out</string>
     <string name="zoom_in">Zoom In</string>
     <string name="qr_code_found">QR Code Found: %1$s</string>
     <string name="flashlight_error">Failed to toggle flashlight</string>
-    <string name="qr_generator">QR Generator</string>
+    <string name="qr_generator">Create QR</string>
     <string name="already_scanned">Already Scanned</string>
     <string name="download_success">Saved Successfully</string>
     <string name="product_image_desc">Product Image</string>
@@ -135,6 +136,9 @@
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="favourites">Favourites</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="about_us">About Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
     <string name="rate_us">Rate Us</string>
     <string name="share_app">Share App</string>
 
@@ -151,6 +155,19 @@
     <string name="no_record_found">No Record Found</string>
     <string name="favorites">Favorites</string>
     <string name="no_favorite_items">You have no favorite items.</string>
+
+
+    <string name="total_scanned">Total Scanned: %d</string>
+    <string name="cancel_batch_scan">Cancel Batch Scan</string>
+    <string name="confirm_batch_scan">Confirm Batch Scan</string>
+
+    <string name="camera_provider_init_error">Failed to initialize camera services.</string>
+    <string name="image_capture_failed_error">Image capture failed: %s</string>
+    <string name="generic_error_occurred">An error occurred: %s</string>
+    <string name="image_capture_failed_for_batch">Failed to capture image for batch results.</string>
+    <string name="no_items_scanned_in_batch">No items were successfully scanned in batch.</string>
+    <string name="qr_code_not_found_in_any_image">QR/Barcode not found in any of the selected images.</string>
+    <string name="error_processing_gallery_image">Error processing image from gallery.</string>
 </resources>
 
 

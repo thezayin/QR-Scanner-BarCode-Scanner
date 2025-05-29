@@ -1,5 +1,6 @@
 package com.thezayin.framework.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -7,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import com.thezayin.values.R
 import timber.log.Timber
 import java.io.File
@@ -150,4 +152,20 @@ fun getDisplayText(result: String): String {
         result.startsWith("wifi:") -> "Connect to WiFi"
         else -> result
     }
+}
+
+fun Context.openTerms(){
+    val url = "https://bougielabs.com/terms-and-conditions/"
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+    this.startActivity(intent)
+}
+
+fun Context.openPrivacy(){
+    val url = "https://bougielabs.com/privacy-policy/"
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+    this.startActivity(intent)
 }

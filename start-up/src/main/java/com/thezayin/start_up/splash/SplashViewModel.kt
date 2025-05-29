@@ -1,8 +1,11 @@
 package com.thezayin.start_up.splash
 
+import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.thezayin.framework.ads.admob.domain.repository.AppOpenAdManager
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.start_up.splash.event.SplashEvent
@@ -17,7 +20,9 @@ import kotlinx.coroutines.launch
 class SplashViewModel(
     application: Application,
     private val preferencesManager: PreferencesManager,
-    val remoteConfig: RemoteConfig
+    val remoteConfig: RemoteConfig,
+    val appOpenAdManager: AppOpenAdManager,
+    val interstitialAdManager: InterstitialAdManager
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(SplashState())
@@ -30,6 +35,11 @@ class SplashViewModel(
         )
         // Start the splash flow
         sendEvent(SplashEvent.LoadSplash)
+    }
+
+    fun initManagers(activity: Activity) {
+        appOpenAdManager.loadAd(activity)
+        interstitialAdManager.loadAd(activity)
     }
 
     private fun sendEvent(event: SplashEvent) {

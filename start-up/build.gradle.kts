@@ -76,4 +76,7 @@ dependencies {
     testImplementation(libs.koin.test.junit4)
     implementation(libs.koin.androidx.navigation)
     implementation(libs.sdp.compose)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 }

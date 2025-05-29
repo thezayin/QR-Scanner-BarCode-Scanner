@@ -1,76 +1,98 @@
 package com.thezayin.scanner.presentation.scanner.component
 
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.thezayin.framework.components.ScannerOverlay
 import com.thezayin.scanner.presentation.scanner.ScannerViewModel
+import com.thezayin.scanner.presentation.scanner.event.ScannerEvent
 import com.thezayin.scanner.presentation.scanner.state.ScannerState
-import com.thezayin.values.R
+import ir.kaaveh.sdpcompose.sdp
 
 @Composable
 fun ScannerScreenContent(
     state: ScannerState,
-    onBatchClick: () -> Unit,
-    onGalleryClick: () -> Unit,
-    onFlashToggle: () -> Unit,
-    onZoomChange: (Float) -> Unit,
-    onZoomIn: () -> Unit,
-    onZoomOut: () -> Unit,
-    onScanSuccess: (List<Pair<String, String>>) -> Unit,
-    onCameraReady: (androidx.camera.core.Camera) -> Unit,
-    viewModel: ScannerViewModel
+    viewModel: ScannerViewModel,
+    onHeaderGalleryClick: () -> Unit,
 ) {
     val context = LocalContext.current
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        topBar = {
-            HeaderSection(
-                onBatchClick = onBatchClick,
-                onGalleryClick = onGalleryClick,
-                onFlashToggle = onFlashToggle,
-                isFlashOn = state.isFlashlightOn
-            )
-
-        },
-        bottomBar = {
-            ZoomControlsSection(
-                primaryColor = viewModel.primaryColor,
-                zoomLevel = state.zoomLevel,
-                onZoomChange = onZoomChange,
-                onZoomIn = onZoomIn,
-                onZoomOut = onZoomOut
-            )
+    LaunchedEffect(state.error) {
+        state.error?.let { errorMessage ->
+            if (errorMessage.isNotBlank()) {
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                viewModel.onEvent(ScannerEvent.ShowError(null))
+            }
         }
-    ) { paddingValues ->
-        CameraPreview(
-            onCameraReady = onCameraReady,
-            viewModel = viewModel,
-            modifier = Modifier.fillMaxSize(),
-            onScanSuccess = onScanSuccess
-        )
-        ScannerOverlay(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        )
     }
 
-    if (state.qrCodeFound == true) {
-        android.widget.Toast.makeText(
-            context,
-            context.getString(R.string.qr_code_found, state.scannedResult),
-            android.widget.Toast.LENGTH_SHORT
-        ).show()
-    } else if (state.qrCodeFound == false) {
-        android.widget.Toast.makeText(
-            context,
-            context.getString(R.string.qr_code_not_found),
-            android.widget.Toast.LENGTH_SHORT
-        ).show()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(top = 8.sdp),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                if (state.isBatchModeActive) {
+                    BatchScanSnackbar(
+                        scannedCount = state.batchScannedCodes.size,
+                        onCancelBatch = { viewModel.onEvent(ScannerEvent.CancelBatchScan) },
+                        onConfirmBatch = { viewModel.onEvent(ScannerEvent.ConfirmBatchScan) })
+                } else {
+                    HeaderSection(
+                        onBatchClick = {
+                            if (state.isCameraReady) {
+                                viewModel.onEvent(ScannerEvent.StartBatchScan)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Camera initializing, please wait...",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+                        onGalleryClick = onHeaderGalleryClick,
+                        onFlashToggle = { viewModel.onEvent(ScannerEvent.ToggleFlashlight) },
+                        isFlashOn = state.isFlashlightOn
+                    )
+                }
+            }
+        },
+        bottomBar = {
+            if (!state.isBatchModeActive) {
+                ZoomControlsSection(
+                    primaryColor = viewModel.primaryColor,
+                    zoomLevel = state.zoomLevel,
+                    onZoomChange = { newZoomLevel -> viewModel.updateZoomLevelUi(newZoomLevel) },
+                    onZoomIn = { viewModel.updateZoomLevelUi(state.zoomLevel + 0.5f) },
+                    onZoomOut = { viewModel.updateZoomLevelUi(state.zoomLevel - 0.5f) })
+            }
+        }) { contentPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding()
+        ) {
+            CameraPreview(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel,
+                onCameraSuccessfullyBound = {})
+            ScannerOverlay(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            )
+        }
     }
 }

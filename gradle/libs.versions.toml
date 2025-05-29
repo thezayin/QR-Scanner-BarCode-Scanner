@@ -1,81 +1,74 @@
 [versions]
 accompanistNavigationAnimation = "0.34.0"
 barcodeScanning = "17.3.0"
-cameraCore = "1.4.1"
-compileSdkVersion = "35"
+billing = "7.1.1"
+cameraCore ="1.4.2"
 core = "3.5.2"
+glide = "4.16.0"
 guava = "33.3.1-android"
-lottieCompose = "6.0.0"
-minSdkVersion = "24"
-targetSdkVersion = "35"
-
-gpuimage = "2.1.0"
-gson = "2.10.1"
-image = "1.0.0-beta1"
-kotlinxCoroutinesPlayServices = "1.9.0"
-playServicesMlkitSubjectSegmentation = "16.0.0-beta1"
+lottieCompose = "6.2.0"
+kotlinxCoroutinesPlayServices ="1.10.2"
 coilCompose = "2.6.0"
 grizzly = "2.1"
+funsolBillingHelper = "v2.0.6"
 multidex = "2.0.1"
-agp = "8.5.2"
+agp = "8.6.1"
 gradle = "8.4.2"
-koin = "4.0.0-RC2"
-koin-version = "3.6.0-wasm-alpha2"
-koinAndroid = "3.5.6"
-kotlin = "2.0.20"
-coreKtx = "1.15.0"
+koin = "4.0.4"
+koin-version = "4.0.4"
+koinAndroid = "4.0.4"
+kotlin = "2.1.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-kotlinxSerializationJson = "1.7.2"
+kotlinxSerializationJson = "1.8.1"
 ktorClientCio = "2.3.12"
-ktorSerializationKotlinxJson = "2.3.12"
-ktorServerContentNegotiation = "2.3.12"
+ktorSerializationKotlinxJson = "3.0.0"
+ktorServerContentNegotiation = "3.0.0"
 orgSerlize = "2.0.10"
-lifecycle = "2.8.7"
-activityCompose = "1.9.3"
-composeBom = "2024.12.01"
-ktor = "2.3.12"
+lifecycle = "2.9.0"
+activityCompose = "1.10.1"
+composeBom = "2025.05.00"
+ktor = "3.1.3"
 sdpCompose = "1.1.0"
-ktorSerialize = "2.3.12"
+ktorSerialize = "3.1.3"
 googleServicesVersion = "4.4.2"
-firebaseAnalytics = "22.1.2"
-firebaseCrashlytics = "19.3.0"
-firebaseCrashlyticsGradle = "3.0.2"
-firebasePerf = "21.0.3"
+firebaseAnalytics = "22.4.0"
+firebaseCrashlytics = "19.4.3"
+firebaseCrashlyticsGradle = "3.0.3"
+firebasePerf = "21.0.5"
 perfPlugin = "1.4.2"
-room = "2.6.1"
-firebaseAppdistributionGradle = "5.0.0"
-firebaseMessaging = "24.1.0"
-firebaseInappmessagingDisplay = "21.0.1"
-firebaseConfig = "22.0.1"
-playServicesAds = "23.6.0"
-tensorflowLite = "2.16.1"
+room = "2.7.1"
+firebaseAppdistributionGradle = "5.1.1"
+firebaseMessaging = "24.1.1"
+firebaseInappmessagingDisplay = "21.0.2"
+firebaseConfig = "22.1.1"
+playServicesAds = "24.2.0"
 textRecognition = "16.0.1"
 timber = "5.0.1"
-userMessagingPlatform = "3.1.0"
+userMessagingPlatform = "3.2.0"
 appcompat = "1.7.0"
 material = "1.12.0"
 jsoupVersion = "1.18.1"
-navigationCompose ="2.8.5"
+navigationCompose ="2.9.0"
 ksp = "2.0.10-1.0.24"
-storage = "1.5.0"
-firebaseCrashlyticsBuildtools = "3.0.2"
-accompanistPermissions = "0.30.1"
-firebaseStorageKtx = "21.0.1"
-firebaseConfigKtx = "22.0.1"
+accompanistPermissions = "0.34.0"
 volley = "1.2.1"
-constraintlayoutComposeAndroid = "1.1.0"
+coilGif = "2.6.0"
+firebaseCrashlyticsKtx = "19.4.3"
+materialIconsExtended = "1.7.8"
 
-androidImageCropper = "4.5.0"
-cloudy = "0.1.2"
-colorpicker = "1.0.0"
-composeScreenshot = "1.0.3"
-lifecycleRuntimeKtx = "2.8.7"
-firebaseCrashlyticsKtx = "19.4.0"
-playServicesAdsLite = "23.6.0"
+compileSdkVersion = "35"
+minSdkVersion = "24"
+targetSdkVersion = "35"
+datastoreCoreAndroid = "1.1.7"
 
 [libraries]
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+
+billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coilGif" }
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
@@ -87,13 +80,13 @@ androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "mult
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "barcodeScanning" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 core = { module = "com.google.zxing:core", version.ref = "core" }
-gpuimage = { module = "jp.co.cyberagent.android:gpuimage", version.ref = "gpuimage" }
+funsol-billing-helper = { module = "com.github.Funsol-Projects:Funsol-Billing-Helper", version.ref = "funsolBillingHelper" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 grizzly = { module = "io.github.farimarwat:grizzly", version.ref = "grizzly" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-image = { module = "com.google.android.odml:image", version.ref = "image" }
 jsoup-jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoupVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -144,31 +137,18 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config", ver
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
-play-services-mlkit-subject-segmentation = { module = "com.google.android.gms:play-services-mlkit-subject-segmentation", version.ref = "playServicesMlkitSubjectSegmentation" }
-tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflowLite" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 sdp-compose = { module = "com.github.Kaaveh:sdp-compose", version.ref = "sdpCompose" }
 
-
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
-firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
-firebase-config-ktx = { group = "com.google.firebase", name = "firebase-config-ktx", version.ref = "firebaseConfigKtx" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
-tensorflow-lite-gpu = { module = "org.tensorflow:tensorflow-lite-gpu", version.ref = "tensorflowLite" }
-androidx-constraintlayout-compose-android = { group = "androidx.constraintlayout", name = "constraintlayout-compose-android", version.ref = "constraintlayoutComposeAndroid" }
-cloudy = { module = "com.github.skydoves:cloudy", version.ref = "cloudy" }
-colorpicker = { module = "io.mhssn:colorpicker", version.ref = "colorpicker" }
-compose-screenshot = { module = "com.github.SmartToolFactory:Compose-Screenshot", version.ref = "composeScreenshot" }
-android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
-play-services-ads-lite = { group = "com.google.android.gms", name = "play-services-ads-lite", version.ref = "playServicesAdsLite" }
+androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

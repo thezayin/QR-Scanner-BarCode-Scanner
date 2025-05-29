@@ -26,28 +26,28 @@ sealed class QrContent {
      *
      * @param code The 8-digit EAN code.
      */
-    data class Ean8(val code: String) : QrContent()
+//    data class Ean8(val code: String) : QrContent()
 
     /**
      * Represents a UPC-A barcode.
      *
      * @param code The UPC-A code (typically 12 digits).
      */
-    data class UpcA(val code: String) : QrContent()
+//    data class UpcA(val code: String) : QrContent()
 
     /**
      * Represents a UPC-E barcode.
      *
      * @param code The UPC-E code, which is a compressed version of UPC-A.
      */
-    data class UpcE(val code: String) : QrContent()
+//    data class UpcE(val code: String) : QrContent()
 
     /**
      * Represents an EAN-13 barcode.
      *
      * @param code The 13-digit EAN code.
      */
-    data class Ean13(val code: String) : QrContent()
+//    data class Ean13(val code: String) : QrContent()
 
     /**
      * Represents an Aztec barcode.

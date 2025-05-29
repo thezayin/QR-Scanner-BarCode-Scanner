@@ -1,6 +1,7 @@
 package com.thezayin.scanner.presentation.result.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,18 +13,16 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
-import com.thezayin.framework.ads.functions.interstitialAd
-import com.thezayin.framework.components.AdLoadingDialog
 import com.thezayin.framework.components.ComposableLifecycle
 import com.thezayin.framework.components.GoogleNativeSimpleAd
+import com.thezayin.framework.utils.billing.isPremium
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
 import com.thezayin.scanner.presentation.result.state.ResultScreenState
 import ir.kaaveh.sdpcompose.sdp
@@ -36,15 +35,17 @@ import kotlinx.coroutines.launch
 fun ResultScreenContent(
     state: ResultScreenState,
     viewModel: ResultScreenViewModel,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    navigateToPremium: () -> Unit
 ) {
-    val activity = LocalContext.current as Activity
+
+    val activity = LocalActivity.current as Activity
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val showLoadingAd = remember { mutableStateOf(false) }
+    val adManager = viewModel.adManager
 
-    if (showLoadingAd.value) {
-        AdLoadingDialog()
+    LaunchedEffect(Unit) {
+        viewModel.initManager(activity)
     }
 
     ComposableLifecycle { _, event ->
@@ -67,13 +68,13 @@ fun ResultScreenContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             ResultTopBar(
+                isPremium = viewModel.preferencesManager.isPremiumFlow.value,
+                navigateToPremium = navigateToPremium,
                 onNavigateUp = {
-                    activity.interstitialAd(
+                    adManager.showAd(
+                        activity = activity,
                         showAd = viewModel.remoteConfig.adConfigs.adOnScanResultBackClick,
-                        adUnitId = viewModel.remoteConfig.adUnits.interstitialAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = {
+                        onNext = {
                             onNavigateUp()
                         },
                     )
@@ -110,13 +111,12 @@ fun ResultScreenContent(
                                     item = item,
                                     scannedResult = item.result,
                                     sessionImageUri = item.imageUrl ?: "",
-                                    vm = viewModel, showLoadingAd = showLoadingAd
+                                    vm = viewModel
                                 )
                             } else {
                                 ScanResultCard(
                                     item = item,
                                     vm = viewModel,
-                                    showLoadingAd = showLoadingAd
                                 )
                             }
                         }

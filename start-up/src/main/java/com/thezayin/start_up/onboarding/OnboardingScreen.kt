@@ -2,13 +2,9 @@ package com.thezayin.start_up.onboarding
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.thezayin.framework.ads.functions.appOpenAd
-import com.thezayin.framework.ads.functions.interstitialAd
-import com.thezayin.framework.components.AdLoadingDialog
 import com.thezayin.start_up.onboarding.actions.OnboardingActions
 import com.thezayin.start_up.onboarding.components.OnboardingContent
 import org.koin.compose.koinInject
@@ -20,9 +16,12 @@ fun OnboardingScreen(
 ) {
     val state = vm.state.collectAsState()
     val activity = LocalContext.current as Activity
-    val showLoadingAd = remember { mutableStateOf(false) }
-    if (showLoadingAd.value) {
-        AdLoadingDialog()
+
+    val appOpenAdManager = vm.appOpenAdManager
+    val interstitialAdManager = vm.interstitialAdManager
+
+    LaunchedEffect(Unit) {
+        vm.initManagers(activity)
     }
 
     if (state.value.isOnboardingCompleted) {
@@ -39,20 +38,16 @@ fun OnboardingScreen(
                 vm.onAction(OnboardingActions.NextPage)
             } else {
                 if (vm.remoteConfig.adConfigs.switchAdOnSplash) {
-                    activity.appOpenAd(
+                    appOpenAdManager.showAd(
+                        activity = activity,
                         showAd = vm.remoteConfig.adConfigs.adOnSplash,
-                        adUnitId = vm.remoteConfig.adUnits.appOpenAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = { vm.onAction(OnboardingActions.CompleteOnboarding) },
+                        onNext = { vm.onAction(OnboardingActions.CompleteOnboarding) },
                     )
                 } else {
-                    activity.interstitialAd(
+                    interstitialAdManager.showAd(
+                        activity = activity,
                         showAd = vm.remoteConfig.adConfigs.adOnSplash,
-                        adUnitId = vm.remoteConfig.adUnits.interstitialAd,
-                        showLoading = { showLoadingAd.value = true },
-                        hideLoading = { showLoadingAd.value = false },
-                        callback = { vm.onAction(OnboardingActions.CompleteOnboarding) },
+                        onNext = { vm.onAction(OnboardingActions.CompleteOnboarding) },
                     )
                 }
             }

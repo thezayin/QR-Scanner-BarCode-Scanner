@@ -1,22 +1,38 @@
+@file:Suppress("DEPRECATION")
+
 package com.thezayin.qrscanner.navigation
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.android.gms.ads.nativead.NativeAd
+import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
-import com.thezayin.start_up.languages.LanguageScreen
+import com.thezayin.qrscanner.ui.language.ui.LanguageScreen
+import com.thezayin.qrscanner.ui.language.ui.LanguageViewModel
 import com.thezayin.start_up.onboarding.OnboardingScreen
 import com.thezayin.start_up.splash.SplashScreen
+import org.koin.compose.koinInject
+import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig) {
+fun RootNavGraph(
+    primaryColor: Color,
+    remoteConfig: RemoteConfig,
+    nativeAd: NativeAd?,
+    preferencesManager: PreferencesManager
+) {
     val navController = rememberNavController()
     AnimatedNavHost(
         navController = navController,
@@ -72,19 +88,37 @@ fun RootNavGraph(primaryColor: Color, remoteConfig: RemoteConfig) {
         }
 
         composable("language") {
+            val languageViewModel: LanguageViewModel = koinInject()
             LanguageScreen(
-                onLanguageSelection = {
-                    navController.navigate("main") {
-                        popUpTo("language") { inclusive = true }
+                viewModel = languageViewModel,
+                onNavigateBack = {
+                    // If user presses back from language screen during initial setup, go back to onboarding
+                    navController.navigate("onboarding") {
+                        popUpTo("language") { inclusive = true } // Avoids multiple language screens on backstack
+                        // You might want to consider singleTop for "onboarding" or launchSingleTop = true
+                        // if there's a chance of creating multiple onboarding instances.
+                        // For now, this ensures going back from language during setup returns to one onboarding screen.
                     }
                 },
-                onNavigateBack = {
-                    navController.navigate("onboarding")
+                onCurrentLanguageConfirmed = {
+                    // User tapped the already selected language (e.g., default English) during initial setup.
+                    // Proceed to the main application. No app restart needed here.
+                    Timber.tag("jajaRootNavGraph")
+                        .d("Language confirmed during initial setup. Navigating to main.")
+                    navController.navigate("main") {
+                        popUpTo("language") { inclusive = true } // Remove language screen from back stack
+                        popUpTo("onboarding") { inclusive = true } // Also remove onboarding
+                    }
                 }
             )
         }
         composable("main") {
-            MainNav(primaryColor = primaryColor, remoteConfig = remoteConfig)
+            MainNav(
+                preferencesManager = preferencesManager,
+                primaryColor = primaryColor,
+                remoteConfig = remoteConfig,
+                nativeAd = nativeAd
+            )
         }
     }
 }

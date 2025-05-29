@@ -1,6 +1,7 @@
 package com.thezayin.generate.presentation.component
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,14 +12,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import com.thezayin.framework.ads.functions.rewardedAd
 import com.thezayin.generate.domain.model.InputFieldData
 import com.thezayin.generate.presentation.GenerateViewModel
 import com.thezayin.values.R
@@ -30,10 +29,10 @@ fun InputSection(
     fields: List<InputFieldData>,
     buttonText: String? = null,
     viewModel: GenerateViewModel,
-    showLoadingAd: MutableState<Boolean>,
     onAction: () -> Unit
 ) {
-    val activity = LocalContext.current as Activity
+    val adManager = viewModel.adManager
+    val activity = LocalActivity.current as Activity
     val allFieldsValid = fields.all { field ->
         field.validation(field.value)
     }
@@ -57,16 +56,13 @@ fun InputSection(
         Spacer(modifier = Modifier.height(40.sdp))
         Button(
             onClick = {
-                activity.rewardedAd(
+                adManager.showAd(
+                    activity = activity,
                     showAd = viewModel.remoteConfig.adConfigs.adOnGenerateQr,
-                    adUnitId = viewModel.remoteConfig.adUnits.rewardedAd,
-                    showLoading = { showLoadingAd.value = true },
-                    hideLoading = { showLoadingAd.value = false },
-                    callback = {
+                    onNext = {
                         onAction()
                     },
                 )
-
             },
             enabled = allFieldsValid,
             modifier = Modifier
@@ -74,7 +70,7 @@ fun InputSection(
                 .height(35.sdp),
             shape = RoundedCornerShape(8.sdp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.primary),
+                containerColor = viewModel.pref.getPrimaryColor(),
                 disabledContainerColor = colorResource(id = R.color.greyish),
             ),
         ) {

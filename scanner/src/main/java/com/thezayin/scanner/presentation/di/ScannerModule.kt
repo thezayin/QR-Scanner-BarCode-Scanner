@@ -1,6 +1,7 @@
 package com.thezayin.scanner.presentation.di
 
 import com.thezayin.scanner.data.datasource.QrLocalDataSource
+import com.thezayin.scanner.data.remote.ApiService
 import com.thezayin.scanner.data.repository.ProductRepositoryImpl
 import com.thezayin.scanner.data.repository.QrRepositoryImpl
 import com.thezayin.scanner.domain.repository.ProductRepository
@@ -17,6 +18,9 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -30,25 +34,15 @@ import org.koin.dsl.module
  */
 val scannerModule = module {
     // Provides an instance of QrLocalDataSource (used for QR scanning)
-    single { QrLocalDataSource(get()) }
+    singleOf(::ApiService)
+    singleOf(::QrLocalDataSource)
 
-    val json = Json { ignoreUnknownKeys = true }
-
-    val httpClient = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json(json)
-        }
-    }
-
-    // Provides a repository implementation for managing QR scan operations
-    single<QrRepository> { QrRepositoryImpl(get()) }
-    single<ProductRepository> { ProductRepositoryImpl(httpClient, get()) }
-    factory { AddProductToDbUseCase(get()) }
-    factory { UpdateFavoriteUseCase(get()) }
-
-    // Factory for UseCase - ensures a new instance per request
-    factory { ScanQrUseCase(get()) }
-    factory { FetchProductDetailsUseCase(get()) }
+    factoryOf(::QrRepositoryImpl) bind QrRepository::class
+    factoryOf(::ProductRepositoryImpl) bind ProductRepository::class
+    singleOf(::AddProductToDbUseCase)
+    singleOf(::UpdateFavoriteUseCase)
+    singleOf(::ScanQrUseCase)
+    singleOf(::FetchProductDetailsUseCase)
 
     // Provides a ViewModel instance to be used within the UI layer
     viewModelOf(::ScannerViewModel)

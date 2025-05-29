@@ -7,12 +7,14 @@ import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import timber.log.Timber
 
 class PreferencesManager(context: Context) {
 
     private val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
     companion object {
+        private const val KEY_IS_PREMIUM = "is_premium"
         private const val KEY_PRIMARY_COLOR = "primary_color"
         private const val KEY_BEEP_ENABLED = "beep_enabled"
         private const val KEY_VIBRATE_ENABLED = "vibrate_enabled"
@@ -24,6 +26,14 @@ class PreferencesManager(context: Context) {
 
     private val _primaryColorFlow = MutableStateFlow(getPrimaryColorFromPrefs())
     val primaryColorFlow = _primaryColorFlow.asStateFlow()
+
+    private val _isPremiumFlow = MutableStateFlow(prefs.getBoolean(KEY_IS_PREMIUM, false))
+    val isPremiumFlow: StateFlow<Boolean> = _isPremiumFlow.asStateFlow()
+
+    fun updatePremiumStatus(isPremium: Boolean) {
+        prefs.edit { putBoolean(KEY_IS_PREMIUM, isPremium) }
+        _isPremiumFlow.value = isPremium
+    }
 
     private val _darkThemeFlow = MutableStateFlow(prefs.getBoolean(KEY_DARK_THEME_ENABLED, false))
     val darkThemeFlow = _darkThemeFlow.asStateFlow()
@@ -45,43 +55,55 @@ class PreferencesManager(context: Context) {
     fun getPrimaryColor(): Color = _primaryColorFlow.value
 
     fun setPrimaryColor(color: Color) {
-        prefs.edit().putInt(KEY_PRIMARY_COLOR, color.toArgb()).apply()
+        prefs.edit { putInt(KEY_PRIMARY_COLOR, color.toArgb()) }
         _primaryColorFlow.value = color
     }
 
     fun getBeepEnabled(): Boolean = _beepFlow.value
 
     fun setBeepEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_BEEP_ENABLED, enabled).apply()
+        prefs.edit { putBoolean(KEY_BEEP_ENABLED, enabled) }
         _beepFlow.value = enabled
     }
 
     fun getVibrateEnabled(): Boolean = _vibrateFlow.value
 
     fun setVibrateEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIBRATE_ENABLED, enabled).apply()
+        prefs.edit { putBoolean(KEY_VIBRATE_ENABLED, enabled) }
         _vibrateFlow.value = enabled
     }
 
     fun getDarkThemeEnabled(): Boolean = _darkThemeFlow.value
 
     fun setDarkThemeEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_DARK_THEME_ENABLED, enabled).apply()
+        prefs.edit { putBoolean(KEY_DARK_THEME_ENABLED, enabled) }
         _darkThemeFlow.value = enabled
+    }
+
+    fun getSavedLanguage(): String? {
+        val langCode = prefs.getString(KEY_SELECTED_LANGUAGE, null)
+        Timber.tag("jejePrefs").i("getSavedLanguage() called, loaded code: '$langCode' for key '$KEY_SELECTED_LANGUAGE'")
+        return langCode
     }
 
     private fun getSelectedLanguageFromPrefs(): String? =
         prefs.getString(KEY_SELECTED_LANGUAGE, null)
 
     fun setSelectedLanguage(language: String) {
+        Timber.tag("jejePrefs").i("setSelectedLanguage() called with code: '$language' for key '$KEY_SELECTED_LANGUAGE'")
         prefs.edit().putString(KEY_SELECTED_LANGUAGE, language).apply()
-        _selectedLanguageFlow.value = language
+        // Also update the flow if other parts of your app observe it
+        if (_selectedLanguageFlow.value != language) { // Avoid redundant updates to the flow if already same
+            _selectedLanguageFlow.value = language
+        }
     }
 
     private val _isFirstTime = MutableStateFlow(true)
     val isFirstTime: StateFlow<Boolean> = _isFirstTime
 
     init {
+        _selectedLanguageFlow.value = prefs.getString(KEY_SELECTED_LANGUAGE, null)
+        Timber.tag("jejePrefs").d("PreferencesManager init: _isFirstTime=${_isFirstTime.value}, _selectedLanguageFlow=${_selectedLanguageFlow.value}")
         _isFirstTime.value = prefs.getBoolean(KEY_IS_FIRST_TIME, true)
     }
 

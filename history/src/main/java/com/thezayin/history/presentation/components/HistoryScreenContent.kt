@@ -25,6 +25,7 @@ import ir.kaaveh.sdpcompose.ssp
 
 @Composable
 fun HistoryScreenContent(
+    isPremium: Boolean,
     state: HistoryState,
     onNavigateUp: () -> Unit,
     onTabSelected: (HistoryTab) -> Unit,
@@ -32,32 +33,30 @@ fun HistoryScreenContent(
     onToggleFavorite: (ScanItem) -> Unit,
     onScanDelete: (ScanItem) -> Unit,
     onCreateDelete: (CreateItem) -> Unit,
-    onItemClicked: (CreateItem) -> Unit
+    onItemClicked: (CreateItem) -> Unit,
+    navigateToPremium: () -> Unit
 ) {
     val enterAnimation = slideInHorizontally(
-        initialOffsetX = { it },
-        animationSpec = tween(durationMillis = 600)
+        initialOffsetX = { it }, animationSpec = tween(durationMillis = 600)
     ) + fadeIn(animationSpec = tween(durationMillis = 600))
     val exitAnimation = slideOutHorizontally(
-        targetOffsetX = { -it },
-        animationSpec = tween(durationMillis = 600)
+        targetOffsetX = { -it }, animationSpec = tween(durationMillis = 600)
     ) + fadeOut(animationSpec = tween(durationMillis = 600))
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
+        containerColor = MaterialTheme.colorScheme.background, topBar = {
             HistoryTabBar(
+                isPremium = isPremium,
                 onNavigateUp = onNavigateUp,
                 selectedTab = state.selectedTab,
-                onTabSelected = onTabSelected
+                onTabSelected = onTabSelected,
+                navigateToPremium = navigateToPremium
             )
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             if (state.isLoading) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     Text(text = stringResource(id = R.string.loading))
                 }
@@ -69,8 +68,7 @@ fun HistoryScreenContent(
                 ) {
                     if (state.scanItems.isEmpty()) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = stringResource(id = R.string.no_record_found),
@@ -80,13 +78,11 @@ fun HistoryScreenContent(
                         }
                     } else {
                         ScanList(
-                            modifier = Modifier
-                                .fillMaxSize(),
+                            modifier = Modifier.fillMaxSize(),
                             items = state.scanItems,
                             onItemClick = { onScanItemClick(it) },
                             onToggleFavorite = { onToggleFavorite(it) },
-                            onDelete = { onScanDelete(it) }
-                        )
+                            onDelete = { onScanDelete(it) })
                     }
                 }
                 AnimatedVisibility(
@@ -96,8 +92,7 @@ fun HistoryScreenContent(
                 ) {
                     if (state.createItems.isEmpty()) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = stringResource(id = R.string.no_record_found),

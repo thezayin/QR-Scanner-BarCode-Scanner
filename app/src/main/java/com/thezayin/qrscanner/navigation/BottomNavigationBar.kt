@@ -1,6 +1,8 @@
 package com.thezayin.qrscanner.navigation
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -8,18 +10,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.thezayin.framework.ads.functions.interstitialAd
-import com.thezayin.framework.components.AdLoadingDialog
+import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.remote.RemoteConfig
+import org.koin.compose.koinInject
 
 @Composable
 fun BottomNavigationBar(
@@ -28,14 +29,15 @@ fun BottomNavigationBar(
     items: List<BottomNavItem>,
     primaryColor: Color
 ) {
-    val activity = LocalContext.current as Activity
-    val showLoadingAd = remember { mutableStateOf(false) }
+    val activity = LocalActivity.current as Activity
+    val adManager = koinInject<InterstitialAdManager>()
 
-    if (showLoadingAd.value) {
-        AdLoadingDialog()
+    LaunchedEffect(Unit) {
+        adManager.loadAd(activity)
     }
 
     NavigationBar(
+        modifier = Modifier.navigationBarsPadding(),
         containerColor = MaterialTheme.colorScheme.surface
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -61,12 +63,10 @@ fun BottomNavigationBar(
                 onClick = {
                     if (item.route != currentRoute) {
                         if (item.route == "create" || item.route == "history") {
-                            activity.interstitialAd(
+                            adManager.showAd(
+                                activity = activity,
                                 showAd = remoteConfig.adConfigs.adOnBottomMenu,
-                                adUnitId = remoteConfig.adUnits.interstitialAd,
-                                showLoading = { showLoadingAd.value = true },
-                                hideLoading = { showLoadingAd.value = false },
-                                callback = {
+                                onNext = {
                                     navController.navigate(item.route) {
                                         popUpTo(navController.graph.startDestinationId) {
                                             saveState = true
@@ -76,7 +76,7 @@ fun BottomNavigationBar(
                                     }
                                 },
                             )
-                        }else{
+                        } else {
                             navController.navigate(item.route) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true

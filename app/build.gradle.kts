@@ -19,8 +19,8 @@ android {
         applicationId = "com.thezayin.qrscanner"
         minSdk = libs.versions.minSdkVersion.get().toInt()
         targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,9 +38,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    androidResources {
-        generateLocaleConfig = true
-    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -68,7 +66,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
+    implementation(libs.billing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -109,4 +107,14 @@ dependencies {
     implementation(libs.grizzly)
     implementation(libs.accompanist.permissions)
     implementation(libs.accompanist.navigation.animation)
+
+    implementation(libs.user.messaging.platform)
+    //Funsol Billing
+    implementation(libs.billing)
+    implementation(libs.funsol.billing.helper)
+
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+    implementation(libs.sdp.compose)
+
 }

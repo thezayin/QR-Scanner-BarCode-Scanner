@@ -12,11 +12,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.thezayin.generate.domain.model.QrType
 import ir.kaaveh.sdpcompose.sdp
 
 @Composable
 fun BigQrTypeList(
+    primaryColor:Color,
     allTypes: List<QrType>,
     onTypeSelected: (QrType) -> Unit,
     modifier: Modifier = Modifier
@@ -38,7 +40,8 @@ fun BigQrTypeList(
                         type = type,
                         isSelected = false,
                         onSelect = { onTypeSelected(type) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        primaryColor = primaryColor
                     )
                 }
             }
