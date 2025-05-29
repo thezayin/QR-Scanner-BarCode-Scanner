@@ -1,19 +1,21 @@
 package com.thezayin.scanner.presentation.scanner
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.Camera
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
+import androidx.core.net.toUri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.mlkit.vision.common.InputImage
@@ -23,13 +25,17 @@ import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.ScanSessionManager
 import com.thezayin.scanner.domain.model.Result
 import com.thezayin.scanner.domain.usecase.ScanQrUseCase
+import com.thezayin.scanner.presentation.scanner.analyzer.BarcodeAnalyzer
 import com.thezayin.scanner.presentation.scanner.event.ScannerEvent
 import com.thezayin.scanner.presentation.scanner.state.ScannerState
 import com.thezayin.values.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import timber.log.Timber
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -37,187 +43,294 @@ import kotlin.coroutines.resumeWithException
 @Suppress("DEPRECATION")
 @RequiresApi(Build.VERSION_CODES.O)
 class ScannerViewModel(
-    private val application: Application,
+    private val app: Application,
     private val scanQrUseCase: ScanQrUseCase,
     private val preferencesManager: PreferencesManager,
     private val sessionManager: ScanSessionManager,
     val remoteConfig: RemoteConfig,
     val adManager: InterstitialAdManager
-) : ViewModel() {
+) : AndroidViewModel(app) {
 
     private val _state = MutableStateFlow(ScannerState())
     val state: StateFlow<ScannerState> = _state
 
     private var camera: Camera? = null
     private var imageCapture: ImageCapture? = null
-    var primaryColor = preferencesManager.getPrimaryColor()
+    private var imageAnalysis: ImageAnalysis? = null
+    val primaryColor = preferencesManager.getPrimaryColor()
+    private var screenNavigationAction: ((List<Pair<String, String>>) -> Unit)? = null
 
     init {
         sessionManager.clearScanResults()
     }
 
-    fun setCamera(camera: Camera) {
-        this.camera = camera
+    fun setScreenNavigationAction(navAction: (List<Pair<String, String>>) -> Unit) {
+        this.screenNavigationAction = navAction
     }
 
-    fun setImageCapture(capture: ImageCapture) {
-        this.imageCapture = capture
-    }
-
-    fun onEvent(event: ScannerEvent, onScanSuccess: (List<Pair<String, String>>) -> Unit) {
-        when (event) {
-            is ScannerEvent.ToggleFlashlight -> toggleFlashlight()
-            is ScannerEvent.ChangeZoom -> changeZoom(event.zoomLevel)
-            is ScannerEvent.ProcessScanResult -> processScanResult(event.result, onScanSuccess)
-            is ScannerEvent.ShowError -> showError(event.message)
-            is ScannerEvent.ImagesSelected -> handleBatchImages(event.imageUris, onScanSuccess)
-            is ScannerEvent.ImageSelected -> handleImageSelected(event.imageUri, onScanSuccess)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun processScanResult(
-        result: String, onScanSuccess: (List<Pair<String, String>>) -> Unit
+    fun onCameraUseCasesReady(
+        boundCamera: Camera, boundImageAnalysis: ImageAnalysis, boundImageCapture: ImageCapture
     ) {
+        this.camera = boundCamera
+        this.imageAnalysis = boundImageAnalysis
+        this.imageCapture = boundImageCapture
+        _state.update { it.copy(isCameraReady = true) }
+        startImageAnalysisSession()
+    }
+
+    private fun startImageAnalysisSession() {
+        val localImageAnalysisUseCase = this.imageAnalysis ?: run {
+            _state.value = _state.value.copy(error = app.getString(R.string.qr_code_scan_error))
+            return
+        }
+        localImageAnalysisUseCase.clearAnalyzer()
+        val newAnalyzer = BarcodeAnalyzer(onBarcodeScanned = { scannedText ->
+            viewModelScope.launch {
+                handleLiveCameraScanResult(scannedText)
+            }
+        }, shouldContinueScanningProvider = {
+            _state.value.isBatchModeActive
+        })
+        localImageAnalysisUseCase.setAnalyzer(ContextCompat.getMainExecutor(app), newAnalyzer)
+    }
+
+    private fun stopImageAnalysisSession() {
+        imageAnalysis?.clearAnalyzer()
+    }
+
+    fun onEvent(event: ScannerEvent) {
         viewModelScope.launch {
-            triggerHapticFeedback(application)
-            try {
-                val filePath = captureImageAndGetInternalPath()
-                sessionManager.saveScanResult(filePath, result)
-                onScanSuccess(listOf(filePath to result))
-            } catch (e: Exception) {
-                showError("Image capture failed: ${e.localizedMessage}")
+            when (event) {
+                ScannerEvent.StartBatchScan -> enterBatchMode()
+                ScannerEvent.CancelBatchScan -> exitBatchModeAndPrepareForSingleScan()
+                ScannerEvent.ConfirmBatchScan -> confirmAndProcessBatch()
+                is ScannerEvent.ImageSelected -> handleGallerySingleImage(event.imageUri)
+                is ScannerEvent.ImagesSelected -> handleGalleryBatchImages(event.imageUris)
+                is ScannerEvent.ToggleFlashlight -> toggleFlashlight()
+                is ScannerEvent.ChangeZoom -> updateZoomLevelInternal(event.zoomLevel)
+                is ScannerEvent.ShowError -> _state.value = _state.value.copy(error = event.message)
+                is ScannerEvent.ProcessScanResultInternal -> {
+                    Timber.tag("ScannerViewModel_onEven")
+                        .w("ProcessScanResultInternal was unexpectedly called via general onEvent. This is for Analyzer callback only.")
+                }
             }
         }
     }
 
-    private suspend fun captureImageAndGetInternalPath(): String {
-        val capture =
-            imageCapture ?: throw IllegalStateException("ImageCapture use case is not initialized.")
-        return suspendCancellableCoroutine { cont ->
-            val internalImagesDir = File(application.filesDir, "scanned_images")
-            if (!internalImagesDir.exists()) {
-                internalImagesDir.mkdirs()
+    @SuppressLint("StringFormatInvalid")
+    private suspend fun handleLiveCameraScanResult(result: String) {
+        if (state.value.isBatchModeActive) {
+            if (!_state.value.batchScannedCodes.contains(result)) {
+                triggerHapticFeedback()
+                _state.value = _state.value.copy(
+                    batchScannedCodes = _state.value.batchScannedCodes + result
+                )
             }
-            val photoFile = File(
-                internalImagesDir, "scanned_image_${System.currentTimeMillis()}.jpg"
-            )
+        } else {
+            try {
+                val imagePath = captureImageAndGetPath()
+                sessionManager.saveScanResult(imagePath, result)
+                this.screenNavigationAction?.invoke(listOf(imagePath to result))
+                    ?: Timber.tag("ScannerViewModel_Handle")
+                        .e("screenNavigationAction is NULL! Cannot navigate on single scan.")
+            } catch (e: Exception) {
+                Timber.e(e, "Error during image capture or processing in single scan mode") // More specific Timber tag
+                FirebaseCrashlytics.getInstance().recordException(e)
+                _state.value = _state.value.copy(
+                    error = app.getString(
+                        R.string.qr_code_scan_error,
+                        e.localizedMessage ?: "Unknown error during image capture"
+                    )
+                )
+            }
+        }
+    }
 
+    private fun enterBatchMode() {
+        if (!_state.value.isCameraReady || this.imageAnalysis == null) { // Check readiness
+            _state.value = _state.value.copy(error = app.getString(R.string.qr_code_scan_error)) // Use a more specific string resource
+            return
+        }
+        sessionManager.clearScanResults()
+        _state.value = _state.value.copy(isBatchModeActive = true, batchScannedCodes = emptySet())
+        startImageAnalysisSession()
+    }
+
+    private fun exitBatchModeAndPrepareForSingleScan() {
+        _state.value = _state.value.copy(isBatchModeActive = false, batchScannedCodes = emptySet())
+        startImageAnalysisSession()
+    }
+
+    private suspend fun confirmAndProcessBatch() {
+        val codesToProcess = _state.value.batchScannedCodes.toList()
+        _state.value = _state.value.copy(isBatchModeActive = false, batchScannedCodes = emptySet())
+        stopImageAnalysisSession()
+        if (codesToProcess.isNotEmpty()) {
+            var singleContextualImagePath: String? = null
+            try {
+                singleContextualImagePath = captureImageAndGetPath()
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                _state.value =
+                    _state.value.copy(error = app.getString(R.string.image_capture_failed_for_batch))
+            }
+
+            val navigationPayload = codesToProcess.map { code ->
+                val imagePathToStore =
+                    singleContextualImagePath ?: "batch_item_no_image_${System.currentTimeMillis()}"
+                sessionManager.saveScanResult(
+                    imagePathToStore, code
+                )
+                imagePathToStore to code
+            }
+            this.screenNavigationAction?.invoke(navigationPayload) ?: Timber.tag("ScannerViewModel")
+                .e("screenNavigationAction is NULL on batch confirm! Cannot navigate.")
+        } else {
+            Toast.makeText(
+                app, app.getString(R.string.no_items_scanned_in_batch), Toast.LENGTH_SHORT
+            ).show()
+        }
+        startImageAnalysisSession()
+    }
+
+    private suspend fun handleGallerySingleImage(imageUriString: String) {
+        try {
+            val image = InputImage.fromFilePath(app, imageUriString.toUri())
+            when (val scanResult = scanQrUseCase.execute(image)) {
+                is Result.Success -> {
+                    triggerHapticFeedback()
+                    sessionManager.saveScanResult(imageUriString, scanResult.data.content)
+                    this.screenNavigationAction?.invoke(listOf(imageUriString to scanResult.data.content))
+                        ?: Timber.tag("ScannerViewModel")
+                            .e("screenNavigationAction is NULL for gallery single. Cannot navigate.")
+                }
+
+                is Result.Failure -> {
+                    _state.value = _state.value.copy(
+                        error = scanResult.exception.message
+                            ?: app.getString(R.string.qr_code_not_found)
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            _state.value =
+                _state.value.copy(error = app.getString(R.string.error_processing_gallery_image))
+        }
+    }
+
+    private suspend fun handleGalleryBatchImages(imageUriStrings: List<String>) {
+        val successfulScans = mutableListOf<Pair<String, String>>()
+        val uniqueCodesFoundInBatch = mutableSetOf<String>()
+        imageUriStrings.forEach { uriString ->
+            try {
+                val image = InputImage.fromFilePath(app, uriString.toUri())
+                when (val scanResult = scanQrUseCase.execute(image)) {
+                    is Result.Success -> {
+                        if (uniqueCodesFoundInBatch.add(scanResult.data.content)) {
+                            sessionManager.saveScanResult(uriString, scanResult.data.content)
+                            successfulScans.add(uriString to scanResult.data.content)
+                        }
+                    }
+
+                    is Result.Failure -> {
+                        _state.update {
+                            it.copy(
+                                error = scanResult.exception.message
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
+
+        if (successfulScans.isNotEmpty()) {
+            triggerHapticFeedback()
+            this.screenNavigationAction?.invoke(successfulScans) ?: Timber.tag("ScannerViewModel")
+                .e("screenNavigationAction is NULL for gallery batch. Cannot navigate.")
+        } else {
+            _state.value =
+                _state.value.copy(error = app.getString(R.string.qr_code_not_found_in_any_image))
+        }
+    }
+
+    private suspend fun captureImageAndGetPath(): String {
+        val localImageCapture =
+            this.imageCapture ?: throw IllegalStateException("ImageCapture is not initialized.")
+        return suspendCancellableCoroutine { cont ->
+            val photoFile = File(
+                app.getExternalFilesDir(null) ?: app.filesDir,
+                "ScanCapture_${System.currentTimeMillis()}.jpg"
+            )
+            photoFile.parentFile?.mkdirs()
             val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-            capture.takePicture(outputOptions,
-                ContextCompat.getMainExecutor(application),
+            localImageCapture.takePicture(
+                outputOptions,
+                ContextCompat.getMainExecutor(app),
                 object : ImageCapture.OnImageSavedCallback {
-                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         cont.resume(photoFile.absolutePath)
                     }
 
-                    override fun onError(exception: ImageCaptureException) {
-                        cont.resumeWithException(exception)
+                    override fun onError(exc: ImageCaptureException) {
+                        cont.resumeWithException(exc)
                     }
                 })
         }
     }
 
-    private fun handleImageSelected(
-        imageUri: String, onScanSuccess: (List<Pair<String, String>>) -> Unit
-    ) {
-        viewModelScope.launch {
-            val image = InputImage.fromFilePath(application, Uri.parse(imageUri))
-            when (val result = scanQrUseCase.execute(image)) {
-                is Result.Success -> {
-                    triggerHapticFeedback(application)
-                    sessionManager.saveScanResult(imageUri, result.data.content)
-                    val scanResult = listOf(imageUri to result.data.content)
-                    onScanSuccess(scanResult)
-                }
-
-                is Result.Failure -> {
-                    Toast.makeText(
-                        application,
-                        application.getString(R.string.qr_code_not_found),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-    }
-
-    private fun handleBatchImages(
-        imageUris: List<String>, onScanSuccess: (List<Pair<String, String>>) -> Unit
-    ) {
-        viewModelScope.launch {
-            val scannedResults = mutableListOf<Pair<String, String>>()
-            for (imageUri in imageUris) {
-                val image = InputImage.fromFilePath(application, Uri.parse(imageUri))
-                val result = scanQrUseCase.execute(image)
-                if (result is Result.Success) {
-                    sessionManager.saveScanResult(imageUri, result.data.content)
-                    scannedResults.add(imageUri to result.data.content)
-                }
-            }
-            if (scannedResults.isNotEmpty()) {
-                triggerHapticFeedback(application)
-                onScanSuccess(scannedResults)
-            } else {
-                Toast.makeText(
-                    application,
-                    application.getString(R.string.qr_code_not_found),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
     private fun toggleFlashlight() {
-        viewModelScope.launch {
-            val currentFlashState = _state.value.isFlashlightOn
-            try {
-                camera?.cameraControl?.enableTorch(!currentFlashState)
-                _state.value = _state.value.copy(isFlashlightOn = !currentFlashState)
-            } catch (e: Exception) {
-                _state.value =
-                    _state.value.copy(error = application.getString(R.string.flashlight_error))
+        val newFlashState = !_state.value.isFlashlightOn
+        camera?.cameraControl?.enableTorch(newFlashState)?.addListener({
+            _state.value = _state.value.copy(isFlashlightOn = newFlashState)
+        }, ContextCompat.getMainExecutor(app))
+    }
+
+    fun updateZoomLevelUi(requestedLevel: Float) {
+        val cameraZoomState = camera?.cameraInfo?.zoomState?.value
+        val minZoom = cameraZoomState?.minZoomRatio ?: 1.0f
+        val maxZoom = cameraZoomState?.maxZoomRatio ?: 1.0f
+        val clampedLevel = requestedLevel.coerceIn(minZoom, maxZoom)
+
+        if (clampedLevel != _state.value.zoomLevel) {
+            viewModelScope.launch {
+                updateZoomLevelInternal(clampedLevel)
             }
         }
     }
 
-    private fun changeZoom(zoomLevel: Float) {
-        viewModelScope.launch {
-            try {
-                camera?.cameraControl?.setZoomRatio(zoomLevel)
-                _state.value = _state.value.copy(zoomLevel = zoomLevel)
-            } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().recordException(e)
-            }
+    private suspend fun updateZoomLevelInternal(level: Float) {
+        try {
+            camera?.cameraControl?.setZoomRatio(level)?.await()
+            _state.value = _state.value.copy(zoomLevel = level)
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            _state.value = _state.value.copy(error = app.getString(R.string.zoom_in))
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun triggerHapticFeedback(context: Context) {
+    private fun triggerHapticFeedback() {
         if (preferencesManager.getVibrateEnabled()) {
-            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+            val vibrator = app.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
         }
         if (preferencesManager.getBeepEnabled()) {
-            val mediaPlayer = MediaPlayer.create(context, R.raw.scanner_sound)
-            mediaPlayer.start()
-        }
-    }
-
-    fun updateZoom(zoomLevel: Float) {
-        viewModelScope.launch {
             try {
-                camera?.cameraControl?.setZoomRatio(zoomLevel)
-                _state.value = _state.value.copy(zoomLevel = zoomLevel)
+                MediaPlayer.create(app, R.raw.scanner_sound)?.apply {
+                    setOnCompletionListener { mp -> mp.release() }
+                    start()
+                }
             } catch (e: Exception) {
                 FirebaseCrashlytics.getInstance().recordException(e)
             }
         }
     }
 
-    private fun showError(message: String) {
-        viewModelScope.launch {
-            _state.value = _state.value.copy(error = message)
-        }
+    override fun onCleared() {
+        super.onCleared()
+        stopImageAnalysisSession()
     }
 }

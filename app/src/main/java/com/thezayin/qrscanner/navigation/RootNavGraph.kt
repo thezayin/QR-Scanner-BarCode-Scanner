@@ -28,7 +28,6 @@ import timber.log.Timber
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RootNavGraph(
-    activity: AppCompatActivity,
     primaryColor: Color,
     remoteConfig: RemoteConfig,
     nativeAd: NativeAd?,
@@ -90,28 +89,31 @@ fun RootNavGraph(
 
         composable("language") {
             val languageViewModel: LanguageViewModel = koinInject()
-            LaunchedEffect(key1 = Unit) { // Use Unit or true if it only needs to run once per composition
-                languageViewModel.recreateActivityEvent
-                    .flowWithLifecycle(
-                        activity.lifecycle,
-                        Lifecycle.State.STARTED
-                    ) // Ensure collection is lifecycle-aware
-                    .collect {
-                        Timber.tag("jajaRootNavGraph")
-                            .d("Received recreateActivityEvent. Calling activity.recreate().")
-//                        activity.recreate()
-                    }
-            }
             LanguageScreen(
                 viewModel = languageViewModel,
                 onNavigateBack = {
-                    navController.navigate("onboarding")
+                    // If user presses back from language screen during initial setup, go back to onboarding
+                    navController.navigate("onboarding") {
+                        popUpTo("language") { inclusive = true } // Avoids multiple language screens on backstack
+                        // You might want to consider singleTop for "onboarding" or launchSingleTop = true
+                        // if there's a chance of creating multiple onboarding instances.
+                        // For now, this ensures going back from language during setup returns to one onboarding screen.
+                    }
+                },
+                onCurrentLanguageConfirmed = {
+                    // User tapped the already selected language (e.g., default English) during initial setup.
+                    // Proceed to the main application. No app restart needed here.
+                    Timber.tag("jajaRootNavGraph")
+                        .d("Language confirmed during initial setup. Navigating to main.")
+                    navController.navigate("main") {
+                        popUpTo("language") { inclusive = true } // Remove language screen from back stack
+                        popUpTo("onboarding") { inclusive = true } // Also remove onboarding
+                    }
                 }
             )
         }
         composable("main") {
             MainNav(
-                activity = activity,
                 preferencesManager = preferencesManager,
                 primaryColor = primaryColor,
                 remoteConfig = remoteConfig,

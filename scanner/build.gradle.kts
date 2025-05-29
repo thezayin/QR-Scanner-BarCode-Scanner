@@ -102,4 +102,5 @@ dependencies {
 
     implementation (libs.guava)
     implementation(libs.androidx.material.icons.extended)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1")
 }

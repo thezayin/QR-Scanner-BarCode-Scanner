@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +33,7 @@ import com.thezayin.qrscanner.ui.theme.QRScannerTheme
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     private companion object {
         private const val TAG = "MainActivity"
     }
@@ -82,7 +83,6 @@ class MainActivity : AppCompatActivity() {
                 Surface {
                     Timber.d("Initializing RootNavGraph...")
                     RootNavGraph(
-                        activity = this@MainActivity,
                         preferencesManager = preferencesManager,
                         primaryColor = primaryColor,
                         remoteConfig = remoteConfig,

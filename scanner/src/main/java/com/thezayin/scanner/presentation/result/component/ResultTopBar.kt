@@ -29,7 +29,7 @@ fun ResultTopBar(
     isPremium: Boolean, onNavigateUp: () -> Unit, navigateToPremium: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().statusBarsPadding(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

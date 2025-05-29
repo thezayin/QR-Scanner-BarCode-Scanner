@@ -2,8 +2,9 @@
 
 package com.thezayin.qrscanner.navigation
 
+import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -35,8 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -63,12 +62,12 @@ import timber.log.Timber
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainNav(
-    activity: AppCompatActivity,
     primaryColor: Color,
     remoteConfig: RemoteConfig,
     nativeAd: NativeAd?,
     preferencesManager: PreferencesManager
 ) {
+    val activity = LocalActivity.current as Activity
     val adManager = koinInject<InterstitialAdManager>()
     LaunchedEffect(Unit) {
         adManager.loadAd(activity)
@@ -164,7 +163,7 @@ fun MainNav(
                 )
             }) {
             composable(BottomNavItem.Scan.route) {
-                ScannerScreen(onScanSuccess = {
+                ScannerScreen(onSuccessfulScanNavigation = {
                     navController.navigate("result")
                 })
             }
@@ -202,19 +201,22 @@ fun MainNav(
             }
             composable("languages") {
                 val languageViewModel: LanguageViewModel = koinInject()
-                LaunchedEffect(key1 = Unit) { // Use Unit or true if it only needs to run once per composition
-                    languageViewModel.recreateActivityEvent.flowWithLifecycle(
-                        activity.lifecycle, Lifecycle.State.STARTED
-                    ) // Ensure collection is lifecycle-aware
-                        .collect {
-                            Timber.tag("jajaRootNavGraph")
-                                .d("Received recreateActivityEvent. Calling activity.recreate().")
-//                            activity.recreate()
-                        }
-                }
                 LanguageScreen(
-                    viewModel = languageViewModel, onNavigateBack = { navController.navigateUp() })
+                    viewModel = languageViewModel,
+                    onNavigateBack = {
+                        // Top bar back button from Settings -> Language: just go back
+                        navController.popBackStack()
+                    },
+                    onCurrentLanguageConfirmed = {
+                        // User tapped the already selected language from Settings -> Language.
+                        // Just navigate back to Settings screen. No app restart.
+                        Timber.tag("jajaMainNav")
+                            .d("Language confirmed from settings. Navigating back.")
+                        navController.popBackStack()
+                    }
+                )
             }
+
             composable("premium") {
                 PremiumScreen(
                     navigateBack = { navController.navigateUp() })
