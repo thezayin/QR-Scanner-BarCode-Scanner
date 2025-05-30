@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -33,7 +32,7 @@ import com.thezayin.qrscanner.ui.theme.QRScannerTheme
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private companion object {
         private const val TAG = "MainActivity"
     }
@@ -57,11 +56,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initializeLanguageViaKoin()
-        setupConsent()
-        loadNativeAd()
-        adManager.loadAd(activity = this)
-        interstitialAdManager.loadAd(activity = this)
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED
@@ -71,6 +65,11 @@ class MainActivity : ComponentActivity() {
         } else {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
+        initializeLanguageViaKoin()
+        setupConsent()
+        loadNativeAd()
+        adManager.loadAd(activity = this)
+        interstitialAdManager.loadAd(activity = this)
     }
 
     private fun initializeScreen() {

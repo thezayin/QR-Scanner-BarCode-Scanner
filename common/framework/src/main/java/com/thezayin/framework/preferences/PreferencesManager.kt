@@ -89,21 +89,11 @@ class PreferencesManager(context: Context) {
     private fun getSelectedLanguageFromPrefs(): String? =
         prefs.getString(KEY_SELECTED_LANGUAGE, null)
 
-    fun setSelectedLanguage(language: String) {
-        Timber.tag("jejePrefs").i("setSelectedLanguage() called with code: '$language' for key '$KEY_SELECTED_LANGUAGE'")
-        prefs.edit().putString(KEY_SELECTED_LANGUAGE, language).apply()
-        // Also update the flow if other parts of your app observe it
-        if (_selectedLanguageFlow.value != language) { // Avoid redundant updates to the flow if already same
-            _selectedLanguageFlow.value = language
-        }
-    }
-
     private val _isFirstTime = MutableStateFlow(true)
     val isFirstTime: StateFlow<Boolean> = _isFirstTime
 
     init {
         _selectedLanguageFlow.value = prefs.getString(KEY_SELECTED_LANGUAGE, null)
-        Timber.tag("jejePrefs").d("PreferencesManager init: _isFirstTime=${_isFirstTime.value}, _selectedLanguageFlow=${_selectedLanguageFlow.value}")
         _isFirstTime.value = prefs.getBoolean(KEY_IS_FIRST_TIME, true)
     }
 

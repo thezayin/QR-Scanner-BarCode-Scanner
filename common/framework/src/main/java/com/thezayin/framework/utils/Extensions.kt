@@ -1,6 +1,5 @@
 package com.thezayin.framework.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -65,8 +64,7 @@ fun saveImageToExternalStorage(context: Context, imageUri: String?): Boolean {
     }
 
     val outputFile = File(
-        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-        "${UUID.randomUUID()}.png"
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${UUID.randomUUID()}.png"
     )
 
     try {
@@ -82,14 +80,12 @@ fun saveImageToExternalStorage(context: Context, imageUri: String?): Boolean {
 }
 
 fun shareImage(context: Context, imageUri: String) {
-    val filePath = Uri.parse(imageUri).path
-        ?: throw IllegalArgumentException("Invalid image URI: $imageUri")
+    val filePath =
+        Uri.parse(imageUri).path ?: throw IllegalArgumentException("Invalid image URI: $imageUri")
 
     val file = File(filePath)
     val contentUri: Uri = FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.fileprovider",
-        file
+        context, "${context.packageName}.fileprovider", file
     )
 
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -154,7 +150,7 @@ fun getDisplayText(result: String): String {
     }
 }
 
-fun Context.openTerms(){
+fun Context.openTerms() {
     val url = "https://bougielabs.com/terms-and-conditions/"
     val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -162,7 +158,7 @@ fun Context.openTerms(){
     this.startActivity(intent)
 }
 
-fun Context.openPrivacy(){
+fun Context.openPrivacy() {
     val url = "https://bougielabs.com/privacy-policy/"
     val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK

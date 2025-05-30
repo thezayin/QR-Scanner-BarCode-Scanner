@@ -130,11 +130,15 @@ class ScannerViewModel(
             try {
                 val imagePath = captureImageAndGetPath()
                 sessionManager.saveScanResult(imagePath, result)
+                triggerHapticFeedback()
                 this.screenNavigationAction?.invoke(listOf(imagePath to result))
                     ?: Timber.tag("ScannerViewModel_Handle")
                         .e("screenNavigationAction is NULL! Cannot navigate on single scan.")
             } catch (e: Exception) {
-                Timber.e(e, "Error during image capture or processing in single scan mode") // More specific Timber tag
+                Timber.e(
+                    e,
+                    "Error during image capture or processing in single scan mode"
+                ) // More specific Timber tag
                 FirebaseCrashlytics.getInstance().recordException(e)
                 _state.value = _state.value.copy(
                     error = app.getString(
@@ -148,7 +152,8 @@ class ScannerViewModel(
 
     private fun enterBatchMode() {
         if (!_state.value.isCameraReady || this.imageAnalysis == null) { // Check readiness
-            _state.value = _state.value.copy(error = app.getString(R.string.qr_code_scan_error)) // Use a more specific string resource
+            _state.value =
+                _state.value.copy(error = app.getString(R.string.qr_code_scan_error)) // Use a more specific string resource
             return
         }
         sessionManager.clearScanResults()
@@ -313,18 +318,68 @@ class ScannerViewModel(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun triggerHapticFeedback() {
-        if (preferencesManager.getVibrateEnabled()) {
-            val vibrator = app.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+        val vibrateEnabled = preferencesManager.getVibrateEnabled()
+        val beepEnabled = preferencesManager.getBeepEnabled()
+
+        // If both are disabled, do nothing.
+        if (!vibrateEnabled && !beepEnabled) {
+            return
         }
-        if (preferencesManager.getBeepEnabled()) {
+
+        if (vibrateEnabled) {
+            val vibrator = app.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            if (vibrator?.hasVibrator() == true) {
+                // The class is already @RequiresApi(Build.VERSION_CODES.O),
+                // so we can directly use VibrationEffect
+                try {
+                    vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+                } catch (e: Exception) {
+                    FirebaseCrashlytics.getInstance().recordException(e)
+                    Timber.e(e, "Error triggering vibration")
+                }
+            } else {
+                Timber.w("Vibration requested but device has no vibrator or service not available.")
+            }
+        }
+
+        if (beepEnabled) {
             try {
-                MediaPlayer.create(app, R.raw.scanner_sound)?.apply {
-                    setOnCompletionListener { mp -> mp.release() }
-                    start()
+                // Create a new MediaPlayer instance each time to avoid issues with reusing.
+                val mediaPlayer = MediaPlayer.create(app, R.raw.scanner_sound)
+                mediaPlayer?.setOnCompletionListener { mp ->
+                    try {
+                        mp.release() // Release resources when playback is complete
+                    } catch (e: IllegalStateException) {
+                        // Can happen if already released or in an invalid state
+                        FirebaseCrashlytics.getInstance().recordException(e)
+                        Timber.e(e, "Error releasing MediaPlayer on completion (IllegalStateException)")
+                    }
+                    catch (e: Exception) {
+                        FirebaseCrashlytics.getInstance().recordException(e)
+                        Timber.e(e, "Error releasing MediaPlayer on completion")
+                    }
+                }
+                mediaPlayer?.setOnErrorListener { mp, what, extra ->
+                    Timber.e("MediaPlayer error occurred: what=$what, extra=$extra")
+                    try {
+                        mp.release() // Attempt to release resources on error as well
+                    } catch (e: IllegalStateException) {
+                        FirebaseCrashlytics.getInstance().recordException(e)
+                        Timber.e(e, "Error releasing MediaPlayer on error (IllegalStateException)")
+                    }
+                    catch (e: Exception) {
+                        FirebaseCrashlytics.getInstance().recordException(e)
+                        Timber.e(e, "Error releasing MediaPlayer on error")
+                    }
+                    true // True indicates that we've handled the error
+                }
+                mediaPlayer?.start()
+                if (mediaPlayer == null) {
+                    Timber.w("MediaPlayer.create returned null. Sound resource might be missing or invalid.")
                 }
             } catch (e: Exception) {
                 FirebaseCrashlytics.getInstance().recordException(e)
+                Timber.e(e, "Error creating or starting MediaPlayer for beep sound")
             }
         }
     }

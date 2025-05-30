@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import com.google.firebase.FirebaseApp
 import com.thezayin.databases.di.databaseModule
 import com.thezayin.framework.di.frameworkModule
-import com.thezayin.framework.utils.billing.initializeClient
 import com.thezayin.generate.presentation.di.generateModule
 import com.thezayin.history.presentation.di.historyModule
 import com.thezayin.qrscanner.ui.language.utils.LocaleHelper
@@ -32,7 +31,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        initializeClient(this)
         FirebaseApp.initializeApp(this)
         Timber.plant(Timber.DebugTree())
         startKoin {

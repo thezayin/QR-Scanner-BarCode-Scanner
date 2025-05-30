@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
@@ -16,9 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
-import com.google.zxing.oned.EAN8Writer
 
 class QrRepositoryImpl(
     private val qrItemDao: QrItemDao, private val application: Application
@@ -215,6 +214,7 @@ class QrRepositoryImpl(
             is QrContent.Aztec -> """{"code": "${content.code}"}"""
         }
     }
+
     // Checksum validation methods for EAN-8 and UPC-A
     private fun isValidEAN8(code: String): Boolean {
         // Implement EAN-8 checksum validation logic here
@@ -229,7 +229,6 @@ class QrRepositoryImpl(
     }
 
     private fun isValidUPC(code: String): Boolean {
-        // Implement UPC-A checksum validation logic here
         val sumOdd = code.filterIndexed { index, _ -> index % 2 == 0 }
             .map { it.toString().toInt() }
             .sum()

@@ -57,7 +57,6 @@ import com.thezayin.scanner.presentation.scanner.ScannerScreen
 import com.thezayin.start_up.setting.SettingsScreen
 import com.thezayin.values.R
 import org.koin.compose.koinInject
-import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -201,20 +200,11 @@ fun MainNav(
             }
             composable("languages") {
                 val languageViewModel: LanguageViewModel = koinInject()
-                LanguageScreen(
-                    viewModel = languageViewModel,
-                    onNavigateBack = {
-                        // Top bar back button from Settings -> Language: just go back
-                        navController.popBackStack()
-                    },
-                    onCurrentLanguageConfirmed = {
-                        // User tapped the already selected language from Settings -> Language.
-                        // Just navigate back to Settings screen. No app restart.
-                        Timber.tag("jajaMainNav")
-                            .d("Language confirmed from settings. Navigating back.")
-                        navController.popBackStack()
-                    }
-                )
+                LanguageScreen(viewModel = languageViewModel, onNavigateBack = {
+                    navController.popBackStack()
+                }, onCurrentLanguageConfirmed = {
+                    navController.popBackStack()
+                })
             }
 
             composable("premium") {
@@ -224,8 +214,7 @@ fun MainNav(
         }
     }
     if (showExitDialog.value) {
-        Dialog(onDismissRequest = { showExitDialog.value = false } // Close dialog on outside touch
-        ) {
+        Dialog(onDismissRequest = { showExitDialog.value = false }) {
             // Custom Dialog Layout
             Card(
                 modifier = Modifier

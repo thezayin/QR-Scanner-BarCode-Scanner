@@ -12,11 +12,6 @@ import com.thezayin.scanner.domain.usecase.ScanQrUseCase
 import com.thezayin.scanner.domain.usecase.UpdateFavoriteUseCase
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
 import com.thezayin.scanner.presentation.scanner.ScannerViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

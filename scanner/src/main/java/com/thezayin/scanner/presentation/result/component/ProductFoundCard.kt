@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.thezayin.scanner.domain.model.ResultScreenItem
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
@@ -35,7 +36,6 @@ import com.thezayin.scanner.presentation.result.event.ResultScreenEvent
 import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
-import androidx.core.net.toUri
 
 @Composable
 fun ProductFoundCard(

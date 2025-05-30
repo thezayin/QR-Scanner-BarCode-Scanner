@@ -18,11 +18,12 @@ import ir.kaaveh.sdpcompose.ssp
 fun IconWithLabel(
     iconRes: Int, label: String, onClick: () -> Unit
 ) {
-    Column(modifier = Modifier
-        .clickable {
-            onClick()
-        }
-        .padding(4.sdp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .clickable {
+                onClick()
+            }
+            .padding(4.sdp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,

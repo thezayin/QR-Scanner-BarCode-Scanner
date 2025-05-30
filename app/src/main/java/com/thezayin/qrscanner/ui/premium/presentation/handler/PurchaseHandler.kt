@@ -14,6 +14,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.google.common.collect.ImmutableList
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thezayin.framework.preferences.PreferencesManager
 import timber.log.Timber
 
@@ -42,6 +43,7 @@ class PurchaseHandler(
             try {
                 onConnected()
             } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
                 Timber.tag("PurchaseHandler")
                     .e(e, "ensureConnection: Error executing onConnected directly.")
                 onError?.invoke(
@@ -75,6 +77,7 @@ class PurchaseHandler(
                             try {
                                 action.invoke()
                             } catch (e: Exception) {
+                                FirebaseCrashlytics.getInstance().recordException(e)
                                 Timber.tag("PurchaseHandler").e(
                                     e,
                                     "ensureConnection: Error executing pending action after successful connection."

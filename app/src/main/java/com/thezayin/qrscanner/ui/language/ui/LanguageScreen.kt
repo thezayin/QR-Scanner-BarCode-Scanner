@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,16 +32,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.thezayin.qrscanner.ui.language.model.LanguageItem
-import com.thezayin.values.R // Make sure this import is correct
+import com.thezayin.qrscanner.ui.language.utils.countryCodeToFlagEmoji
+import com.thezayin.qrscanner.ui.language.utils.languageCodeToCountryCode
+import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanguageScreen(
-    onNavigateBack: () -> Unit,
-    onCurrentLanguageConfirmed: () -> Unit,
-    viewModel: LanguageViewModel
+    onNavigateBack: () -> Unit, onCurrentLanguageConfirmed: () -> Unit, viewModel: LanguageViewModel
 ) {
     val selectedLanguageCode by viewModel.selectedLanguageCode.collectAsState()
 
@@ -59,7 +61,7 @@ fun LanguageScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(onClick = {
-                        onNavigateBack() // Top bar back button action
+                        onNavigateBack()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -87,7 +89,6 @@ fun LanguageScreen(
                     languageItem = languageItem,
                     isSelected = languageItem.code == selectedLanguageCode,
                     onLanguageClick = { viewModel.onLanguageSelected(languageItem.code) })
-                Divider()
             }
         }
     }
@@ -97,26 +98,41 @@ fun LanguageScreen(
 fun LanguageRow(
     languageItem: LanguageItem, isSelected: Boolean, onLanguageClick: () -> Unit
 ) {
-    Row(
+    val countryCode = languageCodeToCountryCode(languageItem.code)
+    val flagEmoji = countryCodeToFlagEmoji(countryCode.uppercase())
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onLanguageClick)
-            .padding(vertical = 10.sdp, horizontal = 2.sdp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = languageItem.displayName,
-            fontSize = 10.ssp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            .padding(vertical = 5.sdp),
+        shape = RoundedCornerShape(10.sdp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "stringResource(id = R.string.selected_language_desc)", // Ensure R.string.selected_language_desc exists
-                tint = MaterialTheme.colorScheme.primary
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onLanguageClick)
+                .padding(vertical = 15.sdp, horizontal = 20.sdp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = flagEmoji, fontSize = 18.ssp, modifier = Modifier.padding(end = 8.sdp)
             )
+            Text(
+                text = languageItem.displayName,
+                fontSize = 10.ssp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

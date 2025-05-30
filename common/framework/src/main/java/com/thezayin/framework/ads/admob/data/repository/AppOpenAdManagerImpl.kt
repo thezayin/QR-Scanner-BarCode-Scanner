@@ -20,11 +20,7 @@ class AppOpenAdManagerImpl(
     remoteConfig: RemoteConfig,
     val preferencesManager: PreferencesManager
 ) : AppOpenAdManager {
-
-    // Holds the loaded App Open ad instance
     private var appOpenAd: AppOpenAd? = null
-
-    // Ad Unit ID (replace with your actual AdMob App Open Ad Unit ID)
     private val adId: String = remoteConfig.adUnits.appOpenAd
 
     /**
