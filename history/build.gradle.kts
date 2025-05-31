@@ -40,7 +40,7 @@ android {
 
 dependencies {
     implementation(project(":common:values"))
-    implementation( project(":databases"))
+    implementation(project(":databases"))
     implementation(project(":common:framework"))
 
     implementation(libs.androidx.core.ktx)
@@ -60,7 +60,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.kotlinx.coroutines.play.services )
+    implementation(libs.kotlinx.coroutines.play.services)
 
     //viewmodel and livedata
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

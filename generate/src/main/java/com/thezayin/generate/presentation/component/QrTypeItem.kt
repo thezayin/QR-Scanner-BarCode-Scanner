@@ -33,16 +33,16 @@ fun QrTypeItem(
     modifier: Modifier = Modifier
 ) {
     val iconTint: Color = when (type) {
-        QrType.CALL       -> colorResource(R.color.ptcl_green)
-        QrType.SMS        -> colorResource(R.color.telenor_blue)
-        QrType.EMAIL      -> colorResource(R.color.strawberry)
-        QrType.WEBSITE    -> colorResource(R.color.pumpkin)
-        QrType.TEXT       -> colorResource(R.color.bright_sun)
-        QrType.CLIPBOARD  -> colorResource(R.color.tealish)
-        QrType.WIFI       -> colorResource(R.color.blue_purple)
-        QrType.CALENDAR   -> colorResource(R.color.carnation_pink)
-        QrType.CONTACT    -> colorResource(R.color.brown)
-        QrType.LOCATION   -> colorResource(R.color.sun_yellow_qr)
+        QrType.CALL -> colorResource(R.color.ptcl_green)
+        QrType.SMS -> colorResource(R.color.telenor_blue)
+        QrType.EMAIL -> colorResource(R.color.strawberry)
+        QrType.WEBSITE -> colorResource(R.color.pumpkin)
+        QrType.TEXT -> colorResource(R.color.bright_sun)
+        QrType.CLIPBOARD -> colorResource(R.color.tealish)
+        QrType.WIFI -> colorResource(R.color.blue_purple)
+        QrType.CALENDAR -> colorResource(R.color.carnation_pink)
+        QrType.CONTACT -> colorResource(R.color.brown)
+        QrType.LOCATION -> colorResource(R.color.sun_yellow_qr)
 
 //        QrType.EAN_8,
 //        QrType.EAN_13,
@@ -52,9 +52,10 @@ fun QrTypeItem(
         QrType.CODE_128,
         QrType.ITF,
         QrType.PDF_417,
-        QrType.CODABAR    -> colorResource(R.color.telenor_blue)
+        QrType.CODABAR -> colorResource(R.color.telenor_blue)
+
         QrType.DATAMATRIX -> colorResource(R.color.deep_lavender)
-        QrType.AZTEC      -> colorResource(R.color.bright_lavender)
+        QrType.AZTEC -> colorResource(R.color.bright_lavender)
     }
 
     Card(

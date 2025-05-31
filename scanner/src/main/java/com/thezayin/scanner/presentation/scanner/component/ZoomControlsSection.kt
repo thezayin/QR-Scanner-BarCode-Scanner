@@ -31,6 +31,8 @@ import ir.kaaveh.sdpcompose.sdp
 fun ZoomControlsSection(
     primaryColor: Color,
     zoomLevel: Float,
+    minZoomRatio: Float, // New parameter
+    maxZoomRatio: Float, // New parameter
     onZoomChange: (Float) -> Unit,
     onZoomIn: () -> Unit,
     onZoomOut: () -> Unit
@@ -59,7 +61,8 @@ fun ZoomControlsSection(
             Slider(
                 value = zoomLevel,
                 onValueChange = onZoomChange,
-                valueRange = 1f..10f,
+                // PROBLEM 1 FIX: Use actual camera's min/max zoom ratios for the slider range
+                valueRange = minZoomRatio..maxZoomRatio,
                 modifier = Modifier
                     .padding(horizontal = 8.sdp)
                     .weight(1f),
@@ -76,9 +79,17 @@ fun ZoomControlsSection(
                             .clip(CircleShape)
                             .background(Color.LightGray)
                     ) {
+                        // Calculate fraction based on the dynamic valueRange
+                        val currentFraction =
+                            (sliderPositions.value - minZoomRatio) / (maxZoomRatio - minZoomRatio)
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(fraction = sliderPositions.value)
+                                .fillMaxWidth(
+                                    fraction = currentFraction.coerceIn(
+                                        0f,
+                                        1f
+                                    )
+                                ) // Clamp to 0-1 range
                                 .height(3.sdp)
                                 .background(primaryColor)
                         )

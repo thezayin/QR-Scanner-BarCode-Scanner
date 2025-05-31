@@ -1,3 +1,4 @@
+// com.thezayin.qrscanner.ui.language.ui.LanguageScreen.kt
 package com.thezayin.qrscanner.ui.language.ui
 
 import androidx.compose.foundation.clickable
@@ -37,11 +38,14 @@ import com.thezayin.qrscanner.ui.language.utils.languageCodeToCountryCode
 import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
 import ir.kaaveh.sdpcompose.ssp
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanguageScreen(
-    onNavigateBack: () -> Unit, onCurrentLanguageConfirmed: () -> Unit, viewModel: LanguageViewModel
+    onNavigateBack: () -> Unit,
+    onCurrentLanguageConfirmed: () -> Unit,
+    viewModel: LanguageViewModel = koinInject()
 ) {
     val selectedLanguageCode by viewModel.selectedLanguageCode.collectAsState()
 
@@ -77,7 +81,8 @@ fun LanguageScreen(
                     Spacer(modifier = Modifier.size(30.sdp))
                 }
             }
-        }) { paddingValues ->
+        }
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
@@ -88,7 +93,8 @@ fun LanguageScreen(
                 LanguageRow(
                     languageItem = languageItem,
                     isSelected = languageItem.code == selectedLanguageCode,
-                    onLanguageClick = { viewModel.onLanguageSelected(languageItem.code) })
+                    onLanguageClick = { viewModel.onLanguageSelected(languageItem.code) }
+                )
             }
         }
     }
@@ -96,7 +102,9 @@ fun LanguageScreen(
 
 @Composable
 fun LanguageRow(
-    languageItem: LanguageItem, isSelected: Boolean, onLanguageClick: () -> Unit
+    languageItem: LanguageItem,
+    isSelected: Boolean,
+    onLanguageClick: () -> Unit
 ) {
     val countryCode = languageCodeToCountryCode(languageItem.code)
     val flagEmoji = countryCodeToFlagEmoji(countryCode.uppercase())

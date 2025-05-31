@@ -50,7 +50,6 @@ import com.thezayin.generate.presentation.GenerateScreen
 import com.thezayin.history.presentation.FavoritesScreen
 import com.thezayin.history.presentation.HistoryScreen
 import com.thezayin.qrscanner.ui.language.ui.LanguageScreen
-import com.thezayin.qrscanner.ui.language.ui.LanguageViewModel
 import com.thezayin.qrscanner.ui.premium.presentation.PremiumScreen
 import com.thezayin.scanner.presentation.result.ResultScreen
 import com.thezayin.scanner.presentation.scanner.ScannerScreen
@@ -199,8 +198,7 @@ fun MainNav(
                     navigateToPremium = { navController.navigate("premium") })
             }
             composable("languages") {
-                val languageViewModel: LanguageViewModel = koinInject()
-                LanguageScreen(viewModel = languageViewModel, onNavigateBack = {
+                LanguageScreen(onNavigateBack = {
                     navController.popBackStack()
                 }, onCurrentLanguageConfirmed = {
                     navController.popBackStack()

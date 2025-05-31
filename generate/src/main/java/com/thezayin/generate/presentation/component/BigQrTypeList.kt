@@ -18,7 +18,7 @@ import ir.kaaveh.sdpcompose.sdp
 
 @Composable
 fun BigQrTypeList(
-    primaryColor:Color,
+    primaryColor: Color,
     allTypes: List<QrType>,
     onTypeSelected: (QrType) -> Unit,
     modifier: Modifier = Modifier

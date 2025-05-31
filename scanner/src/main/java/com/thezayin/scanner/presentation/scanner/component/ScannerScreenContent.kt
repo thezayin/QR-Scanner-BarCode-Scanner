@@ -48,7 +48,8 @@ fun ScannerScreenContent(
                     BatchScanSnackbar(
                         scannedCount = state.batchScannedCodes.size,
                         onCancelBatch = { viewModel.onEvent(ScannerEvent.CancelBatchScan) },
-                        onConfirmBatch = { viewModel.onEvent(ScannerEvent.ConfirmBatchScan) })
+                        onConfirmBatch = { viewModel.onEvent(ScannerEvent.ConfirmBatchScan) }
+                    )
                 } else {
                     HeaderSection(
                         onBatchClick = {
@@ -74,24 +75,37 @@ fun ScannerScreenContent(
                 ZoomControlsSection(
                     primaryColor = viewModel.primaryColor,
                     zoomLevel = state.zoomLevel,
-                    onZoomChange = { newZoomLevel -> viewModel.updateZoomLevelUi(newZoomLevel) },
-                    onZoomIn = { viewModel.updateZoomLevelUi(state.zoomLevel + 0.5f) },
-                    onZoomOut = { viewModel.updateZoomLevelUi(state.zoomLevel - 0.5f) })
+                    // Pass camera's actual min and max zoom ratios to the UI
+                    minZoomRatio = state.minZoomRatio,
+                    maxZoomRatio = state.maxZoomRatio,
+                    // Use ChangeZoom event for both slider and buttons for consistent behavior
+                    onZoomChange = { newZoomLevel ->
+                        viewModel.onEvent(
+                            ScannerEvent.ChangeZoom(
+                                newZoomLevel
+                            )
+                        )
+                    },
+                    onZoomIn = { viewModel.onEvent(ScannerEvent.ChangeZoom(state.zoomLevel + 0.5f)) },
+                    onZoomOut = { viewModel.onEvent(ScannerEvent.ChangeZoom(state.zoomLevel - 0.5f)) }
+                )
             }
-        }) { contentPadding ->
+        }
+    ) { contentPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding()
+                .padding() // This padding() with no arguments does nothing, safe to remove
         ) {
             CameraPreview(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
-                onCameraSuccessfullyBound = {})
+                onCameraSuccessfullyBound = {} // If no specific action needed here
+            )
             ScannerOverlay(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding)
+                    .padding(contentPadding) // Apply Scaffold's content padding here for the overlay
             )
         }
     }

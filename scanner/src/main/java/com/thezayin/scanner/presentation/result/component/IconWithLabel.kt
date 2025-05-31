@@ -23,7 +23,8 @@ fun IconWithLabel(
             .clickable {
                 onClick()
             }
-            .padding(4.sdp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+            .padding(4.sdp),
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = label,

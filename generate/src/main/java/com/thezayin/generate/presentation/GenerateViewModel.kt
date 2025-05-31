@@ -76,13 +76,23 @@ class GenerateViewModel(
                         _state.update {
                             it.copy(generatedQrBitmap = bmp, isGenerating = false)
                         }
-                        Log.d("GenerateViewModel", "Coroutine: Generation SUCCESS. isGenerating = false")
+                        Log.d(
+                            "GenerateViewModel",
+                            "Coroutine: Generation SUCCESS. isGenerating = false"
+                        )
                     } catch (e: Exception) {
-                        Log.e("GenerateViewModel", "Coroutine: Error generating QR: ${e.message}", e)
+                        Log.e(
+                            "GenerateViewModel",
+                            "Coroutine: Error generating QR: ${e.message}",
+                            e
+                        )
                         _state.update {
                             it.copy(error = e.message, isGenerating = false)
                         }
-                        Log.d("GenerateViewModel", "Coroutine: Generation FAILED. isGenerating = false")
+                        Log.d(
+                            "GenerateViewModel",
+                            "Coroutine: Generation FAILED. isGenerating = false"
+                        )
                     }
                 }
             }
@@ -114,7 +124,12 @@ class GenerateViewModel(
             is GenerateEvent.UpdateWifiPassword -> _state.update { it.copy(wifiPassword = event.password) }
             is GenerateEvent.UpdateWifiEncryption -> _state.update { it.copy(wifiEncryption = event.encryption) }
             is GenerateEvent.UpdateCalendarTitle -> _state.update { it.copy(calendarTitle = event.title) }
-            is GenerateEvent.UpdateCalendarDescription -> _state.update { it.copy(calendarDescription = event.description) }
+            is GenerateEvent.UpdateCalendarDescription -> _state.update {
+                it.copy(
+                    calendarDescription = event.description
+                )
+            }
+
             is GenerateEvent.UpdateCalendarStart -> _state.update { it.copy(calendarStart = event.start) }
             is GenerateEvent.UpdateCalendarEnd -> _state.update { it.copy(calendarEnd = event.end) }
             is GenerateEvent.UpdateContactName -> _state.update { it.copy(contactName = event.name) }
@@ -158,19 +173,39 @@ class GenerateViewModel(
         return when (currentState.selectedType) {
             QrType.CALL -> QrContent.Call(phoneNumber = currentState.callNumber)
             QrType.SMS -> QrContent.Sms(currentState.smsNumber, currentState.smsMessage)
-            QrType.EMAIL -> QrContent.Email(currentState.emailAddress, currentState.emailSubject, currentState.emailBody)
+            QrType.EMAIL -> QrContent.Email(
+                currentState.emailAddress,
+                currentState.emailSubject,
+                currentState.emailBody
+            )
+
             QrType.WEBSITE -> QrContent.Website(currentState.websiteUrl)
             QrType.TEXT -> QrContent.Text(currentState.text)
             QrType.CLIPBOARD -> QrContent.Clipboard(currentState.clip)
-            QrType.WIFI -> QrContent.Wifi(currentState.wifiSsid, currentState.wifiPassword, currentState.wifiEncryption)
+            QrType.WIFI -> QrContent.Wifi(
+                currentState.wifiSsid,
+                currentState.wifiPassword,
+                currentState.wifiEncryption
+            )
+
             QrType.CALENDAR -> QrContent.Calendar(
                 title = currentState.calendarTitle,
                 description = currentState.calendarDescription,
                 startTime = currentState.calendarStart.toLongOrNull() ?: 0L,
                 endTime = currentState.calendarEnd.toLongOrNull() ?: 0L
             )
-            QrType.CONTACT -> QrContent.Contact(currentState.contactName, currentState.contactPhone, currentState.contactEmail)
-            QrType.LOCATION -> QrContent.Location(currentState.locationLat, currentState.locationLong)
+
+            QrType.CONTACT -> QrContent.Contact(
+                currentState.contactName,
+                currentState.contactPhone,
+                currentState.contactEmail
+            )
+
+            QrType.LOCATION -> QrContent.Location(
+                currentState.locationLat,
+                currentState.locationLong
+            )
+
             QrType.CODE_39 -> QrContent.Code39(currentState.code39Code)
             QrType.CODE_128 -> QrContent.Code128(currentState.code128Code)
             QrType.ITF -> QrContent.Itf(currentState.itfCode)
@@ -217,8 +252,10 @@ class GenerateViewModel(
 
     private fun shareQrCode(bitmap: Bitmap) {
         val context = getApplication<Application>()
-        val filename = "QR_Share_${System.currentTimeMillis()}.png" // Use a distinct name for sharing
-        val cachePath = File(context.cacheDir, "images_to_share") // Use a specific subdir for sharing
+        val filename =
+            "QR_Share_${System.currentTimeMillis()}.png" // Use a distinct name for sharing
+        val cachePath =
+            File(context.cacheDir, "images_to_share") // Use a specific subdir for sharing
         if (!cachePath.exists()) {
             cachePath.mkdirs()
         }

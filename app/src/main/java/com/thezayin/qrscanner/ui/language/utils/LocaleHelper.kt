@@ -1,3 +1,4 @@
+// com.thezayin.qrscanner.ui.language.utils.LocaleHelper.kt
 package com.thezayin.qrscanner.ui.language.utils
 
 import android.content.Context
@@ -8,7 +9,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
-import timber.log.Timber
 import java.util.Locale
 
 class LocaleHelper(private val context: Context, private val prefs: SharedPreferences) {
@@ -16,24 +16,15 @@ class LocaleHelper(private val context: Context, private val prefs: SharedPrefer
     companion object {
         private const val SELECTED_LANGUAGE_KEY = "selected_language"
         const val DEFAULT_LANGUAGE = "en"
-        private const val TAG = "LocaleHelper"
     }
 
     fun setLocale(languageCode: String) {
-        Timber.tag(TAG).d("Attempting to persist language: $languageCode")
         persistLanguage(languageCode)
         updateLocaleConfiguration(languageCode)
     }
 
     private fun persistLanguage(languageCode: String) {
-        val success = prefs.edit().putString(SELECTED_LANGUAGE_KEY, languageCode).commit()
-        if (success) {
-            Timber.tag(TAG)
-                .i("Successfully committed language '$languageCode' to SharedPreferences key: $SELECTED_LANGUAGE_KEY.")
-        } else {
-            Timber.tag(TAG)
-                .e("Failed to commit language '$languageCode' to SharedPreferences key: $SELECTED_LANGUAGE_KEY.")
-        }
+        prefs.edit().putString(SELECTED_LANGUAGE_KEY, languageCode).apply()
     }
 
     fun getPersistedLocaleCode(): String {
@@ -73,10 +64,9 @@ class LocaleHelper(private val context: Context, private val prefs: SharedPrefer
     }
 
     fun updateContext(baseContext: Context): Context {
-        val prefsForAttach = baseContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val currentPrefs = baseContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val languageCode =
-            prefsForAttach.getString(SELECTED_LANGUAGE_KEY, null) ?: getDeviceLocaleCode()
-        Timber.tag(TAG).d("updateContext: Using language code '$languageCode' for new context.")
+            currentPrefs.getString(SELECTED_LANGUAGE_KEY, null) ?: getDeviceLocaleCode()
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
         val configuration = Configuration(baseContext.resources.configuration)
@@ -86,8 +76,9 @@ class LocaleHelper(private val context: Context, private val prefs: SharedPrefer
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             baseContext.createConfigurationContext(configuration)
         } else {
+            // FIX: Use baseContext.resources.displayMetrics instead of baseContext.displayMetrics
             @Suppress("DEPRECATION") baseContext.resources.updateConfiguration(
-                configuration, baseContext.resources.displayMetrics
+                configuration, baseContext.resources.displayMetrics // <--- FIXED LINE
             )
             baseContext
         }

@@ -11,7 +11,8 @@ enum class QrType {
     CALENDAR,
     CONTACT,
     LOCATION,
-//    EAN_8,
+
+    //    EAN_8,
 //    EAN_13,
 //    UPC_A,
 //    UPC_E,

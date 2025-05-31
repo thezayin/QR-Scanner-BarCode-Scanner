@@ -1,5 +1,6 @@
 package com.thezayin.scanner.presentation.result.component
 
+// Add these imports at the top
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -22,6 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +50,9 @@ fun ProductFoundCard(
     val context = LocalContext.current
     val activity = context as Activity
     val adManager = vm.adManager
+
+    // State to control the visibility of the barcode dialog
+    val showBarcodeDialog = remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.padding(horizontal = 10.sdp, vertical = 20.sdp),
@@ -93,8 +99,7 @@ fun ProductFoundCard(
                         .padding(end = 8.sdp)
                         .clickable {
                             vm.onEvent(ResultScreenEvent.ToggleFavorite(item))
-                        }
-                )
+                        })
             }
             Spacer(modifier = Modifier.height(8.sdp))
             Row(
@@ -108,11 +113,8 @@ fun ProductFoundCard(
                     iconRes = R.drawable.ic_barcode,
                     label = stringResource(id = R.string.view_code),
                     onClick = {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.view_code_to_be_implemented),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        // Show the custom dialog instead of the Toast
+                        showBarcodeDialog.value = true
                     })
                 IconWithLabel(
                     iconRes = R.drawable.ic_amazon,
@@ -120,12 +122,11 @@ fun ProductFoundCard(
                     onClick = {
                         val query = Uri.encode(scannedResult)
                         val url = "https://www.amazon.com/s?k=$query"
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         }
                         context.startActivity(intent)
-                    }
-                )
+                    })
                 IconWithLabel(
                     iconRes = R.drawable.ic_open,
                     label = stringResource(id = R.string.open),
@@ -139,8 +140,7 @@ fun ProductFoundCard(
                                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                 }
                                 context.startActivity(intent)
-                            }
-                        )
+                            })
 
                     })
                 IconWithLabel(
@@ -149,7 +149,7 @@ fun ProductFoundCard(
                     onClick = {
                         val query = Uri.encode(scannedResult)
                         val url = "https://www.ebay.com/sch/i.html?_nkw=$query"
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         }
                         context.startActivity(intent)
@@ -175,7 +175,7 @@ fun ProductFoundCard(
                     onClick = {
                         val query = Uri.encode(scannedResult)
                         val url = "https://www.google.com/search?tbm=shop&q=$query"
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         }
                         context.startActivity(intent)
@@ -198,5 +198,21 @@ fun ProductFoundCard(
                     })
             }
         }
+    }
+
+    if (showBarcodeDialog.value) {
+        ViewBarcodeDialog(viewModel = vm, barcodeText = scannedResult, onDismiss = {
+            showBarcodeDialog.value = false
+        }, onCopy = { textToCopy ->
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(
+                context.getString(R.string.scanned_result), textToCopy
+            )
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(
+                context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT
+            ).show()
+            showBarcodeDialog.value = false
+        })
     }
 }

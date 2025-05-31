@@ -20,18 +20,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.presentation.GenerateViewModel
 import com.thezayin.generate.presentation.event.GenerateEvent
 import com.thezayin.generate.presentation.state.GenerateState
 import com.thezayin.values.R
 import ir.kaaveh.sdpcompose.sdp
-import org.koin.compose.koinInject
 
 @Composable
 fun GeneratedQrContent(

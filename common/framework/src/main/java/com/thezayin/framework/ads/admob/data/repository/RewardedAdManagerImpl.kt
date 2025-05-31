@@ -44,7 +44,8 @@ class RewardedAdManagerImpl(
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("Rewarded Ad failed to load: ${loadAdError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("Rewarded Ad failed to load: ${loadAdError.message}"))
                         Timber.tag("RewardedAd")
                             .d("Rewarded Ad failed to load: ${loadAdError.message}")
                         rewardedAd = null
@@ -87,7 +88,8 @@ class RewardedAdManagerImpl(
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("Rewarded Ad failed to show: ${adError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("Rewarded Ad failed to show: ${adError.message}"))
                         Timber.tag("RewardedAd").d("Rewarded Ad failed to show: ${adError.message}")
                         onNext()
                     }

@@ -82,7 +82,8 @@ class PreferencesManager(context: Context) {
 
     fun getSavedLanguage(): String? {
         val langCode = prefs.getString(KEY_SELECTED_LANGUAGE, null)
-        Timber.tag("jejePrefs").i("getSavedLanguage() called, loaded code: '$langCode' for key '$KEY_SELECTED_LANGUAGE'")
+        Timber.tag("jejePrefs")
+            .i("getSavedLanguage() called, loaded code: '$langCode' for key '$KEY_SELECTED_LANGUAGE'")
         return langCode
     }
 

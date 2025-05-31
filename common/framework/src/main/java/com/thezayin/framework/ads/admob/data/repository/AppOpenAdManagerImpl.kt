@@ -47,7 +47,8 @@ class AppOpenAdManagerImpl(
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("App Open Ad failed to load: ${loadAdError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("App Open Ad failed to load: ${loadAdError.message}"))
                         Timber.tag("AppOpenAd")
                             .d("App Open Ad failed to load: ${loadAdError.message}")
                         appOpenAd = null
@@ -85,7 +86,8 @@ class AppOpenAdManagerImpl(
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("App Open Ad failed to show: ${adError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("App Open Ad failed to show: ${adError.message}"))
                         Timber.tag("AppOpenAd").d("App Open Ad failed to show: ${adError.message}")
                         onNext()
                     }
