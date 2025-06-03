@@ -2,19 +2,15 @@ package com.thezayin.qrscanner.activity
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
-import androidx.core.os.LocaleListCompat
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.nativead.NativeAd
@@ -28,16 +24,11 @@ import com.thezayin.framework.ads.loader.GoogleNativeAdLoader
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.qrscanner.navigation.RootNavGraph
-import com.thezayin.qrscanner.ui.language.utils.LocaleHelper
 import com.thezayin.qrscanner.ui.theme.QRScannerTheme
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-class MainActivity : ComponentActivity() {
-    private companion object {
-        private const val TAG = "MainActivity"
-    }
-
+class MainActivity : AppCompatActivity() {
     private val preferencesManager: PreferencesManager by inject()
     private val remoteConfig: RemoteConfig by inject()
     private val adManager: AppOpenAdManager by inject()
@@ -57,20 +48,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initializeLanguageViaKoin()
-        setupConsent()
-        loadNativeAd()
-        adManager.loadAd(activity = this)
-        interstitialAdManager.loadAd(activity = this)
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             initializeScreen()
-
         } else {
             requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
+        setupConsent()
+        loadNativeAd()
+        adManager.loadAd(activity = this)
+        interstitialAdManager.loadAd(activity = this)
     }
 
     private fun initializeScreen() {
@@ -154,7 +143,7 @@ class MainActivity : ComponentActivity() {
                 initMobileAds()
             }
         }, { loadError ->
-            Timber.tag("UMP").e("Error loading consent form: ${loadError}")
+            Timber.tag("UMP").e("Error loading consent form: ${loadError.message}")
             initMobileAds()
         })
     }
@@ -175,38 +164,6 @@ class MainActivity : ComponentActivity() {
             onNativeAdLoaded = {
                 nativeAd = it
             })
-    }
-
-
-    @Deprecated("This logic should be robustly handled by attachBaseContext from Application and Activity. Retained for checking.")
-    private fun initializeLanguageViaKoin() {
-        val savedLangTag = preferencesManager.getSavedLanguage()
-        if (!savedLangTag.isNullOrEmpty()) {
-            val currentActivityResourcesLocale = resources.configuration.locales[0].toLanguageTag()
-            if (currentActivityResourcesLocale != savedLangTag) {
-                try {
-                    val appLocales = LocaleListCompat.forLanguageTags(savedLangTag)
-                    AppCompatDelegate.setApplicationLocales(appLocales) // THE IMPORTANT CALL
-                } catch (e: Exception) {
-                    Timber.tag(TAG).e(
-                        e,
-                        "initializeLanguageViaKoin: Error calling AppCompatDelegate.setApplicationLocales"
-                    )
-                }
-            } else {
-                Timber.tag(TAG)
-                    .i("initializeLanguageViaKoin: Saved language '$savedLangTag' matches current Activity resources. No change by AppCompatDelegate needed in this pass.")
-            }
-        } else {
-            Timber.tag(TAG).d("initializeLanguageViaKoin: No saved language preference in Prefs.")
-        }
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        val prefs = newBase.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val localLocaleHelper = LocaleHelper(newBase, prefs)
-        val updatedActivityContext = localLocaleHelper.updateContext(newBase)
-        super.attachBaseContext(updatedActivityContext)
     }
 
     override fun onDestroy() {

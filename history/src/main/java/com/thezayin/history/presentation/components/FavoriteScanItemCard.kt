@@ -45,7 +45,6 @@ fun FavoriteScanItemCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            // Display an icon based on the QR type.
             Icon(
                 painter = painterResource(id = getQrTypeIcon(item.type)),
                 contentDescription = stringResource(id = R.string.qr_type_icon),

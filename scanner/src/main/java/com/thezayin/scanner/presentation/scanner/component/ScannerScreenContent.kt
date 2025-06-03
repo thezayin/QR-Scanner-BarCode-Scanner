@@ -48,7 +48,8 @@ fun ScannerScreenContent(
                     BatchScanSnackbar(
                         scannedCount = state.batchScannedCodes.size,
                         onCancelBatch = { viewModel.onEvent(ScannerEvent.CancelBatchScan) },
-                        onConfirmBatch = { viewModel.onEvent(ScannerEvent.ConfirmBatchScan) })
+                        onConfirmBatch = { viewModel.onEvent(ScannerEvent.ConfirmBatchScan) }
+                    )
                 } else {
                     HeaderSection(
                         onBatchClick = {
@@ -74,11 +75,21 @@ fun ScannerScreenContent(
                 ZoomControlsSection(
                     primaryColor = viewModel.primaryColor,
                     zoomLevel = state.zoomLevel,
-                    onZoomChange = { newZoomLevel -> viewModel.updateZoomLevelUi(newZoomLevel) },
-                    onZoomIn = { viewModel.updateZoomLevelUi(state.zoomLevel + 0.5f) },
-                    onZoomOut = { viewModel.updateZoomLevelUi(state.zoomLevel - 0.5f) })
+                    minZoomRatio = state.minZoomRatio,
+                    maxZoomRatio = state.maxZoomRatio,
+                    onZoomChange = { newZoomLevel ->
+                        viewModel.onEvent(
+                            ScannerEvent.ChangeZoom(
+                                newZoomLevel
+                            )
+                        )
+                    },
+                    onZoomIn = { viewModel.onEvent(ScannerEvent.ChangeZoom(state.zoomLevel + 0.5f)) },
+                    onZoomOut = { viewModel.onEvent(ScannerEvent.ChangeZoom(state.zoomLevel - 0.5f)) }
+                )
             }
-        }) { contentPadding ->
+        }
+    ) { contentPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -87,7 +98,8 @@ fun ScannerScreenContent(
             CameraPreview(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
-                onCameraSuccessfullyBound = {})
+                onCameraSuccessfullyBound = {}
+            )
             ScannerOverlay(
                 modifier = Modifier
                     .fillMaxSize()

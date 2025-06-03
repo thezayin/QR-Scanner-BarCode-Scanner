@@ -157,10 +157,23 @@
     <string name="no_favorite_items">You have no favorite items.</string>
 
 
+    <string name="save_language">Save Language</string>
+    <string name="selected">Selected</string>
+    <string name="downloading_language_for">Downloading %1$s language…</string>
+    <string name="download_failed_for">Download failed for %1$s</string>
+    <string name="error_message_format">Error: %1$s</string>
+    <string name="ok">OK</string>
+    <string name="language_download_success">Language %1$s downloaded successfully. Ready to apply.</string>
+
+    <string name="selected_language_indicator_desc">selected_language_indicator_desc</string>
+    <string name="close_dialog">Close dialog</string>
+    <string name="copy_it">Copy it</string>
     <string name="total_scanned">Total Scanned: %d</string>
     <string name="cancel_batch_scan">Cancel Batch Scan</string>
     <string name="confirm_batch_scan">Confirm Batch Scan</string>
-
+    <string name="camera_not_ready_error">Camera is not ready yet. Please try again.</string>
+    <string name="zoom_control_error_format">Zoom control failed: %1$s</string>
+    <string name="qr_code_not_found_gallery">No QR code found in the selected image.</string>
     <string name="camera_provider_init_error">Failed to initialize camera services.</string>
     <string name="image_capture_failed_error">Image capture failed: %s</string>
     <string name="generic_error_occurred">An error occurred: %s</string>

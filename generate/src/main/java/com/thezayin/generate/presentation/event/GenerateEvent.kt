@@ -25,7 +25,8 @@ sealed class GenerateEvent {
     data class UpdateContactEmail(val email: String) : GenerateEvent()
     data class UpdateLocationLat(val lat: String) : GenerateEvent()
     data class UpdateLocationLong(val long: String) : GenerateEvent()
-//    data class UpdateEan8(val code: String) : GenerateEvent()
+
+    //    data class UpdateEan8(val code: String) : GenerateEvent()
 //    data class UpdateEan13(val code: String) : GenerateEvent()
 //    data class UpdateUpcA(val code: String) : GenerateEvent()
 //    data class UpdateUpcE(val code: String) : GenerateEvent()

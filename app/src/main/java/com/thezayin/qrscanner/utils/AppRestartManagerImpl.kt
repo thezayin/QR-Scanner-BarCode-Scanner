@@ -6,7 +6,7 @@ import com.thezayin.qrscanner.activity.MainActivity
 import timber.log.Timber
 
 class AppRestartManagerImpl(
-    private val application: Application // Inject Application via Koin
+    private val application: Application
 ) : AppRestartManager {
 
     override fun restartAppToMainMenu() {

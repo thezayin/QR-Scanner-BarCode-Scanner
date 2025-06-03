@@ -1,3 +1,5 @@
+@file:Suppress("KotlinConstantConditions")
+
 package com.thezayin.qrscanner.ui.premium.presentation
 
 import android.app.Activity

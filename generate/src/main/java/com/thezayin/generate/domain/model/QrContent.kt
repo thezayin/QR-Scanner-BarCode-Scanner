@@ -26,6 +26,7 @@ sealed class QrContent {
      *
      * @param code The 8-digit EAN code.
      */
+
 //    data class Ean8(val code: String) : QrContent()
 
     /**

@@ -9,13 +9,17 @@ import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
 import com.thezayin.framework.preferences.PreferencesManager
 import com.thezayin.framework.remote.RemoteConfig
+import com.thezayin.framework.session.InMemoryScanSessionManager
+import com.thezayin.framework.session.ScanSessionManager
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val frameworkModule = module {
-    single<InterstitialAdManager> { InterstitialAdManagerImpl(get(), get()) }
-    single<AppOpenAdManager> { AppOpenAdManagerImpl(get(), get()) }
-    single<RewardedAdManager> { RewardedAdManagerImpl(get(), get()) }
+    factoryOf(::InterstitialAdManagerImpl) bind InterstitialAdManager::class
+    factoryOf(::AppOpenAdManagerImpl) bind AppOpenAdManager::class
+    factoryOf(::RewardedAdManagerImpl) bind RewardedAdManager::class
+    factoryOf(::InMemoryScanSessionManager) bind ScanSessionManager::class
+    factoryOf(::RemoteConfig)
     single { PreferencesManager(get<Application>()) }
-    single { RemoteConfig(get()) }
-    single<com.thezayin.framework.session.ScanSessionManager> { com.thezayin.framework.session.InMemoryScanSessionManager() }
 }

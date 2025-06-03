@@ -4,7 +4,8 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
-import android.util.Log
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
@@ -14,11 +15,9 @@ import com.thezayin.generate.domain.model.QrContent
 import com.thezayin.generate.domain.repository.QrRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
-import com.google.zxing.oned.EAN8Writer
 
 class QrRepositoryImpl(
     private val qrItemDao: QrItemDao, private val application: Application
@@ -31,19 +30,19 @@ class QrRepositoryImpl(
     override suspend fun buildQrBitmap(content: QrContent): Bitmap =
         withContext(Dispatchers.Default) {
             val params = resolveFormatAndString(content)
-            Log.d("QRCodeGeneration", "Param: $params")
+            Timber.tag("QRCodeGeneration").d("Param: $params")
             val writer = MultiFormatWriter()
             val bitMatrix: BitMatrix = try {
                 writer.encode(
                     params.rawString, params.format, params.width, params.height
                 )
             } catch (e: Exception) {
-                Log.e("QRCodeGeneration", "Error generating BitMatrix: ${e.message}")
-                throw e // Re-throw the exception
+                Timber.tag("QRCodeGeneration").e("Error generating BitMatrix: ${e.message}")
+                throw e
             }
 
             if (bitMatrix.width == 0 || bitMatrix.height == 0) {
-                Log.e("QRCodeGeneration", "BitMatrix width or height is 0")
+                Timber.tag("QRCodeGeneration").e("BitMatrix width or height is 0")
                 throw Exception("Invalid BitMatrix dimensions")
             }
 
@@ -215,6 +214,7 @@ class QrRepositoryImpl(
             is QrContent.Aztec -> """{"code": "${content.code}"}"""
         }
     }
+
     // Checksum validation methods for EAN-8 and UPC-A
     private fun isValidEAN8(code: String): Boolean {
         // Implement EAN-8 checksum validation logic here
@@ -229,7 +229,6 @@ class QrRepositoryImpl(
     }
 
     private fun isValidUPC(code: String): Boolean {
-        // Implement UPC-A checksum validation logic here
         val sumOdd = code.filterIndexed { index, _ -> index % 2 == 0 }
             .map { it.toString().toInt() }
             .sum()

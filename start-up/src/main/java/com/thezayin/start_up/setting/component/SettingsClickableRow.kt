@@ -38,7 +38,9 @@ fun SettingsClickableRow(
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 5.sdp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.sdp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

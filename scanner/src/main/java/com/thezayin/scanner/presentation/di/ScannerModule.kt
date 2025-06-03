@@ -12,11 +12,6 @@ import com.thezayin.scanner.domain.usecase.ScanQrUseCase
 import com.thezayin.scanner.domain.usecase.UpdateFavoriteUseCase
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
 import com.thezayin.scanner.presentation.scanner.ScannerViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -33,18 +28,14 @@ import org.koin.dsl.module
  * - **ScannerViewModel**: ViewModel for managing UI state.
  */
 val scannerModule = module {
-    // Provides an instance of QrLocalDataSource (used for QR scanning)
     singleOf(::ApiService)
     singleOf(::QrLocalDataSource)
-
     factoryOf(::QrRepositoryImpl) bind QrRepository::class
     factoryOf(::ProductRepositoryImpl) bind ProductRepository::class
     singleOf(::AddProductToDbUseCase)
     singleOf(::UpdateFavoriteUseCase)
     singleOf(::ScanQrUseCase)
     singleOf(::FetchProductDetailsUseCase)
-
-    // Provides a ViewModel instance to be used within the UI layer
     viewModelOf(::ScannerViewModel)
     viewModelOf(::ResultScreenViewModel)
 }

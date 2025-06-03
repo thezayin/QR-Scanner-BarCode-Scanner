@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation( project(":databases"))
+    implementation(project(":databases"))
     implementation(project(":common:values"))
     implementation(project(":common:framework"))
 
@@ -60,7 +60,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.kotlinx.coroutines.play.services )
+    implementation(libs.kotlinx.coroutines.play.services)
 
     //viewmodel and livedata
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -78,6 +78,8 @@ dependencies {
     implementation(libs.koin.androidx.navigation)
 
     implementation(libs.sdp.compose)
-    implementation (libs.core)
-    implementation (libs.lottie.compose)
+    implementation(libs.core)
+    implementation(libs.lottie.compose)
+
+    implementation(libs.timber)
 }

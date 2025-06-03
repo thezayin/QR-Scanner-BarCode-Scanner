@@ -12,8 +12,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -33,10 +34,13 @@ fun InputSection(
 ) {
     val adManager = viewModel.adManager
     val activity = LocalActivity.current as Activity
+    val state by viewModel.state.collectAsState()
+
     val allFieldsValid = fields.all { field ->
         field.validation(field.value)
     }
     val effectiveButtonText = buttonText ?: stringResource(id = R.string.generate_qr_code)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,6 +60,7 @@ fun InputSection(
         Spacer(modifier = Modifier.height(40.sdp))
         Button(
             onClick = {
+                // The check for isGenerating is now in the ViewModel's onEvent
                 adManager.showAd(
                     activity = activity,
                     showAd = viewModel.remoteConfig.adConfigs.adOnGenerateQr,
@@ -64,7 +69,7 @@ fun InputSection(
                     },
                 )
             },
-            enabled = allFieldsValid,
+            enabled = allFieldsValid && !state.isGenerating,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(35.sdp),
@@ -75,7 +80,7 @@ fun InputSection(
             ),
         ) {
             Text(
-                text = effectiveButtonText,
+                text = if (state.isGenerating) "generating..." else effectiveButtonText,
                 fontSize = 12.ssp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                 color = colorResource(id = R.color.white)

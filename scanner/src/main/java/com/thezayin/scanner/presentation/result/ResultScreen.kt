@@ -16,6 +16,6 @@ fun ResultScreen(
         state = state,
         viewModel = viewModel,
         onNavigateUp = onNavigateUp,
-        navigateToPremium=navigateToPremium
+        navigateToPremium = navigateToPremium
     )
 }

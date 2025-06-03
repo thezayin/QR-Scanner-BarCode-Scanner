@@ -1,7 +1,6 @@
 package com.thezayin.qrscanner.ui.premium.presentation
 
 import android.app.Activity
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thezayin.framework.preferences.PreferencesManager
@@ -18,7 +17,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PremiumViewModel(
-    application: Application,
     private val appRestartManager: AppRestartManager,
     private val prefs: PreferencesManager,
     private val purchaseHandler: PurchaseHandler
@@ -107,11 +105,6 @@ class PremiumViewModel(
             when (action) {
                 is PremiumActions.SubscriptionSelected -> {
                     _premiumState.update { it.copy(selectedPlan = action.plan) }
-                }
-                // Other actions can be handled here if needed
-                // For purchase, the screen will call purchaseSelectedPlan directly
-                else -> {
-                    // e.g. PremiumActions.ShowLoading, PremiumActions.HideLoading can be handled by state updates directly
                 }
             }
         }

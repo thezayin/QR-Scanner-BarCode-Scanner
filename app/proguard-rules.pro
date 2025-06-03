@@ -37,3 +37,14 @@
 -dontwarn com.thezayin.start_up.languages.LanguageScreenKt
 -dontwarn com.thezayin.qrscanner.ui.languages.LanguageViewModel
 -dontwarn com.thezayin.start_up.setting.SettingsScreenKt
+
+# If AppRestartManager uses any specific lifecycle or reflection, keep it too
+-keep class com.thezayin.qrscanner.utils.AppRestartManager {
+    *;
+}
+
+# For AndroidX components, their own rules usually handle most things, but sometimes
+# specific calls like setApplicationLocales might need a nudge if issues persist.
+# However, this is less common for standard AndroidX APIs.
+-keep class androidx.appcompat.app.** { *; }
+-keep class androidx.core.os.** { *; }

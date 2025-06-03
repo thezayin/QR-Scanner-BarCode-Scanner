@@ -45,7 +45,8 @@ class InterstitialAdManagerImpl(
                     }
 
                     override fun onAdFailedToLoad(adError: LoadAdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("Ad failed to load: ${adError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("Ad failed to load: ${adError.message}"))
                         Timber.tag("InterstitialAd").d("Ad failed to load: ${adError.message}")
                         interstitialAd = null
                     }
@@ -80,7 +81,8 @@ class InterstitialAdManagerImpl(
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("Ad failed to show: ${adError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("Ad failed to show: ${adError.message}"))
                         Timber.tag("InterstitialAd").d("Ad failed to show: ${adError.message}")
                         onNext()
                     }

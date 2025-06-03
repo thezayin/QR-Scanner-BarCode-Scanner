@@ -42,7 +42,7 @@ android {
 dependencies {
     implementation(project(":common:values"))
     implementation(project(":common:framework"))
-    implementation( project(":databases"))
+    implementation(project(":databases"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -61,7 +61,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.kotlinx.coroutines.play.services )
+    implementation(libs.kotlinx.coroutines.play.services)
 
     //viewmodel and livedata
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -80,14 +80,14 @@ dependencies {
 
     implementation(libs.sdp.compose)
 
-    implementation (libs.androidx.camera.core)
-    implementation (libs.androidx.camera.camera2)
-    implementation (libs.androidx.camera.lifecycle)
-    implementation (libs.androidx.camera.view)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
 
     // ML Kit Barcode Scanning
-    implementation (libs.barcode.scanning)
-    implementation (libs.text.recognition)
+    implementation(libs.barcode.scanning)
+    implementation(libs.text.recognition)
 
     //serialization and ktor
     implementation(libs.kotlinx.serialization.json)
@@ -100,7 +100,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.coil.compose)
 
-    implementation (libs.guava)
+    implementation(libs.guava)
     implementation(libs.androidx.material.icons.extended)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1")
 }

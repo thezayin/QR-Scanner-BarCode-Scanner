@@ -20,11 +20,7 @@ class AppOpenAdManagerImpl(
     remoteConfig: RemoteConfig,
     val preferencesManager: PreferencesManager
 ) : AppOpenAdManager {
-
-    // Holds the loaded App Open ad instance
     private var appOpenAd: AppOpenAd? = null
-
-    // Ad Unit ID (replace with your actual AdMob App Open Ad Unit ID)
     private val adId: String = remoteConfig.adUnits.appOpenAd
 
     /**
@@ -51,7 +47,8 @@ class AppOpenAdManagerImpl(
                     }
 
                     override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("App Open Ad failed to load: ${loadAdError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("App Open Ad failed to load: ${loadAdError.message}"))
                         Timber.tag("AppOpenAd")
                             .d("App Open Ad failed to load: ${loadAdError.message}")
                         appOpenAd = null
@@ -89,7 +86,8 @@ class AppOpenAdManagerImpl(
                     }
 
                     override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        FirebaseCrashlytics.getInstance().recordException(Exception("App Open Ad failed to show: ${adError.message}"))
+                        FirebaseCrashlytics.getInstance()
+                            .recordException(Exception("App Open Ad failed to show: ${adError.message}"))
                         Timber.tag("AppOpenAd").d("App Open Ad failed to show: ${adError.message}")
                         onNext()
                     }

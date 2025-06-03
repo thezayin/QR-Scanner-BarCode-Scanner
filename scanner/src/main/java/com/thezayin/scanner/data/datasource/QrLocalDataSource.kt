@@ -18,7 +18,6 @@ class QrLocalDataSource(private val context: Context) {
     private val scanner: BarcodeScanner
 
     init {
-        // Initialize barcode scanner with options to support QR codes and Code 128 formats.
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE, Barcode.FORMAT_CODE_128)
             .build()
@@ -33,26 +32,18 @@ class QrLocalDataSource(private val context: Context) {
      */
     suspend fun scanImage(image: InputImage): Result<QrData> {
         return try {
-            // Process the image and retrieve a list of detected barcodes
             val barcodes = scanner.process(image).await()
-
-            // Check if any barcodes were found
             if (barcodes.isNotEmpty()) {
-                // Extract the content from the first detected barcode
                 val qrContent = barcodes.firstOrNull()?.rawValue
                 if (qrContent != null) {
-                    // Return the scanned data on success
                     Result.Success(QrData(content = qrContent))
                 } else {
-                    // Handle the case where a QR code is detected but has no content
                     Result.Failure(Exception(context.getString(R.string.qr_code_empty_content)))
                 }
             } else {
-                // Return failure if no barcodes are found
                 Result.Failure(Exception(context.getString(R.string.qr_code_not_found)))
             }
         } catch (e: Exception) {
-            // Handle exceptions during scanning and return failure
             Result.Failure(Exception(context.getString(R.string.qr_code_scan_error), e))
         }
     }

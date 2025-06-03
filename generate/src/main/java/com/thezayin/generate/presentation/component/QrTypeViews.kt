@@ -15,7 +15,6 @@ import com.thezayin.values.R
 fun QrTypeViews(
     state: GenerateState, viewModel: GenerateViewModel, onEvent: (GenerateEvent) -> Unit
 ) {
-
     when (state.selectedType) {
         QrType.CALL -> {
             InputSection(

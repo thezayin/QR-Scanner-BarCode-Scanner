@@ -97,7 +97,6 @@ fun ScanItemCard(
                         }
 
                         "LOCATION" -> {
-                            // Split the scanned text for latitude and longitude
                             val parts = item.scannedText.split(",")
                             if (parts.size >= 2) {
                                 Text(

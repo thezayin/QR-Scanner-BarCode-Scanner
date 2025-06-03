@@ -66,7 +66,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.kotlinx.coroutines.play.services )
+    implementation(libs.kotlinx.coroutines.play.services)
 
     //viewmodel and livedata
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -82,4 +82,6 @@ dependencies {
     implementation(libs.koin.android)
     testImplementation(libs.koin.test.junit4)
     implementation(libs.koin.androidx.navigation)
+
+    implementation(libs.timber)
 }

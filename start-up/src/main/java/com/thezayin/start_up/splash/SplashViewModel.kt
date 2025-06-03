@@ -29,11 +29,9 @@ class SplashViewModel(
     val state: StateFlow<SplashState> = _state.asStateFlow()
 
     init {
-        // Set isFirstTime from Preferences
         _state.value = _state.value.copy(
             isFirstTime = preferencesManager.isFirstTime.value
         )
-        // Start the splash flow
         sendEvent(SplashEvent.LoadSplash)
     }
 
@@ -51,7 +49,6 @@ class SplashViewModel(
 
     private fun handleLoadSplash() {
         viewModelScope.launch {
-            // Cycle through splashTexts over 5 seconds
             val totalTime = 5000L
             val interval = totalTime / _state.value.splashTexts.size
 
@@ -70,7 +67,6 @@ class SplashViewModel(
 
 
     private fun handleNavigateNext() {
-        // Once everything is ready, set navigateToNextScreen = true
         _state.update { it.copy(navigateToNextScreen = true) }
     }
 }

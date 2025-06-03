@@ -39,11 +39,12 @@ android {
         buildConfig = true
 
     }
+
 }
 
 dependencies {
     implementation(project(":common:values"))
-    
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -93,6 +94,8 @@ dependencies {
     implementation(libs.timber)
 
     //Funsol Billing
-    implementation (libs.billing)
-    implementation (libs.funsol.billing.helper)
+    implementation(libs.billing)
+    implementation(libs.funsol.billing.helper)
+
+    api ("androidx.datastore:datastore-preferences:1.0.0")
 }

@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -104,9 +103,11 @@ fun ScanResultCard(
                 textDecoration = TextDecoration.Underline,
                 text = displayText,
                 fontSize = 10.ssp,
-                modifier = Modifier.padding(4.sdp).clickable{
-                    vm.onEvent(ResultScreenEvent.OpenItem(item, context))
-                }
+                modifier = Modifier
+                    .padding(4.sdp)
+                    .clickable {
+                        vm.onEvent(ResultScreenEvent.OpenItem(item, context))
+                    }
             )
             Spacer(modifier = Modifier.height(4.sdp))
             Row(

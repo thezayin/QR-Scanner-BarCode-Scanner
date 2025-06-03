@@ -2,7 +2,6 @@
 
 package com.thezayin.qrscanner.navigation
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -49,15 +48,13 @@ import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.generate.presentation.GenerateScreen
 import com.thezayin.history.presentation.FavoritesScreen
 import com.thezayin.history.presentation.HistoryScreen
-import com.thezayin.qrscanner.ui.language.ui.LanguageScreen
-import com.thezayin.qrscanner.ui.language.ui.LanguageViewModel
+import com.thezayin.qrscanner.activity.MainActivity
 import com.thezayin.qrscanner.ui.premium.presentation.PremiumScreen
 import com.thezayin.scanner.presentation.result.ResultScreen
 import com.thezayin.scanner.presentation.scanner.ScannerScreen
 import com.thezayin.start_up.setting.SettingsScreen
 import com.thezayin.values.R
 import org.koin.compose.koinInject
-import timber.log.Timber
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -65,10 +62,12 @@ fun MainNav(
     primaryColor: Color,
     remoteConfig: RemoteConfig,
     nativeAd: NativeAd?,
-    preferencesManager: PreferencesManager
+    preferencesManager: PreferencesManager,
+    navigateToLanguageScreenRoot: () -> Unit
 ) {
-    val activity = LocalActivity.current as Activity
+    val activity = LocalActivity.current as MainActivity
     val adManager = koinInject<InterstitialAdManager>()
+
     LaunchedEffect(Unit) {
         adManager.loadAd(activity)
     }
@@ -86,7 +85,6 @@ fun MainNav(
         BottomNavItem.Scan, BottomNavItem.Create, BottomNavItem.History, BottomNavItem.Settings
     )
     val showExitDialog = remember { mutableStateOf(false) }
-
     BackHandler(enabled = true) {
         if (currentRoute == BottomNavItem.Scan.route) {
             showExitDialog.value = true
@@ -175,15 +173,14 @@ fun MainNav(
             composable(BottomNavItem.History.route) {
                 HistoryScreen(
                     onNavigateUp = { navController.navigate(BottomNavItem.Scan.route) },
-                    navigateToScanItem = {
-                        navController.navigate("result")
-                    },
+                    navigateToScanItem = { navController.navigate("result") },
                     navigateToPremium = { navController.navigate("premium") })
             }
             composable(BottomNavItem.Settings.route) {
                 SettingsScreen(
-
-                    navigateToLanguage = { navController.navigate("languages") },
+                    navigateToLanguage = {
+                        navigateToLanguageScreenRoot()
+                    },
                     navigateToPremium = { navController.navigate(("premium")) },
                     onNavigateBack = { navController.navigate(BottomNavItem.Scan.route) },
                     navigateToFavourite = { navController.navigate("favourite") })
@@ -199,45 +196,19 @@ fun MainNav(
                     onNavigateUp = { navController.popBackStack() },
                     navigateToPremium = { navController.navigate("premium") })
             }
-            composable("languages") {
-                val languageViewModel: LanguageViewModel = koinInject()
-                LanguageScreen(
-                    viewModel = languageViewModel,
-                    onNavigateBack = {
-                        // Top bar back button from Settings -> Language: just go back
-                        navController.popBackStack()
-                    },
-                    onCurrentLanguageConfirmed = {
-                        // User tapped the already selected language from Settings -> Language.
-                        // Just navigate back to Settings screen. No app restart.
-                        Timber.tag("jajaMainNav")
-                            .d("Language confirmed from settings. Navigating back.")
-                        navController.popBackStack()
-                    }
-                )
-            }
-
             composable("premium") {
-                PremiumScreen(
-                    navigateBack = { navController.navigateUp() })
+                PremiumScreen(navigateBack = { navController.navigateUp() })
             }
         }
     }
     if (showExitDialog.value) {
-        Dialog(onDismissRequest = { showExitDialog.value = false } // Close dialog on outside touch
-        ) {
-            // Custom Dialog Layout
-            Card(
-                modifier = Modifier
-            ) {
-                // Column to hold dialog content and the native ad
+        Dialog(onDismissRequest = { showExitDialog.value = false }) {
+            Card(modifier = Modifier) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp)
-
                 ) {
-                    // Title and text
                     Text(
                         text = "Exit App",
                         style = MaterialTheme.typography.bodyMedium,

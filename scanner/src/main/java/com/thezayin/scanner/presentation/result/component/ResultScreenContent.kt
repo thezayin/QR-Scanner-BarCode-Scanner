@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.thezayin.framework.components.ComposableLifecycle
 import com.thezayin.framework.components.GoogleNativeSimpleAd
-import com.thezayin.framework.utils.billing.isPremium
 import com.thezayin.scanner.presentation.result.ResultScreenViewModel
 import com.thezayin.scanner.presentation.result.state.ResultScreenState
 import ir.kaaveh.sdpcompose.sdp

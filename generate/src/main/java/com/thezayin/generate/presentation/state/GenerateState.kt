@@ -40,5 +40,6 @@ data class GenerateState(
     val generatedQrBitmap: Bitmap? = null,
     val showMainListOnly: Boolean = true,
     val selectedType: QrType = QrType.CALL,
-    val showDownloadSuccess: Boolean = false
+    val showDownloadSuccess: Boolean = false,
+    val isGenerating: Boolean = false
 )
