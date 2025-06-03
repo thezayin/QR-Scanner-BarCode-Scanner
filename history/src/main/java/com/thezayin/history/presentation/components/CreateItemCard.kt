@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thezayin.framework.utils.formatTimestamp
 import com.thezayin.framework.utils.getQrTypeIcon
 import com.thezayin.history.domain.model.CreateItem
@@ -98,6 +99,7 @@ fun CreateItemCard(
                 val jsonObject = try {
                     org.json.JSONObject(item.content)
                 } catch (e: Exception) {
+                    FirebaseCrashlytics.getInstance().recordException(e)
                     null
                 }
                 jsonObject?.let { obj ->

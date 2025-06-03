@@ -1,6 +1,5 @@
 package com.thezayin.start_up.di
 
-import com.thezayin.start_up.onboarding.OnboardingViewModel
 import com.thezayin.start_up.setting.SettingsViewModel
 import com.thezayin.start_up.splash.SplashViewModel
 import kotlinx.serialization.json.Json
@@ -14,8 +13,5 @@ val settingsModule = module {
             ignoreUnknownKeys = true
         }
     }
-
-
     viewModelOf(::SplashViewModel)
-    viewModelOf(::OnboardingViewModel)
 }

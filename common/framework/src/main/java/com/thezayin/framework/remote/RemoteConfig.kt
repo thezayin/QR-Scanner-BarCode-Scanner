@@ -2,6 +2,7 @@ package com.thezayin.framework.remote
 
 import android.annotation.SuppressLint
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -39,7 +40,8 @@ class RemoteConfig(
             val adUnitsJson = config.getString(AD_UNITS)
             json.decodeFromString(AdUnits.serializer(), adUnitsJson)
         } catch (e: Exception) {
-            json.decodeFromString(AdUnits.serializer(), defaultAdUnits)  // Fallback to default
+            FirebaseCrashlytics.getInstance().recordException(e)
+            json.decodeFromString(AdUnits.serializer(), defaultAdUnits)
         }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -49,16 +51,16 @@ class RemoteConfig(
             Timber.tag("RemoteConfig").d("AdConfigs JSON: %s", adConfigsJson)
             if (adConfigsJson.isBlank()) {
                 Timber.tag("RemoteConfig").e("Received empty or null JSON for AdConfigs")
-                AdConfigs()  // Return default AdConfigs if the JSON is empty or null
+                AdConfigs()
             } else {
                 json.decodeFromString(AdConfigs.serializer(), adConfigsJson)
             }
         } catch (e: MissingFieldException) {
             Timber.tag("RemoteConfig").e(e, "Missing fields in AdConfigs JSON")
-            AdConfigs()  // Return default AdConfigs in case of MissingFieldException
+            AdConfigs()
         } catch (e: Exception) {
             Timber.tag("RemoteConfig").e(e, "Error decoding AdConfigs JSON")
-            AdConfigs()  // Handle any other exceptions and provide fallback
+            AdConfigs()
         }
 
     @OptIn(ExperimentalSerializationApi::class)

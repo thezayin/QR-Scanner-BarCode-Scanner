@@ -35,25 +35,17 @@ class ProductRepositoryImpl(
     override suspend fun fetchProductDetails(barcode: String): Result<ResultScreenItem> {
         return try {
             val productResponse: JsonObject? = apiService.fetchProductDetails(barcode)
-
-            // If the response is HTTP 200 (OK), parse the JSON body for product data.
             if (productResponse != null) {
                 val product = productResponse["product"]?.jsonObject
-
                 if (product != null) {
-                    // Extract relevant fields from the product JSON
                     val name = product["product_name"]?.jsonPrimitive?.contentOrNull
                     val imageUrl = product["image_url"]?.jsonPrimitive?.contentOrNull
                     val brands = product["brands"]?.jsonPrimitive?.contentOrNull
-
-                    // Extract possible links (these keys may or may not exist)
                     val links = mapOf(
                         "amazon" to product["amazon_url"]?.jsonPrimitive?.contentOrNull,
                         "open_food" to product["open_food_url"]?.jsonPrimitive?.contentOrNull,
                         "ebay" to product["ebay_url"]?.jsonPrimitive?.contentOrNull
                     ).filterValues { !it.isNullOrEmpty() }
-
-                    // Build a ResultScreenItem object containing the fetched product info.
                     val result = ResultScreenItem(
                         name = name ?: "",
                         imageUrl = imageUrl ?: "",
@@ -66,8 +58,6 @@ class ProductRepositoryImpl(
                         productFound = true,
                         isFavorite = false,
                     )
-
-                    // Wrap the product details in a Success result.
                     Result.Success(result)
                 } else {
                     Result.Failure(Exception("Product not found"))
@@ -75,9 +65,7 @@ class ProductRepositoryImpl(
             } else {
                 Result.Failure(Exception("HTTP error ${productResponse}"))
             }
-
         } catch (e: Exception) {
-            // Any networking or parsing errors are caught here and returned as a Failure.
             Result.Failure(e)
         }
     }

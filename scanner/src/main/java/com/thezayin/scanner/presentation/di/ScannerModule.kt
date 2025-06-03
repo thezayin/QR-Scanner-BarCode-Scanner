@@ -28,18 +28,14 @@ import org.koin.dsl.module
  * - **ScannerViewModel**: ViewModel for managing UI state.
  */
 val scannerModule = module {
-    // Provides an instance of QrLocalDataSource (used for QR scanning)
     singleOf(::ApiService)
     singleOf(::QrLocalDataSource)
-
     factoryOf(::QrRepositoryImpl) bind QrRepository::class
     factoryOf(::ProductRepositoryImpl) bind ProductRepository::class
     singleOf(::AddProductToDbUseCase)
     singleOf(::UpdateFavoriteUseCase)
     singleOf(::ScanQrUseCase)
     singleOf(::FetchProductDetailsUseCase)
-
-    // Provides a ViewModel instance to be used within the UI layer
     viewModelOf(::ScannerViewModel)
     viewModelOf(::ResultScreenViewModel)
 }

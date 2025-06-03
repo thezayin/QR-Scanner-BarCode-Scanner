@@ -1,13 +1,14 @@
 package com.thezayin.framework.preferences
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.edit
+import androidx.core.os.LocaleListCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import timber.log.Timber
 
 class PreferencesManager(context: Context) {
 
@@ -19,9 +20,37 @@ class PreferencesManager(context: Context) {
         private const val KEY_BEEP_ENABLED = "beep_enabled"
         private const val KEY_VIBRATE_ENABLED = "vibrate_enabled"
         private const val KEY_DARK_THEME_ENABLED = "dark_theme_enabled"
-        private const val KEY_SELECTED_LANGUAGE = "selected_language"
+        private const val KEY_SELECTED_LANGUAGE = "selected_language_code"
         private const val KEY_IS_FIRST_TIME = "is_first_time"
+
         private val DEFAULT_PRIMARY_COLOR = Color(0xFFA761FF)
+    }
+
+    fun saveSelectedLanguageCode(code: String) {
+        prefs.edit { putString(KEY_SELECTED_LANGUAGE, code) }
+        applyLocale(code)
+    }
+
+    fun getSelectedLanguageCode(): String? {
+        return prefs.getString(KEY_SELECTED_LANGUAGE, null)
+    }
+
+    private fun applyLocale(languageCode: String) {
+        val localeList = if (languageCode == Language.SYSTEM_DEFAULT_CODE) {
+            LocaleListCompat.getEmptyLocaleList()
+        } else {
+            LocaleListCompat.forLanguageTags(languageCode)
+        }
+        AppCompatDelegate.setApplicationLocales(localeList)
+    }
+
+    fun initializeLocale() {
+        val savedLanguageCode = getSelectedLanguageCode()
+        if (savedLanguageCode != null) {
+            applyLocale(savedLanguageCode)
+        } else {
+            applyLocale(Language.SYSTEM_DEFAULT_CODE)
+        }
     }
 
     private val _primaryColorFlow = MutableStateFlow(getPrimaryColorFromPrefs())
@@ -43,9 +72,6 @@ class PreferencesManager(context: Context) {
 
     private val _vibrateFlow = MutableStateFlow(prefs.getBoolean(KEY_VIBRATE_ENABLED, false))
     val vibrateFlow = _vibrateFlow.asStateFlow()
-
-    private val _selectedLanguageFlow = MutableStateFlow(getSelectedLanguageFromPrefs())
-    val selectedLanguageFlow = _selectedLanguageFlow.asStateFlow()
 
     private fun getPrimaryColorFromPrefs(): Color {
         val colorInt = prefs.getInt(KEY_PRIMARY_COLOR, DEFAULT_PRIMARY_COLOR.toArgb())
@@ -80,27 +106,13 @@ class PreferencesManager(context: Context) {
         _darkThemeFlow.value = enabled
     }
 
-    fun getSavedLanguage(): String? {
-        val langCode = prefs.getString(KEY_SELECTED_LANGUAGE, null)
-        Timber.tag("jejePrefs")
-            .i("getSavedLanguage() called, loaded code: '$langCode' for key '$KEY_SELECTED_LANGUAGE'")
-        return langCode
-    }
-
-    private fun getSelectedLanguageFromPrefs(): String? =
-        prefs.getString(KEY_SELECTED_LANGUAGE, null)
-
     private val _isFirstTime = MutableStateFlow(true)
-    val isFirstTime: StateFlow<Boolean> = _isFirstTime
+    val isFirstTime: StateFlow<Boolean> = _isFirstTime.asStateFlow()
 
     init {
-        _selectedLanguageFlow.value = prefs.getString(KEY_SELECTED_LANGUAGE, null)
         _isFirstTime.value = prefs.getBoolean(KEY_IS_FIRST_TIME, true)
     }
 
-    /**
-     * Marks that the user has completed onboarding.
-     */
     fun setOnboardingCompleted() {
         prefs.edit {
             putBoolean(KEY_IS_FIRST_TIME, false)

@@ -9,20 +9,16 @@ import com.thezayin.history.domain.usecase.GetAllScanItemsUseCase
 import com.thezayin.history.domain.usecase.UpdateScanFavoriteUseCase
 import com.thezayin.history.presentation.HistoryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val historyModule = module {
-    single<HistoryRepository> {
-        HistoryRepositoryImpl(
-            scanDao = get(),
-            createDao = get()
-        )
-    }
-
-    factory { GetAllScanItemsUseCase(get()) }
-    factory { GetAllCreateItemsUseCase(get()) }
-    factory { UpdateScanFavoriteUseCase(get()) }
-    factory { DeleteScanItemUseCase(get()) }
-    factory { DeleteCreateItemUseCase(get()) }
+    factoryOf(::HistoryRepositoryImpl) bind HistoryRepository::class
+    factoryOf(::GetAllScanItemsUseCase)
+    factoryOf(::GetAllCreateItemsUseCase)
+    factoryOf(::UpdateScanFavoriteUseCase)
+    factoryOf(::DeleteScanItemUseCase)
+    factoryOf(::DeleteCreateItemUseCase)
     viewModelOf(::HistoryViewModel)
 }

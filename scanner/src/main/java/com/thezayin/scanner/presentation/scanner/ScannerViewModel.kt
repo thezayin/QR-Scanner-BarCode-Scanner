@@ -29,11 +29,11 @@ import com.thezayin.scanner.presentation.scanner.analyzer.BarcodeAnalyzer
 import com.thezayin.scanner.presentation.scanner.event.ScannerEvent
 import com.thezayin.scanner.presentation.scanner.state.ScannerState
 import com.thezayin.values.R
-import kotlinx.coroutines.Job // New import
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.guava.await // Required for .await() extension on ListenableFuture
+import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
@@ -61,7 +61,7 @@ class ScannerViewModel(
     val primaryColor = preferencesManager.getPrimaryColor()
     private var screenNavigationAction: ((List<Pair<String, String>>) -> Unit)? = null
 
-    private var currentZoomJob: Job? = null // New: To manage concurrent zoom updates
+    private var currentZoomJob: Job? = null
 
     init {
         sessionManager.clearScanResults()
@@ -78,13 +78,13 @@ class ScannerViewModel(
         this.imageAnalysis = boundImageAnalysis
         this.imageCapture = boundImageCapture
 
-        val cameraZoomState = boundCamera.cameraInfo.zoomState.value // Get current zoom info
+        val cameraZoomState = boundCamera.cameraInfo.zoomState.value
         _state.update {
             it.copy(
                 isCameraReady = true,
-                zoomLevel = cameraZoomState?.zoomRatio ?: 1f, // Initialize with actual current zoom
-                minZoomRatio = cameraZoomState?.minZoomRatio ?: 1f, // Initialize min zoom
-                maxZoomRatio = cameraZoomState?.maxZoomRatio ?: 1f // Initialize max zoom
+                zoomLevel = cameraZoomState?.zoomRatio ?: 1f,
+                minZoomRatio = cameraZoomState?.minZoomRatio ?: 1f,
+                maxZoomRatio = cameraZoomState?.maxZoomRatio ?: 1f
             )
         }
         startImageAnalysisSession()
@@ -111,7 +111,6 @@ class ScannerViewModel(
     }
 
     fun onEvent(event: ScannerEvent) {
-        // Use launch for each event to prevent blocking the main thread or other event processing
         viewModelScope.launch {
             when (event) {
                 ScannerEvent.StartBatchScan -> enterBatchMode()
@@ -120,7 +119,7 @@ class ScannerViewModel(
                 is ScannerEvent.ImageSelected -> handleGallerySingleImage(event.imageUri)
                 is ScannerEvent.ImagesSelected -> handleGalleryBatchImages(event.imageUris)
                 is ScannerEvent.ToggleFlashlight -> toggleFlashlight()
-                is ScannerEvent.ChangeZoom -> updateZoomLevelUi(event.zoomLevel) // This routes to the refined zoom logic
+                is ScannerEvent.ChangeZoom -> updateZoomLevelUi(event.zoomLevel)
                 is ScannerEvent.ShowError -> _state.value = _state.value.copy(error = event.message)
                 is ScannerEvent.ProcessScanResultInternal -> {
                     Timber.tag("ScannerViewModel_onEven")
@@ -138,8 +137,6 @@ class ScannerViewModel(
                 _state.update { it.copy(batchScannedCodes = it.batchScannedCodes + result) }
             }
         } else {
-            // In single scan mode, stop scanning to avoid duplicate triggers and
-            // ensure the UI has time to transition.
             stopImageAnalysisSession()
             try {
                 val imagePath = captureImageAndGetPath()
@@ -154,15 +151,12 @@ class ScannerViewModel(
                 _state.update {
                     it.copy(
                         error = app.getString(
-                            R.string.qr_code_scan_error, // This could be more specific, e.g., "capture_error_format"
+                            R.string.qr_code_scan_error,
                             e.localizedMessage ?: "Unknown error during image capture"
                         )
                     )
                 }
             } finally {
-                // IMPORTANT: Always restart analysis after navigation or error in single mode.
-                // The VM should restart analysis or rely on the UI/flow to re-trigger.
-                // For simplicity, we restart here.
                 startImageAnalysisSession()
             }
         }
@@ -180,13 +174,13 @@ class ScannerViewModel(
 
     private fun exitBatchModeAndPrepareForSingleScan() {
         _state.update { it.copy(isBatchModeActive = false, batchScannedCodes = emptySet()) }
-        startImageAnalysisSession() // Restart analyzer for single mode
+        startImageAnalysisSession()
     }
 
     private suspend fun confirmAndProcessBatch() {
         val codesToProcess = _state.value.batchScannedCodes.toList()
         _state.update { it.copy(isBatchModeActive = false, batchScannedCodes = emptySet()) }
-        stopImageAnalysisSession() // Stop while processing to prevent new detections
+        stopImageAnalysisSession()
 
         if (codesToProcess.isNotEmpty()) {
             var singleContextualImagePath: String? = null
@@ -214,7 +208,7 @@ class ScannerViewModel(
                 Toast.LENGTH_SHORT
             ).show()
         }
-        startImageAnalysisSession() // Always restart analysis after batch confirm or cancel
+        startImageAnalysisSession()
     }
 
     private suspend fun handleGallerySingleImage(imageUriString: String) {
@@ -260,8 +254,6 @@ class ScannerViewModel(
 
                     is Result.Failure -> {
                         Timber.d("No QR code found in image $uriString: ${scanResult.exception.message}")
-                        // We might not want to show a toast for *every* failed image in a batch
-                        // if many are selected. Let the overall 'no successful scans' handle it.
                     }
                 }
             } catch (e: Exception) {
@@ -315,21 +307,11 @@ class ScannerViewModel(
         val currentMinZoom = _state.value.minZoomRatio
         val currentMaxZoom = _state.value.maxZoomRatio
         val clampedLevel = requestedLevel.coerceIn(currentMinZoom, currentMaxZoom)
-
-        // PROBLEM 3 & 2 FIX: Immediately update UI state with the clamped desired level.
-        // This makes the slider follow the finger instantly.
         _state.update { it.copy(zoomLevel = clampedLevel) }
-
-        // Only send a camera command if the zoom actually changes
-        // (clampedLevel might be the same if it was already at max/min or not actually changed).
-        // This check also prevents unnecessary API calls if the camera can't change zoom beyond current.
         if (clampedLevel != camera?.cameraInfo?.zoomState?.value?.zoomRatio) {
-            currentZoomJob?.cancel() // Cancel any previous pending zoom job
+            currentZoomJob?.cancel()
             currentZoomJob = viewModelScope.launch {
                 try {
-                    // PROBLEM 3 FIX: Fire the camera command asynchronously.
-                    // We're no longer awaiting its completion to update the UI _before_ updating state.
-                    // The UI state was already updated to the *desired* value above.
                     camera?.cameraControl?.setZoomRatio(clampedLevel)?.await()
                 } catch (e: Exception) {
                     FirebaseCrashlytics.getInstance().recordException(e)
@@ -380,7 +362,8 @@ class ScannerViewModel(
                 mediaPlayer?.setOnCompletionListener { mp ->
                     try {
                         mp.release()
-                    } catch (e: IllegalStateException) { /* ignored */
+                    } catch (e: IllegalStateException) {
+                        FirebaseCrashlytics.getInstance().recordException(e)
                     } catch (e: Exception) {
                         FirebaseCrashlytics.getInstance().recordException(e); Timber.e(
                             e,
@@ -392,7 +375,8 @@ class ScannerViewModel(
                     Timber.e("MediaPlayer error occurred: what=$what, extra=$extra")
                     try {
                         mp.release()
-                    } catch (e: IllegalStateException) { /* ignored */
+                    } catch (e: IllegalStateException) {
+                        FirebaseCrashlytics.getInstance().recordException(e)
                     } catch (e: Exception) {
                         FirebaseCrashlytics.getInstance().recordException(e); Timber.e(
                             e,
@@ -415,6 +399,6 @@ class ScannerViewModel(
     override fun onCleared() {
         super.onCleared()
         stopImageAnalysisSession()
-        currentZoomJob?.cancel() // Cancel any pending zoom job when ViewModel is cleared
+        currentZoomJob?.cancel()
     }
 }

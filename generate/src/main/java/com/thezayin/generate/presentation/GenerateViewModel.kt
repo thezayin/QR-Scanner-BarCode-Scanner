@@ -1,4 +1,3 @@
-// file: com/thezayin/generate/presentation/GenerateViewModel.kt
 package com.thezayin.generate.presentation
 
 import android.app.Activity
@@ -10,10 +9,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thezayin.framework.ads.admob.domain.repository.InterstitialAdManager
 import com.thezayin.framework.ads.admob.domain.repository.RewardedAdManager
 import com.thezayin.framework.preferences.PreferencesManager
@@ -28,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
@@ -51,48 +51,40 @@ class GenerateViewModel(
                         selectedType = event.type,
                         showMainListOnly = false,
                         generatedQrBitmap = null,
-                        isGenerating = false // Reset when type changes
+                        isGenerating = false
                     )
                 }
             }
 
             GenerateEvent.GenerateQrCode -> {
-                // Check if already generating, if so, do nothing.
                 if (_state.value.isGenerating) {
-                    Log.d("GenerateViewModel", "GenerateQrCode event IGNORED (already generating).")
+                    Timber.tag("GenerateViewModel")
+                        .d("GenerateQrCode event IGNORED (already generating).")
                     return
                 }
 
-                // Set isGenerating to true immediately and synchronously.
                 _state.update { it.copy(isGenerating = true, error = null) }
-                Log.d("GenerateViewModel", "GenerateQrCode event PROCESSING. isGenerating = true.")
-
-                // Launch the QR generation in a coroutine.
+                Timber.tag("GenerateViewModel")
+                    .d("GenerateQrCode event PROCESSING. isGenerating = true.")
                 viewModelScope.launch {
                     try {
                         val content = buildQrContentFromState(_state.value)
-                        Log.d("GenerateViewModel", "Coroutine: Generating QR for: $content")
+                        Timber.tag("GenerateViewModel").d("Coroutine: Generating QR for: $content")
                         val bmp = generateQrUseCase(content)
                         _state.update {
                             it.copy(generatedQrBitmap = bmp, isGenerating = false)
                         }
-                        Log.d(
-                            "GenerateViewModel",
-                            "Coroutine: Generation SUCCESS. isGenerating = false"
-                        )
+                        Timber.tag("GenerateViewModel")
+                            .d("Coroutine: Generation SUCCESS. isGenerating = false")
                     } catch (e: Exception) {
-                        Log.e(
-                            "GenerateViewModel",
-                            "Coroutine: Error generating QR: ${e.message}",
-                            e
-                        )
+                        FirebaseCrashlytics.getInstance().recordException(e)
+                        Timber.tag("GenerateViewModel")
+                            .e(e, "Coroutine: Error generating QR: ${e.message}")
                         _state.update {
                             it.copy(error = e.message, isGenerating = false)
                         }
-                        Log.d(
-                            "GenerateViewModel",
-                            "Coroutine: Generation FAILED. isGenerating = false"
-                        )
+                        Timber.tag("GenerateViewModel")
+                            .d("Coroutine: Generation FAILED. isGenerating = false")
                     }
                 }
             }
@@ -103,10 +95,10 @@ class GenerateViewModel(
                         currentState.copy(
                             showMainListOnly = true,
                             generatedQrBitmap = null,
-                            isGenerating = false // Reset if going back
+                            isGenerating = false
                         )
                     } else {
-                        currentState // No change if already on main list
+                        currentState
                     }
                 }
             }
@@ -224,7 +216,7 @@ class GenerateViewModel(
             put(MediaStore.Images.Media.MIME_TYPE, "image/png")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
-                put(MediaStore.Images.Media.IS_PENDING, 1) // For Android Q and above
+                put(MediaStore.Images.Media.IS_PENDING, 1)
             }
         }
 
@@ -241,21 +233,20 @@ class GenerateViewModel(
                     values.put(MediaStore.Images.Media.IS_PENDING, 0)
                     resolver.update(uri, values, null, null)
                 }
-                Log.d("GenerateViewModel", "QR Code downloaded successfully to $uri")
+                Timber.tag("GenerateViewModel").d("QR Code downloaded successfully to $uri")
             } catch (e: Exception) {
-                Log.e("GenerateViewModel", "Error downloading QR Code", e)
-                // Optionally, handle the error by removing the pending entry if it exists
+                Timber.tag("GenerateViewModel").e(e, "Error downloading QR Code")
                 resolver.delete(uri, null, null)
             }
-        } ?: Log.e("GenerateViewModel", "Failed to create MediaStore entry for download.")
+        } ?: Timber.tag("GenerateViewModel").e("Failed to create MediaStore entry for download.")
     }
 
     private fun shareQrCode(bitmap: Bitmap) {
         val context = getApplication<Application>()
         val filename =
-            "QR_Share_${System.currentTimeMillis()}.png" // Use a distinct name for sharing
+            "QR_Share_${System.currentTimeMillis()}.png"
         val cachePath =
-            File(context.cacheDir, "images_to_share") // Use a specific subdir for sharing
+            File(context.cacheDir, "images_to_share")
         if (!cachePath.exists()) {
             cachePath.mkdirs()
         }
@@ -268,12 +259,11 @@ class GenerateViewModel(
             }
             fileUri = FileProvider.getUriForFile(
                 context,
-                "${context.packageName}.fileprovider", // Ensure this matches your provider authority
+                "${context.packageName}.fileprovider",
                 file
             )
         } catch (e: Exception) {
-            Log.e("GenerateViewModel", "Error creating file for sharing", e)
-            // Handle error (e.g., show a toast to the user)
+            Timber.tag("GenerateViewModel").e(e, "Error creating file for sharing")
             return
         }
 
@@ -284,17 +274,14 @@ class GenerateViewModel(
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             val chooser = Intent.createChooser(shareIntent, "Share QR Code").apply {
-                // Add FLAG_ACTIVITY_NEW_TASK if starting from a non-Activity context,
-                // but usually not needed when started from an Activity (Compose LocalActivity.current)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             try {
                 context.startActivity(chooser)
-                Log.d("GenerateViewModel", "Share intent started for $it")
+                Timber.tag("GenerateViewModel").d("Share intent started for $it")
             } catch (e: Exception) {
-                Log.e("GenerateViewModel", "Error starting share intent", e)
-                // Handle error (e.g., show a toast to the user)
+                Timber.tag("GenerateViewModel").e(e, "Error starting share intent")
             }
-        } ?: Log.e("GenerateViewModel", "File URI for sharing is null.")
+        } ?: Timber.tag("GenerateViewModel").e("File URI for sharing is null.")
     }
 }

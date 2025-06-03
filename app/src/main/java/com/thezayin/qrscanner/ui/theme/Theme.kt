@@ -14,13 +14,9 @@ import androidx.compose.ui.platform.LocalContext
 private val DefaultLightColorScheme = lightColorScheme(
     primary = Purple40,
     tertiary = Pink40,
-    //background color
     background = Color(0xFFDEDEDE),
-    //icon and text color
     onSurface = Color(0xFF000000),
-    //card color
     surfaceContainer = (Color(0xFFFFFFFF)),
-    //text field color
     secondary = (Color(0xFFf3f3f3)),
 )
 
@@ -28,13 +24,9 @@ private val DefaultDarkColorScheme = darkColorScheme(
     primary = Purple80,
     tertiary = Pink80,
 
-    //background color
     background = Color(0xFF121212),
-    //icon and text color
     onSurface = Color(0xFFE3E3E3),
-    //card color
     surfaceContainer = (Color(0xFF353935)),
-    //text field color
     secondary = Color(0xFF353935),
 )
 

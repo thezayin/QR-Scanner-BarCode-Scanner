@@ -75,10 +75,8 @@ fun ScannerScreenContent(
                 ZoomControlsSection(
                     primaryColor = viewModel.primaryColor,
                     zoomLevel = state.zoomLevel,
-                    // Pass camera's actual min and max zoom ratios to the UI
                     minZoomRatio = state.minZoomRatio,
                     maxZoomRatio = state.maxZoomRatio,
-                    // Use ChangeZoom event for both slider and buttons for consistent behavior
                     onZoomChange = { newZoomLevel ->
                         viewModel.onEvent(
                             ScannerEvent.ChangeZoom(
@@ -95,17 +93,17 @@ fun ScannerScreenContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding() // This padding() with no arguments does nothing, safe to remove
+                .padding()
         ) {
             CameraPreview(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
-                onCameraSuccessfullyBound = {} // If no specific action needed here
+                onCameraSuccessfullyBound = {}
             )
             ScannerOverlay(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding) // Apply Scaffold's content padding here for the overlay
+                    .padding(contentPadding)
             )
         }
     }

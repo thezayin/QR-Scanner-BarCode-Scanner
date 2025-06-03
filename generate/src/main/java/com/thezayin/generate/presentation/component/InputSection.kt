@@ -34,8 +34,6 @@ fun InputSection(
 ) {
     val adManager = viewModel.adManager
     val activity = LocalActivity.current as Activity
-
-    // Collect the state from the ViewModel
     val state by viewModel.state.collectAsState()
 
     val allFieldsValid = fields.all { field ->
@@ -71,7 +69,6 @@ fun InputSection(
                     },
                 )
             },
-            // Disable button if fields are not valid OR if currently generating
             enabled = allFieldsValid && !state.isGenerating,
             modifier = Modifier
                 .fillMaxWidth()
@@ -83,7 +80,6 @@ fun InputSection(
             ),
         ) {
             Text(
-                // Optionally change button text while generating
                 text = if (state.isGenerating) "generating..." else effectiveButtonText,
                 fontSize = 12.ssp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),

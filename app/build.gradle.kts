@@ -19,12 +19,52 @@ android {
         applicationId = "com.thezayin.qrscanner"
         minSdk = libs.versions.minSdkVersion.get().toInt()
         targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        versionCode = 5
-        versionName = "1.0.0.5"
+        versionCode = 10
+        versionName = "1.0.0.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resourceConfigurations += listOf(
+            "en",
+            "es",
+            "fr",
+            "ar",
+            "ru",
+            "pt",
+            "hi",
+            "da",
+            "it",
+            "tr",
+            "in",
+            "ja",
+            "ko",
+            "pl",
+            "af",
+            "zh",
+            "zh-rTW",
+            "th",
+            "fa",
+            "vi",
+            "hu",
+            "iw",
+            "sv",
+            "no",
+            "ca",
+            "ms",
+            "nl",
+            "cs",
+            "ur",
+            "de",
+            "uk",
+            "bn",
+            "hy",
+            "ro"
+        )
     }
-
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -46,6 +86,12 @@ android {
         compose = true
         dataBinding = true
         buildConfig = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -116,5 +162,9 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
     implementation(libs.sdp.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 
+    implementation(libs.feature.delivery)
+    implementation(libs.feature.delivery.ktx)
 }

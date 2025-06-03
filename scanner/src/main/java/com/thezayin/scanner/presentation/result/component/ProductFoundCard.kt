@@ -1,6 +1,5 @@
 package com.thezayin.scanner.presentation.result.component
 
-// Add these imports at the top
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -50,8 +49,6 @@ fun ProductFoundCard(
     val context = LocalContext.current
     val activity = context as Activity
     val adManager = vm.adManager
-
-    // State to control the visibility of the barcode dialog
     val showBarcodeDialog = remember { mutableStateOf(false) }
 
     Card(
@@ -113,7 +110,6 @@ fun ProductFoundCard(
                     iconRes = R.drawable.ic_barcode,
                     label = stringResource(id = R.string.view_code),
                     onClick = {
-                        // Show the custom dialog instead of the Toast
                         showBarcodeDialog.value = true
                     })
                 IconWithLabel(

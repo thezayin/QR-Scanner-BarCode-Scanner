@@ -18,8 +18,9 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thezayin.framework.preferences.PreferencesManager
 import timber.log.Timber
 
+@Suppress("DEPRECATION", "SENSELESS_COMPARISON")
 class PurchaseHandler(
-    private val context: Context, private val prefs: PreferencesManager
+    context: Context, private val prefs: PreferencesManager
 ) {
     private var isConnecting = false
     private val pendingOnReadyActions =
@@ -136,7 +137,7 @@ class PurchaseHandler(
                 }
 
                 var isEffectivelyPremium = false
-                if (purchasesList.isNullOrEmpty()) {
+                if (purchasesList.isEmpty()) {
                     prefs.updatePremiumStatus(false)
                 } else {
                     var foundAcknowledged = false
@@ -189,7 +190,7 @@ class PurchaseHandler(
 
             client.queryProductDetailsAsync(queryParams) { billingResult, productDetailsList ->
                 Timber.tag("PurchaseHandler_QSPD")
-                    .d("queryProductDetailsAsync returned. Result: ${billingResult.responseCode} - ${billingResult.debugMessage}, List size: ${productDetailsList?.size ?: "null"}")
+                    .d("queryProductDetailsAsync returned. Result: ${billingResult.responseCode} - ${billingResult.debugMessage}, List size: ${productDetailsList.size}")
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     if (productDetailsList != null) {
                         onDetailsFetched(productDetailsList)
@@ -231,9 +232,9 @@ class PurchaseHandler(
                 .d("LPF: Calling queryProductDetailsAsync for $productId.")
             client.queryProductDetailsAsync(queryParams) { result, productDetailsList ->
                 Timber.tag("PurchaseHandler_LPF")
-                    .d("LPF: queryProductDetailsAsync for $productId returned. Result: ${result.responseCode} - ${result.debugMessage}, List size: ${productDetailsList?.size ?: "null"}")
+                    .d("LPF: queryProductDetailsAsync for $productId returned. Result: ${result.responseCode} - ${result.debugMessage}, List size: ${productDetailsList.size}")
 
-                if (result.responseCode == BillingClient.BillingResponseCode.OK && !productDetailsList.isNullOrEmpty()) {
+                if (result.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList.isNotEmpty()) {
                     val productDetails = productDetailsList.first()
                     Timber.tag("PurchaseHandler_LPF")
                         .d("LPF: Product details found for $productId: ${productDetails.name}. Preparing flow params.")
@@ -287,9 +288,9 @@ class PurchaseHandler(
                     }
                 } else {
                     Timber.tag("PurchaseHandler_LPF")
-                        .e("LPF: Product details not found or error for $productId: Result code ${result.responseCode}, Debug: ${result.debugMessage}, List empty/null: ${productDetailsList.isNullOrEmpty()}")
+                        .e("LPF: Product details not found or error for $productId: Result code ${result.responseCode}, Debug: ${result.debugMessage}, List empty/null: ${productDetailsList.isEmpty()}")
                     onPurchaseHandledListener?.invoke(
-                        false, "Details for ${productId} not found: ${result.debugMessage}"
+                        false, "Details for $productId not found: ${result.debugMessage}"
                     )
                 }
             }

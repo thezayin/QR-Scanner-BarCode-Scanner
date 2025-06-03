@@ -80,4 +80,6 @@ dependencies {
     implementation(libs.sdp.compose)
     implementation(libs.core)
     implementation(libs.lottie.compose)
+
+    implementation(libs.timber)
 }

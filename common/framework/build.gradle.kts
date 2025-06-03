@@ -39,6 +39,7 @@ android {
         buildConfig = true
 
     }
+
 }
 
 dependencies {
@@ -95,4 +96,6 @@ dependencies {
     //Funsol Billing
     implementation(libs.billing)
     implementation(libs.funsol.billing.helper)
+
+    api ("androidx.datastore:datastore-preferences:1.0.0")
 }
