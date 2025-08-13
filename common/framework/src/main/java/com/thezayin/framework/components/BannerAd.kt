@@ -14,7 +14,7 @@ import com.thezayin.framework.preferences.PreferencesManager
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun BannerAd(
-    adId: String = "ca-app-pub-2913057115284606/1324373691",
+    adId: String = "ca-app-pub-1251134228868472/1473537183",
     showAd: Boolean = true,
     preferencesManager: PreferencesManager
 ) {

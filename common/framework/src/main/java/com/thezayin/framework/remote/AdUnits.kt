@@ -5,19 +5,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AdUnits(
-    @SerialName("appOpenAd") val appOpenAd: String = "",
-    @SerialName("interstitialAd") val interstitialAd: String = "",
-    @SerialName("rewardedAd") val rewardedAd: String = "",
-    @SerialName("nativeAd") val nativeAd: String = "",
-    @SerialName("bannerAd") val bannerAd: String = ""
+    @SerialName("appOpenAd") val appOpenAd: String = "ca-app-pub-1251134228868472/3535468012",
+    @SerialName("interstitialAd") val interstitialAd: String = "ca-app-pub-1251134228868472/5179722171",
+    @SerialName("rewardedAd") val rewardedAd: String = "ca-app-pub-1251134228868472/4848549688",
+    @SerialName("nativeAd") val nativeAd: String = "ca-app-pub-1251134228868472/9371901017",
+    @SerialName("bannerAd") val bannerAd: String = "ca-app-pub-1251134228868472/1473537183"
 )
 
 val defaultAdUnits = """
 {
-  "appOpenAd": "ca-app-pub-3940256099942544/9257395921",
-  "interstitialAd": "ca-app-pub-3940256099942544/1033173712",
-  "rewardedAd": "ca-app-pub-3940256099942544/5224354917",
-  "nativeAd": "ca-app-pub-3940256099942544/2247696110",
-  "bannerAd": "ca-app-pub-3940256099942544/6300978111"
+  "appOpenAd": "ca-app-pub-1251134228868472/3535468012",
+  "interstitialAd": "ca-app-pub-1251134228868472/5179722171",
+  "rewardedAd": "ca-app-pub-1251134228868472/4848549688",
+  "nativeAd": "ca-app-pub-1251134228868472/9371901017",
+  "bannerAd": "ca-app-pub-1251134228868472/1473537183"
 }
 """.trimIndent()
