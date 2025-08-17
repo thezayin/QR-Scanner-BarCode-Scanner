@@ -1,5 +1,6 @@
 package com.thezayin.scanner.presentation.scanner.analyzer
 
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -43,10 +44,12 @@ class BarcodeAnalyzer(
                 if (barcodes.isNotEmpty()) {
                     barcodes.firstOrNull()?.rawValue?.let { result ->
                         if (isInContinuousScanMode) {
+                            Log.d("resultggg", "analyze:$result ")
                             onBarcodeScanned(result)
                         } else {
                             if (!singleScanCallbackFiredThisInstance) {
                                 singleScanCallbackFiredThisInstance = true
+                                Log.d("resultggg", "analyze11:$result ")
                                 onBarcodeScanned(result)
                             }
                         }

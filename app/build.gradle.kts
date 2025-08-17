@@ -19,8 +19,8 @@ android {
         applicationId = "com.thezayin.qrscanner"
         minSdk = libs.versions.minSdkVersion.get().toInt()
         targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        versionCode = 11
-        versionName = "1.0.0.11"
+        versionCode = 12
+        versionName = "1.0.0.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resourceConfigurations += listOf(

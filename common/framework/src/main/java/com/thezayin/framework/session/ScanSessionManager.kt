@@ -20,4 +20,7 @@ interface ScanSessionManager {
      * Returns the list of scan results.
      */
     fun getScanResults(): List<Pair<String, String>>
+
+
+    fun reload()
 }

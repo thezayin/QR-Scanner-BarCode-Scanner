@@ -12,14 +12,15 @@ import com.thezayin.framework.remote.RemoteConfig
 import com.thezayin.framework.session.InMemoryScanSessionManager
 import com.thezayin.framework.session.ScanSessionManager
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val frameworkModule = module {
-    factoryOf(::InterstitialAdManagerImpl) bind InterstitialAdManager::class
-    factoryOf(::AppOpenAdManagerImpl) bind AppOpenAdManager::class
-    factoryOf(::RewardedAdManagerImpl) bind RewardedAdManager::class
-    factoryOf(::InMemoryScanSessionManager) bind ScanSessionManager::class
-    factoryOf(::RemoteConfig)
+    singleOf(::InterstitialAdManagerImpl) bind InterstitialAdManager::class
+    singleOf(::AppOpenAdManagerImpl) bind AppOpenAdManager::class
+    singleOf(::RewardedAdManagerImpl) bind RewardedAdManager::class
+    singleOf(::InMemoryScanSessionManager) bind ScanSessionManager::class
+    singleOf(::RemoteConfig)
     single { PreferencesManager(get<Application>()) }
 }

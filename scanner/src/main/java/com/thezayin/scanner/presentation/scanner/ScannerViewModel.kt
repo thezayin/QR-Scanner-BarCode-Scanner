@@ -7,6 +7,7 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.Camera
@@ -131,7 +132,9 @@ class ScannerViewModel(
 
     @SuppressLint("StringFormatInvalid")
     private suspend fun handleLiveCameraScanResult(result: String) {
+        Log.d("gggg", "handleLiveCameraScanResult:1 $result ")
         if (state.value.isBatchModeActive) {
+            Log.d("gggg", "handleLiveCameraScanResult:2 ${state.value.isBatchModeActive} ")
             if (!_state.value.batchScannedCodes.contains(result)) {
                 triggerHapticFeedback()
                 _state.update { it.copy(batchScannedCodes = it.batchScannedCodes + result) }
@@ -140,7 +143,9 @@ class ScannerViewModel(
             stopImageAnalysisSession()
             try {
                 val imagePath = captureImageAndGetPath()
+                Log.d("gggg", "handleLiveCameraScanResult:3 $imagePath ")
                 sessionManager.saveScanResult(imagePath, result)
+                Log.d("gggg", "handleLiveCameraScanResult:4 ${ sessionManager.getScanResults()} ")
                 triggerHapticFeedback()
                 this.screenNavigationAction?.invoke(listOf(imagePath to result))
                     ?: Timber.tag("ScannerViewModel_Handle")

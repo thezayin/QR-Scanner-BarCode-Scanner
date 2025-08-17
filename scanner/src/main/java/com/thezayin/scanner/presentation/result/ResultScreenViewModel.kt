@@ -6,6 +6,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
@@ -24,9 +25,13 @@ import com.thezayin.scanner.domain.usecase.FetchProductDetailsUseCase
 import com.thezayin.scanner.domain.usecase.UpdateFavoriteUseCase
 import com.thezayin.scanner.presentation.result.event.ResultScreenEvent
 import com.thezayin.scanner.presentation.result.state.ResultScreenState
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import java.util.Locale
 
 class ResultScreenViewModel(
@@ -47,7 +52,10 @@ class ResultScreenViewModel(
         private set
 
     init {
-        loadResults()
+//        viewModelScope.launch {
+        Log.d("result2ggg", "${sessionManager.getScanResults()} ")
+            loadResults()
+//        }
     }
 
     fun initManager(activity: Activity) {
@@ -67,7 +75,8 @@ class ResultScreenViewModel(
     }
 
     private fun loadResults() {
-        viewModelScope.launch {
+        viewModelScope.launch(Main) {
+
             _state.value = _state.value.copy(isLoading = true)
             val sessionList = sessionManager.getScanResults()
             val items = sessionList.map { (imageUri, resultText) ->
@@ -80,7 +89,7 @@ class ResultScreenViewModel(
                     isFavorite = false
                 )
             }.toMutableList()
-
+            Log.d("checkingQR", "loadResults: $sessionList  \n $items")
             items.forEachIndexed { index, rawItem ->
                 if (rawItem.type == "Text" || rawItem.type == "Barcode") {
                     val productResult = fetchProductDetailsUseCase.execute(rawItem.result)

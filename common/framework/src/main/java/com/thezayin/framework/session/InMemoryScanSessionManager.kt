@@ -1,5 +1,7 @@
 package com.thezayin.framework.session
 
+import android.util.Log
+
 /**
  * An in-memory implementation of [ScanSessionManager] used to store QR scan results
  * without persisting them to disk or a database. This class is typically useful for
@@ -21,13 +23,16 @@ class InMemoryScanSessionManager : ScanSessionManager {
      * @param result The text extracted from the scanned QR code or barcode.
      */
     override fun saveScanResult(imageUri: String, result: String) {
+        Log.d("memomryggg", "saveScanResult: ")
         scanResults.add(imageUri to result)
+
     }
 
     /**
      * Clears all currently stored scan results.
      */
     override fun clearScanResults() {
+        Log.d("memomryggg", "clearScanResults: ")
         scanResults.clear()
     }
 
@@ -36,5 +41,13 @@ class InMemoryScanSessionManager : ScanSessionManager {
      *
      * @return A list of pairs containing (imageUri, result) for each scan.
      */
-    override fun getScanResults(): List<Pair<String, String>> = scanResults.toList()
+    override fun getScanResults(): List<Pair<String, String>> {
+        Log.d("memomryggg", "getScanResults:${scanResults.toList()} " )
+        return scanResults.toList()
+    }
+
+    override fun reload() {
+        Log.d("jeje", "fun REloaded ")
+        Log.d("jeje2", "${scanResults.toList()} ")
+    }
 }
